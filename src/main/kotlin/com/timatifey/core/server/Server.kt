@@ -4,52 +4,41 @@ import java.io.*
 import java.net.ServerSocket
 import java.net.Socket
 
-open class Server: Runnable {
-    private lateinit var server: ServerSocket
-    private lateinit var clientSocket: Socket
-
-    private lateinit var input: BufferedReader
-    private lateinit var output: PrintWriter
-    private lateinit var inputLine: String
+abstract class Server: Runnable {
+    lateinit var server: ServerSocket
+    lateinit var clientSocket: Socket
+    lateinit var input: BufferedReader
+    lateinit var output: PrintWriter
 
     fun start(port: Int) {
-        server = ServerSocket(port)
-        println("SERVER IS WAITING OF CONNECTION")
-        clientSocket = server.accept()
-        println("CLIENT CONNECTED")
-        run()
-    }
-
-    private fun stop() {
-        clientSocket.close()
-        server.close()
-        input.close()
-        output.close()
-    }
-
-    fun isConnected(): Boolean {
-        return clientSocket.isConnected
-    }
-
-    fun getInfo(): String {
-        return inputLine
-    }
-
-    override fun run() {
-        input = BufferedReader(InputStreamReader(clientSocket.getInputStream()));
-        output = PrintWriter(clientSocket.getOutputStream(), true)
-
-        inputLine = input.readLine()
-        while (clientSocket.isConnected) {
-            if (inputLine.equals("stop", ignoreCase = true)) {
-                println("DISCONNECT")
-                output.println("DISCONNECT")
-                output.flush()
-                break
-            }
-            println(inputLine)
-            inputLine = input.readLine()
+        try {
+            server = ServerSocket(port)
+            println("SERVER IS WAITING OF CONNECTION")
+            clientSocket = server.accept()
+            println("CLIENT CONNECTED")
+            run()
+        } catch (e: IOException) {
+            println("Starting Server Error: $e")
         }
-        stop()
     }
+
+    fun stop() {
+        try {
+            server.close()
+        } catch (e: IOException) {
+            println("Stopping Server Error: $e")
+        }
+    }
+
+    fun stopConnection() {
+        try {
+            input.close()
+            output.close()
+            clientSocket.close()
+        } catch (e: IOException) {
+            println("Stopping Connection with server Error: $e")
+        }
+    }
+
+    override fun run() {}
 }
