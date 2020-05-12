@@ -1,14 +1,14 @@
-package com.timatifey.core.server
+package com.timatifey.models.server
 
+import com.timatifey.models.receivers.MouseEventReceiver
+import com.timatifey.models.senders.ScreenSender
 import java.io.*
 import java.net.ServerSocket
 import java.net.Socket
 
-abstract class Server: Runnable {
-    lateinit var server: ServerSocket
-    lateinit var clientSocket: Socket
-    lateinit var input: BufferedReader
-    lateinit var output: PrintWriter
+object Server  {
+    private lateinit var server: ServerSocket
+    private lateinit var clientSocket: Socket
 
     fun start(port: Int) {
         try {
@@ -16,7 +16,8 @@ abstract class Server: Runnable {
             println("SERVER IS WAITING OF CONNECTION")
             clientSocket = server.accept()
             println("CLIENT CONNECTED")
-            run()
+            Thread(MouseEventReceiver(clientSocket)).start()
+            Thread(ScreenSender(clientSocket)).start()
         } catch (e: IOException) {
             println("Starting Server Error: $e")
         }
@@ -24,21 +25,10 @@ abstract class Server: Runnable {
 
     fun stop() {
         try {
+            clientSocket.close()
             server.close()
         } catch (e: IOException) {
             println("Stopping Server Error: $e")
         }
     }
-
-    fun stopConnection() {
-        try {
-            input.close()
-            output.close()
-            clientSocket.close()
-        } catch (e: IOException) {
-            println("Stopping Connection with server Error: $e")
-        }
-    }
-
-    override fun run() {}
 }
