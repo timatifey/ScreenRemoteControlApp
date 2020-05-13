@@ -1,6 +1,5 @@
 package com.timatifey.app
-import com.timatifey.views.Main
-import javafx.stage.Stage
+import com.timatifey.views.MainView
 import tornadofx.*
 
-class Main : App(Main::class) {}
+class Main : App(MainView::class) {}

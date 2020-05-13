@@ -16,7 +16,6 @@ class ScreenSender(private val client: Socket): Runnable {
     override fun run() {
         try {
             while (true) {
-                println("send")
                 ImageIO.write(takeScreen(), "png", client.getOutputStream())
                 sleep(200)
             }

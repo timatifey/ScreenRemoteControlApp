@@ -8,8 +8,10 @@ import java.util.concurrent.TimeUnit
 
 object Client {
     private lateinit var clientSocket: Socket
+    private lateinit var mouseEventSender: MouseEventSender
+    private lateinit var screenReceiver: ScreenReceiver
 
-    fun startConnection(ip: String, port: Int) {
+    fun startConnection(ip: String, port: Int): Boolean {
         while (true) {
             try {
                 clientSocket = Socket(ip, port)
@@ -19,11 +21,18 @@ object Client {
                 TimeUnit.SECONDS.sleep(3)
             }
         }
-        val mouseThread = Thread(MouseEventSender(clientSocket))
+        if (clientSocket.isConnected && !clientSocket.isClosed) println("CLIENT CONNECTED TO $ip:$port")
+        mouseEventSender = MouseEventSender(clientSocket)
+        val mouseThread = Thread(mouseEventSender)
         mouseThread.start()
-        val screenThread = Thread(ScreenReceiver(clientSocket))
+
+        screenReceiver = ScreenReceiver(clientSocket)
+        val screenThread = Thread(screenReceiver)
         screenThread.start()
+        return true
     }
+    fun getMouseSender() = mouseEventSender
+    fun getScreenReceiver() = screenReceiver
 
     fun stopConnection() {
         try {
