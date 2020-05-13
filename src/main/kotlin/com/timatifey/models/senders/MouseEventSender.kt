@@ -28,6 +28,7 @@ class MouseEventSender(private val client: Socket): Runnable {
             while (true) {
                 if (needSend) {
                     val json = Gson().toJson(eventMouse)
+                    println("json $json")
                     output.println(json)
                     needSend = false
                 }

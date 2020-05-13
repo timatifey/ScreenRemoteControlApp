@@ -2,9 +2,7 @@ package com.timatifey.views
 
 import com.timatifey.controllers.MouseController
 import com.timatifey.controllers.ScreenRemoteControlController
-import javafx.beans.property.SimpleObjectProperty
 import tornadofx.*
-import java.awt.Image
 
 class ScreenRemoteControlView : View("View") {
     private val mouseController: MouseController by inject()

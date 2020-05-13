@@ -26,7 +26,9 @@ class MouseEventReceiver(private val client: Socket): Runnable {
             val input = BufferedReader(InputStreamReader(client.getInputStream()))
             while (true) {
                 val json = input.readLine()
+                println("json $json")
                 val event = Gson().fromJson(json, MouseEvent::class.java)
+                println("json $event")
                 move(event.screenX.toInt(), event.sceneY.toInt())
                 sleep(200)
             }
