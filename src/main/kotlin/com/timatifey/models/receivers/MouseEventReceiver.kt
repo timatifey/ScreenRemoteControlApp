@@ -32,6 +32,7 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                 println("mouse $mouse")
                 move(mouse.x, mouse.y)
                 sleep(200)
+
             }
         } catch (e: IOException) {
             e.printStackTrace()
