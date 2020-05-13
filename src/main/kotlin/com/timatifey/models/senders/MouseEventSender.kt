@@ -1,6 +1,7 @@
 package com.timatifey.models.senders
 
 import com.google.gson.Gson
+import com.timatifey.Mouse
 import javafx.scene.input.MouseEvent
 import java.io.IOException
 import java.io.PrintWriter
@@ -26,9 +27,11 @@ class MouseEventSender(private val client: Socket): Runnable {
         try {
             val output = PrintWriter(client.getOutputStream(), true)
             while (true) {
+                println("IN THREAD $needSend")
                 if (needSend) {
-                    val json = Gson().toJson(eventMouse)
-                    println("json $json")
+                    val mouse = Mouse(eventMouse.screenX.toInt(), eventMouse.screenY.toInt())
+                    val json = Gson().toJson(mouse)
+                    println("mouse $json")
                     output.println(json)
                     needSend = false
                 }

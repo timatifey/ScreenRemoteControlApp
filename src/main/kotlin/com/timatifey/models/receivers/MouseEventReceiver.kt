@@ -1,6 +1,7 @@
 package com.timatifey.models.receivers
 
 import com.google.gson.Gson
+import com.timatifey.Mouse
 import javafx.scene.input.MouseEvent
 import java.awt.AWTException
 import java.awt.Robot
@@ -27,9 +28,9 @@ class MouseEventReceiver(private val client: Socket): Runnable {
             while (true) {
                 val json = input.readLine()
                 println("json $json")
-                val event = Gson().fromJson(json, MouseEvent::class.java)
-                println("json $event")
-                move(event.screenX.toInt(), event.sceneY.toInt())
+                val mouse = Gson().fromJson(json, Mouse::class.java)
+                println("mouse $mouse")
+                move(mouse.x, mouse.y)
                 sleep(200)
             }
         } catch (e: IOException) {

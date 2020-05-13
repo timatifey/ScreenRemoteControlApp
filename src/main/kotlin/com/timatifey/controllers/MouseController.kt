@@ -8,7 +8,7 @@ class MouseController: Controller() {
     private val mouseSender = Client.getMouseSender()
 
     fun setEvent(event: MouseEvent) {
-        println("send $event")
+        //println("send $event")
         mouseSender.setEvent(event)
     }
 
