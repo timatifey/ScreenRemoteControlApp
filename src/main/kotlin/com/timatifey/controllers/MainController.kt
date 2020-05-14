@@ -2,7 +2,7 @@ package com.timatifey.controllers
 
 import com.timatifey.models.client.Client
 import com.timatifey.views.MainView
-import com.timatifey.views.ScreenRemoteControlView
+import com.timatifey.views.ScreenControlView
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 import java.lang.NumberFormatException
@@ -19,7 +19,7 @@ class MainController: Controller() {
             runLater {
                 if (result) {
                     find(MainView::class).replaceWith(
-                            ScreenRemoteControlView::class,
+                            ScreenControlView::class,
                             sizeToScene = true,
                             centerOnScreen = true
                     )

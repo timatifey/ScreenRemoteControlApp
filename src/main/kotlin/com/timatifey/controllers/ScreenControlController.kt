@@ -2,6 +2,6 @@ package com.timatifey.controllers
 
 import tornadofx.*
 
-class ScreenRemoteControlController: Controller() {
+class ScreenControlController: Controller() {
     val url = "screen.png"
 }

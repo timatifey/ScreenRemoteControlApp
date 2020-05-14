@@ -21,21 +21,37 @@ class MouseEventSender(private val client: Socket): Runnable {
     fun setEvent(event: MouseEvent) {
         eventMouse = event
         needSend = true
+        println(event)
     }
 
     override fun run() {
         try {
             val output = PrintWriter(client.getOutputStream(), true)
             while (true) {
-                println("IN THREAD $needSend")
                 if (needSend) {
-                    val mouse = Mouse(eventMouse.screenX.toInt(), eventMouse.screenY.toInt())
+                    val mouse = Mouse(
+                            eventMouse.eventType,
+                            eventMouse.x,
+                            eventMouse.y,
+                            eventMouse.screenX,
+                            eventMouse.screenY,
+                            eventMouse.button,
+                            eventMouse.clickCount,
+                            eventMouse.isShiftDown,
+                            eventMouse.isControlDown,
+                            eventMouse.isAltDown,
+                            eventMouse.isMetaDown,
+                            eventMouse.isPrimaryButtonDown,
+                            eventMouse.isMiddleButtonDown,
+                            eventMouse.isPopupTrigger,
+                            eventMouse.isStillSincePress,
+                            eventMouse.isSecondaryButtonDown
+                    )
                     val json = Gson().toJson(mouse)
                     println("mouse $json")
-                    output.println(json)
+                    output.println(mouse)
                     needSend = false
                 }
-                sleep(200)
             }
         } catch (e: IOException) {
             e.printStackTrace()

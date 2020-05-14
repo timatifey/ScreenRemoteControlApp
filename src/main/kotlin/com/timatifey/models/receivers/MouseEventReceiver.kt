@@ -30,7 +30,7 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                 println("json $json")
                 val mouse = Gson().fromJson(json, Mouse::class.java)
                 println("mouse $mouse")
-                move(mouse.x, mouse.y)
+                move(mouse.x.toInt(), mouse.y.toInt())
                 sleep(200)
 
             }
