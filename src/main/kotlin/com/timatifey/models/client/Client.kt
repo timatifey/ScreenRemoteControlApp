@@ -12,23 +12,19 @@ object Client {
     private lateinit var screenReceiver: ScreenReceiver
 
     fun startConnection(ip: String, port: Int): Boolean {
-        while (true) {
-            try {
-                clientSocket = Socket(ip, port)
-                break
-            } catch (e: IOException) {
-                println("Client Connecting Error: $e")
-                TimeUnit.SECONDS.sleep(3)
-            }
+       try {
+            clientSocket = Socket(ip, port)
+        } catch (e: IOException) {
+            return false
         }
         if (clientSocket.isConnected && !clientSocket.isClosed) println("CLIENT CONNECTED TO $ip:$port")
         mouseEventSender = MouseEventSender(clientSocket)
         val mouseThread = Thread(mouseEventSender)
         mouseThread.start()
 
-        screenReceiver = ScreenReceiver(clientSocket)
-        val screenThread = Thread(screenReceiver)
-        screenThread.start()
+//        screenReceiver = ScreenReceiver(clientSocket)
+//        val screenThread = Thread(screenReceiver)
+//        screenThread.start()
         return true
     }
     fun getMouseSender() = mouseEventSender

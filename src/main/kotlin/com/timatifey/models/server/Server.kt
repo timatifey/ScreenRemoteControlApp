@@ -17,7 +17,7 @@ object Server  {
             clientSocket = server.accept()
             println("CLIENT CONNECTED")
             Thread(MouseEventReceiver(clientSocket)).start()
-            Thread(ScreenSender(clientSocket)).start()
+//            Thread(ScreenSender(clientSocket)).start()
         } catch (e: IOException) {
             println("Starting Server Error: $e")
         }

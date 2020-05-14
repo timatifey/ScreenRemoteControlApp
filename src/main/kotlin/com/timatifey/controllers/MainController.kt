@@ -10,7 +10,8 @@ import java.lang.NumberFormatException
 class MainController: Controller() {
     val statusProperty = SimpleStringProperty("")
     var status: String by statusProperty
-
+    var ip = ""
+    var port = ""
     fun connect(ip: String, port: String) {
         runLater { status = "" }
         try {
@@ -18,11 +19,15 @@ class MainController: Controller() {
             val result = Client.startConnection(ip, intPort)
             runLater {
                 if (result) {
+                    this.ip = ip
+                    this.port = port
                     find(MainView::class).replaceWith(
                             ScreenControlView::class,
                             sizeToScene = true,
                             centerOnScreen = true
                     )
+                } else {
+                    status = "Connection Error"
                 }
             }
         }
