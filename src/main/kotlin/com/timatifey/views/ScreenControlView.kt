@@ -9,22 +9,27 @@ import javafx.geometry.Orientation
 import tornadofx.*
 
 class ScreenControlView : View("View") {
+    private val screenControlController: ScreenControlController by inject()
     private val mainController: MainController by inject()
     private val mouseController: MouseController by inject()
+
     //private val screenControlController: ScreenControlController by inject()
 
-    override val root = vbox {
-        setPrefSize(500.0, 500.0)
-        fieldset(labelPosition = Orientation.HORIZONTAL) {
+    override val root = form {
+        setPrefSize(640.0, 500.0)
+        fieldset() {
             label("${mainController.ip}:${mainController.port}")
+            spacer()
             button("DISCONNECT") {
-                paddingLeft = 100.0
                 mouseController.disconnect()
-                replaceWith<MainView>()
+                action {
+                    screenControlController.disconnect()
+                }
             }
         }
-        imageview("screen.png") {
-            setPrefSize(500.0, 500.0)
+        spacer()
+        imageview(screenControlController.urlImage) {
+            setPrefSize(640.0, 360.0)
         }
         setOnMouseMoved {
             mouseController.setEvent(it!!)

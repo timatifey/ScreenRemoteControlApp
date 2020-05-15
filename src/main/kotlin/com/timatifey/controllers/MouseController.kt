@@ -5,10 +5,9 @@ import tornadofx.*
 import javafx.scene.input.MouseEvent
 
 class MouseController: Controller() {
-    private val mouseSender = Client.getMouseSender()
 
     fun setEvent(event: MouseEvent) {
-        mouseSender.setEvent(event)
+        Client.mouseEventSender.setEvent(event)
     }
 
     fun disconnect() {

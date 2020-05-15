@@ -4,12 +4,11 @@ import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.MouseEventSender
 import java.io.*
 import java.net.Socket
-import java.util.concurrent.TimeUnit
 
 object Client {
     private lateinit var clientSocket: Socket
-    private lateinit var mouseEventSender: MouseEventSender
-    private lateinit var screenReceiver: ScreenReceiver
+    lateinit var mouseEventSender: MouseEventSender
+    lateinit var screenReceiver: ScreenReceiver
 
     fun startConnection(ip: String, port: Int): Boolean {
        try {
@@ -27,12 +26,11 @@ object Client {
 //        screenThread.start()
         return true
     }
-    fun getMouseSender() = mouseEventSender
-    fun getScreenReceiver() = screenReceiver
 
     fun stopConnection() {
         try {
             clientSocket.close()
+            mouseEventSender.stop()
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
         }
