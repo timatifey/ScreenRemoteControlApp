@@ -4,7 +4,6 @@ import com.timatifey.models.Mouse
 import com.timatifey.models.Mouse.MouseEventType
 import com.timatifey.models.Mouse.MouseButton
 import com.timatifey.models.client.Client
-import com.timatifey.views.ScreenControlView
 import tornadofx.*
 import javafx.scene.input.MouseEvent
 import java.awt.Toolkit

@@ -39,6 +39,7 @@ object Client {
             clientSocket.close()
             mouseEventSender.stop()
             screenReceiver.stop()
+            keyEventSender.stop()
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
         }

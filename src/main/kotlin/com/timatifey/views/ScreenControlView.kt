@@ -1,5 +1,6 @@
 package com.timatifey.views
 
+import com.timatifey.controllers.KeyController
 import com.timatifey.controllers.MainController
 import com.timatifey.controllers.MouseController
 import com.timatifey.models.client.Client
@@ -13,6 +14,7 @@ import java.util.concurrent.Callable
 class ScreenControlView : View("") {
     private val mainController: MainController by inject()
     private val mouseController: MouseController by inject()
+    private val keyController: KeyController by inject()
     private val image = Client.screenReceiver.image
 
     override val root = form {
@@ -44,7 +46,7 @@ class ScreenControlView : View("") {
                 mouseController.sendMouseEvent(it!!)
             }
             addEventHandler(KeyEvent.ANY) {
-
+                keyController.sendKeyEvent(it!!)
             }
         }
 //        currentStage?.setOnCloseRequest {

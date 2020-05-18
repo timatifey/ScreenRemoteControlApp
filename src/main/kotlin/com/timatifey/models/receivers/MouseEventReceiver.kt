@@ -15,6 +15,7 @@ import java.lang.Thread.sleep
 import java.net.Socket
 
 class MouseEventReceiver(private val client: Socket): Runnable {
+    @Volatile var needStop = false
 
     private fun mouseRealise(mouse: Mouse) {
         try {
@@ -79,7 +80,7 @@ class MouseEventReceiver(private val client: Socket): Runnable {
     override fun run() {
         try {
             val input = BufferedReader(InputStreamReader(client.getInputStream()))
-            while (true) {
+            while (!needStop) {
                 val json = input.readLine()
                 println(json)
                 if (json != null) {
@@ -92,5 +93,9 @@ class MouseEventReceiver(private val client: Socket): Runnable {
             e.printStackTrace()
             println("Cursor Controller Client Socket Error: $e")
         }
+    }
+
+    fun stop() {
+        needStop = true
     }
 }

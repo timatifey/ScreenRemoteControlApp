@@ -11,6 +11,9 @@ import java.net.Socket
 object Server  {
     private lateinit var server: ServerSocket
     private lateinit var clientSocket: Socket
+    private lateinit var mouseEventReceiver: MouseEventReceiver
+    private lateinit var keyEventReceiver: KeyEventReceiver
+    private lateinit var screenSender: ScreenSender
 
     fun start(port: Int) {
         try {
@@ -18,9 +21,15 @@ object Server  {
             println("SERVER IS WAITING OF CONNECTION")
             clientSocket = server.accept()
             println("CLIENT CONNECTED")
-            Thread(MouseEventReceiver(clientSocket)).start()
-            Thread(KeyEventReceiver(clientSocket)).start()
-            Thread(ScreenSender(clientSocket)).start()
+
+            mouseEventReceiver = MouseEventReceiver(clientSocket)
+            Thread(mouseEventReceiver).start()
+
+            keyEventReceiver = KeyEventReceiver(clientSocket)
+            Thread(keyEventReceiver).start()
+
+            screenSender = ScreenSender(clientSocket)
+            Thread(screenSender).start()
         } catch (e: IOException) {
             println("Starting Server Error: $e")
         }
@@ -29,6 +38,9 @@ object Server  {
     fun stop() {
         try {
             clientSocket.close()
+            mouseEventReceiver.stop()
+            keyEventReceiver.stop()
+            screenSender.stop()
             server.close()
         } catch (e: IOException) {
             println("Stopping Server Error: $e")

@@ -11,6 +11,7 @@ import java.lang.Thread.sleep
 import java.net.Socket
 
 class KeyEventReceiver(private val client: Socket): Runnable {
+    @Volatile var needStop = false
 
     private fun keyRealise(key: Key) {
         try {
@@ -32,7 +33,7 @@ class KeyEventReceiver(private val client: Socket): Runnable {
     override fun run() {
         try {
             val input = BufferedReader(InputStreamReader(client.getInputStream()))
-            while (true) {
+            while (!needStop) {
                 val json = input.readLine()
                 println(json)
                 if (json != null) {
@@ -45,5 +46,9 @@ class KeyEventReceiver(private val client: Socket): Runnable {
             e.printStackTrace()
             println("Key Controller Client Socket Error: $e")
         }
+    }
+
+    fun stop() {
+        needStop = true
     }
 }

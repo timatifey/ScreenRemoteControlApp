@@ -3,7 +3,6 @@ package com.timatifey.models
 import javafx.scene.input.KeyCode
 
 data class Key(val eventType: KeyEventType,
-               val CHAR_UNDEFINED: String,
                val character: String,
                val text: String,
                val code: KeyCode,
