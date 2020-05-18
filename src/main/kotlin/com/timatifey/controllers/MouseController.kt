@@ -5,7 +5,6 @@ import tornadofx.*
 import javafx.scene.input.MouseEvent
 
 class MouseController: Controller() {
-
     fun setEvent(event: MouseEvent) {
         Client.mouseEventSender.setEvent(event)
     }
@@ -13,5 +12,4 @@ class MouseController: Controller() {
     fun disconnect() {
         Client.stopConnection()
     }
-
 }

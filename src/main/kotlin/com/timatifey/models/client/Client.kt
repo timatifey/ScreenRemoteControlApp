@@ -7,8 +7,8 @@ import java.net.Socket
 
 object Client {
     private lateinit var clientSocket: Socket
-    lateinit var mouseEventSender: MouseEventSender
-    lateinit var screenReceiver: ScreenReceiver
+    lateinit var mouseEventSender: MouseEventSender private set
+    lateinit var screenReceiver: ScreenReceiver private set
 
     fun startConnection(ip: String, port: Int): Boolean {
        try {
@@ -21,9 +21,9 @@ object Client {
         val mouseThread = Thread(mouseEventSender)
         mouseThread.start()
 
-//        screenReceiver = ScreenReceiver(clientSocket)
-//        val screenThread = Thread(screenReceiver)
-//        screenThread.start()
+        screenReceiver = ScreenReceiver(clientSocket)
+        val screenThread = Thread(screenReceiver)
+        screenThread.start()
         return true
     }
 

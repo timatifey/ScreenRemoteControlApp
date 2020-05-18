@@ -5,18 +5,17 @@ import com.timatifey.Mouse
 import javafx.scene.input.MouseEvent
 import java.io.IOException
 import java.io.PrintWriter
-import java.lang.Thread.sleep
 import java.net.Socket
+import java.util.concurrent.LinkedBlockingQueue
 
 class MouseEventSender(private val client: Socket): Runnable {
 
-    @Volatile private var needSend = false
     @Volatile private var needStop = false
-    @Volatile private lateinit var mouse: Mouse
+    private val que = LinkedBlockingQueue<Mouse>()
 
     fun setEvent(eventMouse: MouseEvent) {
-        mouse = Mouse(
-                eventMouse.eventType,
+        val mouse = Mouse(
+                eventMouse.eventType.name,
                 eventMouse.x,
                 eventMouse.y,
                 eventMouse.screenX,
@@ -33,22 +32,19 @@ class MouseEventSender(private val client: Socket): Runnable {
                 eventMouse.isStillSincePress,
                 eventMouse.isSecondaryButtonDown
         )
-        needSend = true
-        println("$needSend")
+        que.put(mouse)
+        println("size: ${que.size}")
     }
 
     override fun run() {
         try {
             val output = PrintWriter(client.getOutputStream(), true)
                 while (!needStop) {
-                    println("in thread $needSend")
-                    if (needSend) {
-                        val json = Gson().toJson(mouse)
-                        println("mouse $json")
-                        output.println(mouse)
-                        needSend = false
-                    }
-                    sleep(10)
+                    println("in thread ${que.size}")
+                    val mouse = que.take()
+                    val json = Gson().toJson(mouse)
+                    println("json $json")
+                    output.println(json)
                 }
             client.close()
         } catch (e: IOException) {
@@ -58,6 +54,7 @@ class MouseEventSender(private val client: Socket): Runnable {
     }
 
     fun stop() {
+        println("STOP")
         needStop = true
     }
 }

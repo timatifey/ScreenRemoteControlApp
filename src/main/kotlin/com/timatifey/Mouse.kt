@@ -5,7 +5,7 @@ import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 
 data class Mouse(
-    val eventType: EventType<out MouseEvent>,
+    val nameEvent: String,
     val x: Double,
     val y: Double,
     val screenX: Double,
