@@ -1,6 +1,7 @@
 package com.timatifey.models.client
 
 import com.timatifey.models.receivers.ScreenReceiver
+import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MouseEventSender
 import java.io.*
 import java.net.Socket
@@ -9,6 +10,7 @@ object Client {
     private lateinit var clientSocket: Socket
     lateinit var mouseEventSender: MouseEventSender private set
     lateinit var screenReceiver: ScreenReceiver private set
+    lateinit var keyEventSender: KeyEventSender private set
 
     fun startConnection(ip: String, port: Int): Boolean {
         try {
@@ -17,9 +19,14 @@ object Client {
             return false
         }
         if (clientSocket.isConnected && !clientSocket.isClosed) println("CLIENT CONNECTED TO $ip:$port")
+
         mouseEventSender = MouseEventSender(clientSocket)
         val mouseThread = Thread(mouseEventSender)
         mouseThread.start()
+
+        keyEventSender = KeyEventSender(clientSocket)
+        val keyThread = Thread(keyEventSender)
+        keyThread.start()
 
         screenReceiver = ScreenReceiver(clientSocket)
         val screenThread = Thread(screenReceiver)

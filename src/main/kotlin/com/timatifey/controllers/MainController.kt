@@ -22,9 +22,7 @@ class MainController: Controller() {
                     this.ip = ip
                     this.port = port
                     find(MainView::class).replaceWith(
-                            ScreenControlView::class,
-                            sizeToScene = true,
-                            centerOnScreen = true
+                            ScreenControlView::class
                     )
                 } else {
                     status = "Connection Error"

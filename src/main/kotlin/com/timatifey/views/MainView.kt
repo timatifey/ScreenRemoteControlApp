@@ -16,7 +16,7 @@ class MainView : View("Screen Remote Control") {
     private val port = model.bind { SimpleStringProperty() }
 
     override val root = form {
-        setPrefSize(200.0, 200.0)
+        setPrefSize(1920.0, 1080.0)
         fieldset(labelPosition = Orientation.VERTICAL) {
             fieldset("IP") {
                 textfield(ip).required()

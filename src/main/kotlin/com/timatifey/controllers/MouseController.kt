@@ -10,17 +10,17 @@ import javafx.scene.input.MouseEvent
 import java.awt.Toolkit
 
 class MouseController: Controller() {
-    private val view: ScreenControlView by inject()
-    private val height = view.currentWindow?.height
-    private val width = view.currentWindow?.width
+    private var height = 800.0
+    private var width = 1440.0
 
     fun sendMouseEvent(eventMouse: MouseEvent) {
+        val screen = Toolkit.getDefaultToolkit().screenSize
         Client.mouseEventSender.putMouseEvent(Mouse(
                 MouseEventType.valueOf(eventMouse.eventType.name),
                 eventMouse.x,
                 eventMouse.y,
-                eventMouse.x / width!!,
-                eventMouse.y / height!!,
+                eventMouse.x / width,
+                eventMouse.y / height,
                 eventMouse.screenX,
                 eventMouse.screenY,
                 MouseButton.valueOf(eventMouse.button.name),
@@ -36,4 +36,5 @@ class MouseController: Controller() {
                 eventMouse.isSecondaryButtonDown
         ))
     }
+
 }

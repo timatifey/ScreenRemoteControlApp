@@ -1,6 +1,8 @@
 package com.timatifey.models.server
 
+import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
+import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.ScreenSender
 import java.io.*
 import java.net.ServerSocket
@@ -17,6 +19,7 @@ object Server  {
             clientSocket = server.accept()
             println("CLIENT CONNECTED")
             Thread(MouseEventReceiver(clientSocket)).start()
+            Thread(KeyEventReceiver(clientSocket)).start()
             Thread(ScreenSender(clientSocket)).start()
         } catch (e: IOException) {
             println("Starting Server Error: $e")
