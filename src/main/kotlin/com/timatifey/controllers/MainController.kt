@@ -36,4 +36,7 @@ class MainController: Controller() {
         }
     }
 
+    fun disconnect() {
+        Client.stopConnection()
+    }
 }

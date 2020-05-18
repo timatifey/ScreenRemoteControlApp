@@ -1,10 +1,13 @@
 package com.timatifey.models.receivers
 
 import com.google.gson.Gson
-import com.timatifey.Mouse
-import javafx.scene.input.MouseEvent
+import com.timatifey.models.Mouse
+import com.timatifey.models.Mouse.MouseButton
+import com.timatifey.models.Mouse.MouseEventType
+import java.awt.event.*
 import java.awt.AWTException
 import java.awt.Robot
+import java.awt.Toolkit
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -13,12 +16,63 @@ import java.net.Socket
 
 class MouseEventReceiver(private val client: Socket): Runnable {
 
-    fun move(x: Int, y: Int) {
+    private fun mouseRealise(mouse: Mouse) {
         try {
+            val screenSize = Toolkit.getDefaultToolkit().screenSize
             val robot = Robot()
-            robot.mouseMove(x, y)
+            when (mouse.eventType) {
+                MouseEventType.MOUSE_MOVED -> {
+                    robot.mouseMove(
+                            (mouse.relativelyX * screenSize.width).toInt(),
+                            (mouse.relativelyY * screenSize.height).toInt()
+                    )
+                }
+                MouseEventType.MOUSE_CLICKED -> {
+                    val button = when (mouse.button) {
+                        MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
+                        MouseButton.SECONDARY -> InputEvent.BUTTON2_DOWN_MASK
+                        MouseButton.MIDDLE -> InputEvent.BUTTON3_DOWN_MASK
+                        else -> null
+                    }
+                    if (button != null) {
+                        for (count in 1..mouse.clickCount) {
+                            robot.mousePress(button)
+                            robot.mouseRelease(button)
+                        }
+                    }
+                }
+                MouseEventType.MOUSE_PRESSED -> {
+                    val button = when (mouse.button) {
+                        MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
+                        MouseButton.SECONDARY -> InputEvent.BUTTON2_DOWN_MASK
+                        MouseButton.MIDDLE -> InputEvent.BUTTON3_DOWN_MASK
+                        else -> null
+                    }
+                    if (button != null) {
+                        robot.mousePress(button)
+                        robot.mouseRelease(button)
+                    }
+                }
+                MouseEventType.MOUSE_DRAGGED -> {
+                    val button = when (mouse.button) {
+                        MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
+                        MouseButton.SECONDARY -> InputEvent.BUTTON2_DOWN_MASK
+                        MouseButton.MIDDLE -> InputEvent.BUTTON3_DOWN_MASK
+                        else -> null
+                    }
+                    if (button != null) {
+                        robot.mousePress(button)
+                        robot.mouseRelease(button)
+                    }
+                    robot.mouseMove(
+                            (mouse.relativelyX * screenSize.width).toInt(),
+                            (mouse.relativelyY * screenSize.height).toInt()
+                    )
+                }
+            }
         } catch (e: AWTException) {
             println(e.message)
+            e.printStackTrace()
         }
     }
 
@@ -30,8 +84,7 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                 println(json)
                 if (json != null) {
                     val mouse = Gson().fromJson(json, Mouse::class.java)
-                    println("mouse $mouse")
-                    move(mouse.x.toInt(), mouse.y.toInt())
+                    mouseRealise(mouse)
                 }
                 sleep(10)
             }

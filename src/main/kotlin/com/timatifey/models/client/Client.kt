@@ -11,7 +11,7 @@ object Client {
     lateinit var screenReceiver: ScreenReceiver private set
 
     fun startConnection(ip: String, port: Int): Boolean {
-       try {
+        try {
             clientSocket = Socket(ip, port)
         } catch (e: IOException) {
             return false
@@ -31,6 +31,7 @@ object Client {
         try {
             clientSocket.close()
             mouseEventSender.stop()
+            screenReceiver.stop()
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
         }

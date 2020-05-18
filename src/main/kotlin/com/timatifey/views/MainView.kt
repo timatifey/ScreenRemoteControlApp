@@ -1,9 +1,10 @@
 package com.timatifey.views
 
 import com.timatifey.controllers.MainController
-import javafx.beans.property.SimpleIntegerProperty
+import com.timatifey.models.Mouse
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
+import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import tornadofx.*

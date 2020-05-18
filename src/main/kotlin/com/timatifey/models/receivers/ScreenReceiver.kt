@@ -4,24 +4,29 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import java.io.*
-import java.lang.Thread.sleep
 import java.net.Socket
 import javax.imageio.ImageIO
 
 class ScreenReceiver(private val client: Socket): Runnable {
     val image = SimpleObjectProperty<Image?>()
+    @Volatile var needStop = false
 
     override fun run() {
         try {
-            while (true) {
+            while (!needStop) {
                 synchronized(this) {
                     val image = ImageIO.read(client.getInputStream())
-                    this.image.value = SwingFXUtils.toFXImage(image, null)
+                    if (image != null)
+                        this.image.value = SwingFXUtils.toFXImage(image, null)
                 }
             }
         } catch (e: IOException) {
             e.printStackTrace()
             println("Cursor Controller Client Socket Error: $e")
         }
+    }
+
+    fun stop() {
+        needStop = true
     }
 }
