@@ -37,13 +37,10 @@ class ScreenControlView : View("") {
             ))
             addEventHandler(MouseEvent.ANY) {
                 val need = listOf(MouseEvent.MOUSE_MOVED, MouseEvent.MOUSE_CLICKED, MouseEvent.MOUSE_DRAGGED)
-                if (it.eventType in need) mouseController.sendMouseEvent(it!!)
+                mouseController.sendMouseEvent(it!!)
             }
         }
-        setOnKeyPressed {
-            keyController.sendKeyEvent(it!!)
-        }
-        setOnKeyReleased {
+        addEventHandler(KeyEvent.ANY) {
             keyController.sendKeyEvent(it!!)
         }
     }
