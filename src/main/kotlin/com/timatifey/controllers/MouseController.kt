@@ -11,10 +11,11 @@ import java.awt.Toolkit
 class MouseController: Controller() {
     private var height = 800.0
     private var width = 1440.0
+    private val clientController: ClientController by inject()
 
     fun sendMouseEvent(eventMouse: MouseEvent) {
         val screen = Toolkit.getDefaultToolkit().screenSize
-        Client.mouseEventSender.putMouseEvent(Mouse(
+        clientController.client.mouseEventSender.putMouseEvent(Mouse(
                 MouseEventType.valueOf(eventMouse.eventType.name),
                 eventMouse.x,
                 eventMouse.y,

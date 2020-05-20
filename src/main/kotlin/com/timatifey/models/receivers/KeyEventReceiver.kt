@@ -49,6 +49,7 @@ class KeyEventReceiver(private val client: Socket): Runnable {
                     }
                 }
             }
+            input.close()
             client.close()
         } catch (e: IOException) {
             e.printStackTrace()

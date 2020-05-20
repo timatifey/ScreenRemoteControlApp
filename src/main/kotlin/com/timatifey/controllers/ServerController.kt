@@ -9,12 +9,13 @@ class ServerController: Controller() {
     val statusProperty = SimpleStringProperty("")
     var status: String by statusProperty
     var port = ""
+    val server = Server()
 
     fun start(port: String) {
         runLater { status = "" }
         try {
             val intPort = port.toInt()
-            Server.start(intPort)
+            server.start(intPort)
             runLater {
                 this.port = port
             }
@@ -25,6 +26,6 @@ class ServerController: Controller() {
     }
 
     fun disconnect() {
-        Server.stop()
+        server.stop()
     }
 }

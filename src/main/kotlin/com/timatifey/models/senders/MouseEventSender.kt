@@ -5,6 +5,7 @@ import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Mouse
 import java.io.IOException
 import java.io.PrintWriter
+import java.lang.Thread.sleep
 import java.net.Socket
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -27,6 +28,7 @@ class MouseEventSender(private val client: Socket): Runnable {
                 val json = Gson().toJson(data)
                 output.println(json)
             }
+            output.close()
             client.close()
         } catch (e: IOException) {
             e.printStackTrace()

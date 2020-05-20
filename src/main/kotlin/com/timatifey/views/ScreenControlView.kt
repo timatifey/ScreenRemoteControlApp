@@ -14,11 +14,12 @@ class ScreenControlView : View("") {
     private val clientController: ClientController by inject()
     private val mouseController: MouseController by inject()
     private val keyController: KeyController by inject()
-    private val image = Client.screenReceiver.imageScene
+    private val image = clientController.client.screenReceiver.imageScene
 
     override val root = form {
         title = "${clientController.ip}:${clientController.port}"
         setPrefSize(1920.0, 1080.0)
+        usePrefSize = true
         minWidth = 256.0
         minHeight = 144.0
         button {

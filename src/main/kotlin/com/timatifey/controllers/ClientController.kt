@@ -12,11 +12,13 @@ class ClientController: Controller() {
     var status: String by statusProperty
     var ip = ""
     var port = ""
+    val client = Client()
+
     fun connect(ip: String, port: String) {
         runLater { status = "" }
         try {
             val intPort = port.toInt()
-            val isConnected = Client.startConnection(ip, intPort)
+            val isConnected = client.startConnection(ip, intPort)
             runLater {
                 if (isConnected) {
                     this.ip = ip
@@ -33,6 +35,6 @@ class ClientController: Controller() {
     }
 
     fun disconnect() {
-        Client.stopConnection()
+        client.stopConnection()
     }
 }

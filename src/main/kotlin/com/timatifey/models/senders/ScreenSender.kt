@@ -12,9 +12,7 @@ import java.io.IOException
 import java.io.PrintWriter
 import java.lang.Thread.sleep
 import java.net.Socket
-import java.nio.ByteBuffer
 import javax.imageio.ImageIO
-
 
 class ScreenSender(private val client: Socket): Runnable {
     @Volatile var needStop = false
@@ -44,15 +42,13 @@ class ScreenSender(private val client: Socket): Runnable {
                     val image = Image(screen.height, screen.width, byteArray)
                     val data = DataPackage(DataPackage.DataType.IMAGE, image = image)
                     val json = Gson().toJson(data)
-                    println(json)
                     output.println(json)
-//                try {
-//                    ImageIO.write(screen, "png", client.getOutputStream())
                 } catch (e: IOException) {
                     println(e.message)
                 }
                 sleep(200)
             }
+            output.close()
             client.close()
         } catch (e: IOException) {
             e.printStackTrace()

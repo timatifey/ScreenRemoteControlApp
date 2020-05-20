@@ -48,6 +48,8 @@ class ClientForm: Fragment() {
     private val port = model.bind { SimpleStringProperty() }
 
     override val root = form {
+        setPrefSize(200.0, 200.0)
+        usePrefSize = true
         fieldset(labelPosition = Orientation.VERTICAL) {
             fieldset("IP") {
                 textfield(ip).required()

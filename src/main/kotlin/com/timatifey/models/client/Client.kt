@@ -6,12 +6,13 @@ import com.timatifey.models.senders.MouseEventSender
 import java.io.*
 import java.net.Socket
 
-object Client {
+class Client {
     private lateinit var clientSocket: Socket
     lateinit var mouseEventSender: MouseEventSender private set
     lateinit var screenReceiver: ScreenReceiver private set
     lateinit var keyEventSender: KeyEventSender private set
-    
+    lateinit var socketForKeys: Socket
+
     fun startConnection(ip: String, port: Int): Boolean {
         try {
             clientSocket = Socket(ip, port)
@@ -24,7 +25,8 @@ object Client {
         mouseEventSender = MouseEventSender(clientSocket)
         Thread(mouseEventSender).start()
 
-        keyEventSender = KeyEventSender(clientSocket)
+        socketForKeys = Socket(ip, port + 1)
+        keyEventSender = KeyEventSender(socketForKeys)
         Thread(keyEventSender).start()
 
         screenReceiver = ScreenReceiver(clientSocket)
@@ -35,10 +37,14 @@ object Client {
 
     fun stopConnection() {
         try {
+            val output = PrintWriter(clientSocket.getOutputStream(), true)
+            output.println("stop")
+            output.close()
             mouseEventSender.stop()
             keyEventSender.stop()
             screenReceiver.stop()
             clientSocket.close()
+            socketForKeys.close()
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
         }

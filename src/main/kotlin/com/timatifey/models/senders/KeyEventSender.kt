@@ -5,6 +5,7 @@ import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Key
 import java.io.IOException
 import java.io.PrintWriter
+import java.lang.Thread.sleep
 import java.net.Socket
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -22,11 +23,11 @@ class KeyEventSender(private val client: Socket): Runnable {
             needStop = false
             while (!needStop) {
                 val key = queueKey.take()
-                println(key)
                 val data = DataPackage(DataPackage.DataType.KEY, key = key)
                 val json = Gson().toJson(data)
                 output.println(json)
             }
+            output.close()
             client.close()
         } catch (e: IOException) {
             e.printStackTrace()
