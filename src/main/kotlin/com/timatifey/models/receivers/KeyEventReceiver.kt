@@ -1,13 +1,13 @@
 package com.timatifey.models.receivers
 
 import com.google.gson.Gson
-import com.timatifey.models.Key
+import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.Key
 import java.awt.AWTException
 import java.awt.Robot
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.lang.Thread.sleep
 import java.net.Socket
 
 class KeyEventReceiver(private val client: Socket): Runnable {
@@ -33,18 +33,21 @@ class KeyEventReceiver(private val client: Socket): Runnable {
     override fun run() {
         try {
             val input = BufferedReader(InputStreamReader(client.getInputStream()))
+            needStop = false
             while (!needStop) {
                 val json = input.readLine()
-                println(json)
                 if (json != null) {
-                    val key = Gson().fromJson(json, Key::class.java)
-                    keyRealise(key)
+                    val data = Gson().fromJson(json, DataPackage::class.java)
+                    if (data.dataType == DataPackage.DataType.KEY) {
+                        println(data.dataObject)
+                        keyRealise(data.dataObject as Key)
+                    }
                 }
-                sleep(10)
             }
+            client.close()
         } catch (e: IOException) {
             e.printStackTrace()
-            println("Key Controller Client Socket Error: $e")
+            println("Key Event Receiver Client Socket Error: $e")
         }
     }
 

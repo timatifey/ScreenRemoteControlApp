@@ -11,35 +11,34 @@ object Client {
     lateinit var mouseEventSender: MouseEventSender private set
     lateinit var screenReceiver: ScreenReceiver private set
     lateinit var keyEventSender: KeyEventSender private set
-
+    
     fun startConnection(ip: String, port: Int): Boolean {
         try {
             clientSocket = Socket(ip, port)
         } catch (e: IOException) {
             return false
         }
+
         if (clientSocket.isConnected && !clientSocket.isClosed) println("CLIENT CONNECTED TO $ip:$port")
 
         mouseEventSender = MouseEventSender(clientSocket)
-        val mouseThread = Thread(mouseEventSender)
-        mouseThread.start()
+        Thread(mouseEventSender).start()
 
         keyEventSender = KeyEventSender(clientSocket)
-        val keyThread = Thread(keyEventSender)
-        keyThread.start()
+        Thread(keyEventSender).start()
 
         screenReceiver = ScreenReceiver(clientSocket)
-        val screenThread = Thread(screenReceiver)
-        screenThread.start()
+        Thread(screenReceiver).start()
+
         return true
     }
 
     fun stopConnection() {
         try {
-            clientSocket.close()
             mouseEventSender.stop()
-            screenReceiver.stop()
             keyEventSender.stop()
+            screenReceiver.stop()
+            clientSocket.close()
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
         }

@@ -2,7 +2,6 @@ package com.timatifey.models.server
 
 import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
-import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.ScreenSender
 import java.io.*
 import java.net.ServerSocket
@@ -30,6 +29,7 @@ object Server  {
 
             screenSender = ScreenSender(clientSocket)
             Thread(screenSender).start()
+
         } catch (e: IOException) {
             println("Starting Server Error: $e")
         }

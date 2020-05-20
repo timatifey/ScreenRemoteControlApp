@@ -1,7 +1,8 @@
 package com.timatifey.models.senders
 
 import com.google.gson.Gson
-import com.timatifey.models.Mouse
+import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.Mouse
 import java.io.IOException
 import java.io.PrintWriter
 import java.net.Socket
@@ -19,15 +20,17 @@ class MouseEventSender(private val client: Socket): Runnable {
     override fun run() {
         try {
             val output = PrintWriter(client.getOutputStream(), true)
-                while (!needStop) {
-                    val mouse = queueMouse.take()
-                    val json = Gson().toJson(mouse)
-                    output.println(json)
-                }
+            needStop = false
+            while (!needStop) {
+                val mouse = queueMouse.take()
+                val data = DataPackage(DataPackage.DataType.MOUSE, mouse)
+                val json = Gson().toJson(data)
+                output.println(json)
+            }
             client.close()
         } catch (e: IOException) {
             e.printStackTrace()
-            println("Mouse event Sender Client Socket Error: $e")
+            println("Mouse Event Sender Client Socket Error: $e")
         }
     }
 

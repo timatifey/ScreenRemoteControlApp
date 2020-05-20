@@ -1,8 +1,8 @@
 package com.timatifey.controllers
 
-import com.timatifey.models.Mouse
-import com.timatifey.models.Mouse.MouseEventType
-import com.timatifey.models.Mouse.MouseButton
+import com.timatifey.models.data.Mouse
+import com.timatifey.models.data.Mouse.MouseEventType
+import com.timatifey.models.data.Mouse.MouseButton
 import com.timatifey.models.client.Client
 import tornadofx.*
 import javafx.scene.input.MouseEvent
