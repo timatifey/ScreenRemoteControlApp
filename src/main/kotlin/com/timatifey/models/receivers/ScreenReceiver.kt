@@ -28,14 +28,15 @@ class ScreenReceiver(private val client: Socket): Runnable {
 //                            val image = ImageIO.read(ByteArrayInputStream(
 //                                    (data.dataObject as com.timatifey.models.data.Image).bytes
 //                            ))
-                    val image = ImageIO.read(client.getInputStream())
-                    if (image != null) {
-                        imageScene.value = SwingFXUtils.toFXImage(image, null)
-                        println("IMAGE NOT NULL")
-                    } else {
-                        println("IMAGE NULL")
+                    try {
+                        val image = ImageIO.read(client.getInputStream())
+                        if (image != null) {
+                            imageScene.value = SwingFXUtils.toFXImage(image, null)
+                        }
+                    } catch (e: IOException) {
+                        println(e.message)
+                        e.printStackTrace()
                     }
-
                 }
             }
             client.close()

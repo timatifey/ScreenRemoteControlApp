@@ -42,7 +42,12 @@ class ScreenSender(private val client: Socket): Runnable {
 //                val json = Gson().toJson(data)
 //                println(json)
 //                output.println(json)
-                ImageIO.write(screen, "png", client.getOutputStream())
+                try {
+                    ImageIO.write(screen, "png", client.getOutputStream())
+                } catch (e: IOException) {
+                    println(e.message)
+                    e.printStackTrace()
+                }
                 sleep(200)
             }
             client.close()
