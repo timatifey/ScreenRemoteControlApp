@@ -18,9 +18,15 @@ class KeyEventReceiver(private val client: Socket): Runnable {
         try {
             val robot = Robot()
             when (key.eventType) {
-                Key.KeyEventType.KEY_TYPED -> {
+                Key.KeyEventType.KEY_PRESSED -> {
                     try {
                         robot.keyPress(key.code.code)
+                    } catch (e: IllegalArgumentException) {
+                        println(e.message)
+                    }
+                }
+                Key.KeyEventType.KEY_RELEASED -> {
+                    try {
                         robot.keyRelease(key.code.code)
                     } catch (e: IllegalArgumentException) {
                         println(e.message)

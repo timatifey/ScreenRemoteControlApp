@@ -48,8 +48,11 @@ class ScreenControlView : View("") {
             addEventHandler(MouseEvent.MOUSE_CLICKED) {
                 mouseController.sendMouseEvent(it!!)
             }
+            addEventHandler(MouseEvent.MOUSE_DRAGGED) {
+                mouseController.sendMouseEvent(it!!)
+            }
         }
-        addEventHandler(KeyEvent.KEY_TYPED) {
+        addEventHandler(KeyEvent.ANY) {
             keyController.sendKeyEvent(it!!)
         }
     }
