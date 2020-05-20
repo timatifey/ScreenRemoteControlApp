@@ -37,7 +37,7 @@ class ScreenSender(private val client: Socket): Runnable {
                 ImageIO.write(screen, "png", byteArrayOutputStream)
                 val byteArray = byteArrayOutputStream.toByteArray()
 
-                val image = Image(screen.height, screen.width, screen)
+                val image = Image(screen.height, screen.width, byteArray)
                 val data = DataPackage(DataPackage.DataType.IMAGE, image)
                 val json = Gson().toJson(data)
                 println(json)

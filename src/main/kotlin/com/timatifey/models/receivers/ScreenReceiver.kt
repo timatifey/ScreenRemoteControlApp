@@ -25,8 +25,11 @@ class ScreenReceiver(private val client: Socket): Runnable {
                         val data = Gson().fromJson(json, DataPackage::class.java)
                         if (data.dataType == DataPackage.DataType.IMAGE) {
                             println(data.dataObject)
-                            val image = (data.dataObject as com.timatifey.models.data.Image).image
-                            imageScene.value = SwingFXUtils.toFXImage(image, null)
+                            val image = ImageIO.read(ByteArrayInputStream(
+                                    (data.dataObject as com.timatifey.models.data.Image).bytes
+                            ))
+                            if (image != null)
+                                imageScene.value = SwingFXUtils.toFXImage(image, null)
                         }
                     }
                 }
