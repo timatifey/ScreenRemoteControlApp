@@ -1,35 +1,36 @@
 package com.timatifey.models.receivers
 
+import com.google.gson.Gson
+import com.timatifey.models.data.DataPackage
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.io.IOException
-import java.io.InputStream
+import java.io.*
 import java.net.Socket
-import java.nio.ByteBuffer
 import javax.imageio.ImageIO
 
 
 class ScreenReceiver(private val client: Socket): Runnable {
-    val image = SimpleObjectProperty<Image?>()
+    val imageScene = SimpleObjectProperty<Image?>()
     @Volatile var needStop = false
 
     override fun run() {
         try {
             needStop = false
-            val inputStream: InputStream = client.getInputStream()
+            val input = BufferedReader(InputStreamReader(client.getInputStream()))
             while (!needStop) {
                 synchronized(this) {
-                    val sizeAr = ByteArray(4)
-                    inputStream.read(sizeAr)
-                    val size = ByteBuffer.wrap(sizeAr).asIntBuffer().get()
-                    val imageAr = ByteArray(size)
-                    inputStream.read(imageAr)
-                    val image = ImageIO.read(ByteArrayInputStream(imageAr))
-                    if (image != null)
-                        this.image.value = SwingFXUtils.toFXImage(image, null)
+                    val json = input.readLine()
+                    if (json != null) {
+                        val data = Gson().fromJson(json, DataPackage::class.java)
+                        if (data.dataType == DataPackage.DataType.IMAGE) {
+                            println(data.dataObject)
+                            val image = ImageIO.read(ByteArrayInputStream(
+                                    (data.dataObject as com.timatifey.models.data.Image).byteArray
+                            ))
+                            imageScene.value = SwingFXUtils.toFXImage(image, null)
+                        }
+                    }
                 }
             }
             client.close()

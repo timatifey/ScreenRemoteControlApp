@@ -6,7 +6,8 @@ data class DataPackage (
 ) {
     enum class DataType {
         KEY,
-        MOUSE
+        MOUSE,
+        IMAGE
     }
     
     interface DataObject
