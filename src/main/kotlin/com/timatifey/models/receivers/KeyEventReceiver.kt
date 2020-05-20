@@ -53,7 +53,6 @@ class KeyEventReceiver(private val client: Socket): Runnable {
                     val data = Gson().fromJson(json, DataPackage::class.java)
                     if (data.dataType == DataPackage.DataType.KEY) {
                         val key = data.key!!
-                        println(key)
                         keyRealise(key)
                     }
                 }
