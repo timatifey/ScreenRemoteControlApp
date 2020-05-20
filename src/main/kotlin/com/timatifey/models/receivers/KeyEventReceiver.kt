@@ -8,6 +8,7 @@ import java.awt.Robot
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.lang.IllegalArgumentException
 import java.net.Socket
 
 class KeyEventReceiver(private val client: Socket): Runnable {
@@ -18,8 +19,12 @@ class KeyEventReceiver(private val client: Socket): Runnable {
             val robot = Robot()
             when (key.eventType) {
                 Key.KeyEventType.KEY_TYPED -> {
-                    robot.keyPress(key.code.code)
-                    robot.keyRelease(key.code.code)
+                    try {
+                        robot.keyPress(key.code.code)
+                        robot.keyRelease(key.code.code)
+                    } catch (e: IllegalArgumentException) {
+                        println(e.message)
+                    }
                 }
             }
         } catch (e: AWTException) {
