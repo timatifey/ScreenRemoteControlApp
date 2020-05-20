@@ -35,6 +35,10 @@ class KeyEventReceiver(private val client: Socket): Runnable {
             val input = BufferedReader(InputStreamReader(client.getInputStream()))
             needStop = false
             while (!needStop) {
+                if (!client.isConnected) {
+                    needStop = false
+                    break
+                }
                 val json = input.readLine()
                 if (json != null) {
                     val data = Gson().fromJson(json, DataPackage::class.java)

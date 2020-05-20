@@ -2,7 +2,7 @@ package com.timatifey.models.data
 
 data class DataPackage (
         val dataType: DataType,
-        val dataObject: Any
+        val dataObject: DataObject
 ) {
     enum class DataType {
         KEY,
@@ -10,5 +10,5 @@ data class DataPackage (
         IMAGE
     }
     
-    interface DataObject
+    class DataObject
 }
