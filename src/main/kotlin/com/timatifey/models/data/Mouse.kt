@@ -19,7 +19,7 @@ data class Mouse(
         val popupTrigger: Boolean,
         val stillSincePress: Boolean,
         val secondaryButtonDown: Boolean
-): DataPackage.DataObject() {
+): DataPackage.DataObject {
     enum class MouseEventType {
         ANY,
         MOUSE_PRESSED,

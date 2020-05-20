@@ -10,5 +10,5 @@ data class DataPackage (
         IMAGE
     }
     
-    class DataObject
+    interface DataObject
 }
