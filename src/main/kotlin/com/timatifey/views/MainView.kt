@@ -4,13 +4,11 @@ import com.timatifey.controllers.ClientController
 import com.timatifey.controllers.ServerController
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
-import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.input.KeyEvent
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import tornadofx.*
-import kotlin.system.exitProcess
-
 
 class MainView : View("Screen Remote Control") {
     private val serverController: ServerController by inject()
@@ -26,16 +24,18 @@ class MainView : View("Screen Remote Control") {
         tab<ServerForm> (){
             usePrefSize = true
         }
+        addEventHandler(KeyEvent.ANY) {
+            println(it.eventType.name)
+        }
     }
 
     override fun onDock() {
         currentWindow?.setOnCloseRequest {
             it.consume()
             confirm("Really close?", "Do you want to close") {
-                clientController.disconnect()
-                serverController.disconnect()
+                clientController.stopConnection()
+                serverController.stopServer()
                 currentWindow?.hide()
-                exitProcess(0)
             }
         }
     }
@@ -90,30 +90,28 @@ class ServerForm: Fragment() {
             fieldset("PORT") {
                 textfield(port).required()
             }
-            vbox {
-                button("Start server") {
-                    enableWhen(!serverController.hasStarted)
-                    enableWhen(model.valid)
-                    isDefaultButton = true
-                    useMaxWidth = true
-                    action {
-                        runAsyncWithProgress {
-                            serverController.start(port.value)
-                        }
-                    }
-                }
-                paddingVertical = 30.0
-                button("Stop server") {
-                    enableWhen(serverController.hasStarted)
-                    isDefaultButton = true
-                    useMaxWidth = true
-                    action {
-                        runAsyncWithProgress {
-                            serverController.disconnect()
-                        }
+            button("Start server") {
+                enableWhen(!serverController.hasStarted)
+                enableWhen(model.valid)
+                isDefaultButton = true
+                useMaxWidth = true
+                action {
+                    runAsyncWithProgress {
+                        serverController.start(port.value)
                     }
                 }
             }
+            button("Stop server") {
+                enableWhen(serverController.hasStarted)
+                isDefaultButton = true
+                useMaxWidth = true
+                action {
+                    runAsyncWithProgress {
+                        serverController.stopServer()
+                    }
+                }
+            }
+
         }
         label(serverController.statusProperty) {
             style {

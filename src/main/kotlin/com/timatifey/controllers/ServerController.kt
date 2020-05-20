@@ -20,8 +20,8 @@ class ServerController: Controller() {
             runLater {
                 status = "Server is waiting of connection"
             }
-            val isConnected = server.start(intPort)
             hasStarted.value = true
+            val isConnected = server.start(intPort)
             runLater {
                 this.port = port
                 if (isConnected) {
@@ -34,7 +34,7 @@ class ServerController: Controller() {
         }
     }
 
-    fun disconnect() {
+    fun stopServer() {
         hasStarted.value = false
         server.stop()
         runLater {

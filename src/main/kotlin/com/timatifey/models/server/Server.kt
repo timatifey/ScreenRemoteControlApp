@@ -4,7 +4,6 @@ import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.senders.ScreenSender
 import java.io.*
-import java.lang.Thread.sleep
 import java.net.ServerSocket
 import java.net.Socket
 

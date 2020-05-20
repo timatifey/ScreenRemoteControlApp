@@ -44,8 +44,8 @@ class KeyEventReceiver(private val client: Socket): Runnable {
             val input = BufferedReader(InputStreamReader(client.getInputStream()))
             needStop = false
             while (!needStop) {
-                if (!client.isConnected) {
-                    needStop = false
+                if (!client.isConnected || client.isClosed) {
+                    needStop = true
                     break
                 }
                 val json = input.readLine()

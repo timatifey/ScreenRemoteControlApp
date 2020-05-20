@@ -1,7 +1,6 @@
 package com.timatifey.controllers
 
 import com.timatifey.models.client.Client
-import com.timatifey.views.MainView
 import com.timatifey.views.ScreenControlView
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
@@ -34,7 +33,8 @@ class ClientController: Controller() {
         }
     }
 
-    fun disconnect() {
+    fun stopConnection() {
         client.stopConnection()
     }
+
 }
