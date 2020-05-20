@@ -9,11 +9,12 @@ import javafx.scene.control.TabPane
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import tornadofx.*
+import kotlin.system.exitProcess
 
 
 class MainView : View("Screen Remote Control") {
-    private lateinit var tabPane: TabPane
-    private lateinit var tabFront: Tab
+    private val serverController: ServerController by inject()
+    private val clientController: ClientController by inject()
 
     override val root = tabpane {
         setPrefSize(200.0, 250.0)
@@ -24,6 +25,18 @@ class MainView : View("Screen Remote Control") {
         }
         tab<ServerForm> (){
             usePrefSize = true
+        }
+    }
+
+    override fun onDock() {
+        currentWindow?.setOnCloseRequest {
+            it.consume()
+            confirm("Really close?", "Do you want to close") {
+                clientController.disconnect()
+                serverController.disconnect()
+                currentWindow?.hide()
+                exitProcess(0)
+            }
         }
     }
 }

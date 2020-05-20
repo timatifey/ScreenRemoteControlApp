@@ -17,6 +17,7 @@ import java.net.Socket
 
 class MouseEventReceiver(private val client: Socket): Runnable {
     @Volatile var needStop = false
+    var prevMouse: Mouse? = null
 
     private fun mouseRealise(mouse: Mouse) {
         try {
@@ -43,6 +44,19 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                         }
                     }
                 }
+                MouseEventType.MOUSE_RELEASED -> {
+                    val button = when (mouse.button) {
+                        MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
+                        MouseButton.SECONDARY -> InputEvent.BUTTON3_DOWN_MASK
+                        MouseButton.MIDDLE -> InputEvent.BUTTON2_DOWN_MASK
+                        else -> null
+                    }
+                    if (button != null) {
+                        if (prevMouse == null || prevMouse!!.eventType == MouseEventType.MOUSE_DRAGGED) {
+                            robot.mouseRelease(button)
+                        }
+                    }
+                }
                 MouseEventType.MOUSE_DRAGGED -> {
                     val button = when (mouse.button) {
                         MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
@@ -51,8 +65,9 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                         else -> null
                     }
                     if (button != null) {
-                        robot.mousePress(button)
-                        robot.mouseRelease(button)
+                        if (prevMouse == null || prevMouse!!.eventType != MouseEventType.MOUSE_DRAGGED) {
+                            robot.mousePress(button)
+                        }
                     }
                     robot.mouseMove(
                             (mouse.relativelyX * screenSize.width).toInt(),
@@ -81,6 +96,7 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                     if (data.dataType == DataPackage.DataType.MOUSE) {
                         val mouse = data.mouse!!
                         mouseRealise(mouse)
+                        prevMouse = mouse.copy()
                     }
                 }
             }

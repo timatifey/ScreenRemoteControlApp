@@ -37,5 +37,8 @@ class ServerController: Controller() {
     fun disconnect() {
         hasStarted.value = false
         server.stop()
+        runLater {
+            status = "Server has stopped"
+        }
     }
 }

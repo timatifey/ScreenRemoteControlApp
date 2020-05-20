@@ -3,7 +3,6 @@ package com.timatifey.views
 import com.timatifey.controllers.ClientController
 import com.timatifey.controllers.KeyController
 import com.timatifey.controllers.MouseController
-import com.timatifey.models.client.Client
 import javafx.beans.binding.Bindings
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
@@ -18,7 +17,7 @@ class ScreenControlView : View("") {
 
     override val root = form {
         title = "${clientController.ip}:${clientController.port}"
-        setPrefSize(1920.0, 1080.0)
+        setPrefSize(1920.0, 1075.0)
         usePrefSize = true
         minWidth = 256.0
         minHeight = 144.0
@@ -41,14 +40,17 @@ class ScreenControlView : View("") {
         }
         addEventHandler(KeyEvent.ANY) {
             keyController.sendKeyEvent(it!!)
-            println(it)
         }
     }
 
-    override fun onDelete() {
-        confirm("Вы уверены, что хотите разорвать соединение?") {
-            clientController.disconnect()
-            find(ScreenControlView::class).replaceWith(MainView::class)
+    override fun onDock() {
+        currentWindow?.setOnCloseRequest {
+            it.consume()
+            confirm("Вы уверены, что хотите разорвать соединение?") {
+                clientController.disconnect()
+                currentWindow?.hide()
+                find(ScreenControlView::class).replaceWith(MainView::class)
+            }
         }
     }
 
