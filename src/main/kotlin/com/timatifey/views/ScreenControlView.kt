@@ -14,7 +14,7 @@ class ScreenControlView : View("") {
     private val clientController: ClientController by inject()
     private val mouseController: MouseController by inject()
     private val keyController: KeyController by inject()
-    private val image = Client.screenReceiver.image
+    private val image = Client.screenReceiver.imageScene
 
     override val root = form {
         title = "${clientController.ip}:${clientController.port}"
