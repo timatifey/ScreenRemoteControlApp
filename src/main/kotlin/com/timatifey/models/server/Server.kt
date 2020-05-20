@@ -17,14 +17,14 @@ class Server {
     private lateinit var keyEventReceiver: KeyEventReceiver
     private lateinit var screenSender: ScreenSender
 
-    fun start(port: Int) {
+    fun start(port: Int): Boolean {
         try {
             server = ServerSocket(port)
             serverForKeys = ServerSocket(port + 1)
             println("SERVER IS WAITING OF CONNECTION")
             clientSocket = server.accept()
             socketForKeys = serverForKeys.accept()
-            println("CLIENT CONNECTED")
+            println("CLIENT HAS CONNECTED")
 
             mouseEventReceiver = MouseEventReceiver(clientSocket)
             Thread(mouseEventReceiver).start()
@@ -38,6 +38,7 @@ class Server {
         } catch (e: IOException) {
             println("Starting Server Error: $e")
         }
+        return true
     }
 
     fun stop() {

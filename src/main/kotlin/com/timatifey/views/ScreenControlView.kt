@@ -36,7 +36,6 @@ class ScreenControlView : View("") {
                     }, parent.layoutBoundsProperty()
             ))
             addEventHandler(MouseEvent.ANY) {
-                val need = listOf(MouseEvent.MOUSE_MOVED, MouseEvent.MOUSE_CLICKED, MouseEvent.MOUSE_DRAGGED)
                 mouseController.sendMouseEvent(it!!)
             }
         }

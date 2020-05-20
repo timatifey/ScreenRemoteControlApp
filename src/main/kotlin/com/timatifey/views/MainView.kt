@@ -2,41 +2,28 @@ package com.timatifey.views
 
 import com.timatifey.controllers.ClientController
 import com.timatifey.controllers.ServerController
-import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.beans.value.ObservableObjectValue
-import javafx.collections.FXCollections
 import javafx.geometry.Orientation
+import javafx.scene.control.Tab
+import javafx.scene.control.TabPane
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import tornadofx.*
-import java.beans.Visibility
 
 
 class MainView : View("Screen Remote Control") {
+    private lateinit var tabPane: TabPane
+    private lateinit var tabFront: Tab
 
-    override val root = borderpane {
-        top {
-            setPrefSize(250.0, 100.0)
-            paddingAll = 10.0
-            useMaxHeight = true
-            useMaxWidth = true
-            togglebutton("Выбрать режим клиента") {
-                useMaxWidth = true
-                action {
-                    text = if (isSelected) "Выбрать режим сервера" else "Выбрать режим клиента"
-                    if (isSelected) {
-                        find(ClientForm::class.java).replaceWith(ServerForm::class)
-                        add(find(ServerForm::class))
-                    } else {
-                        find(ServerForm::class.java).replaceWith(ClientForm::class)
-                        add(find(ClientForm::class))
-                    }
-                }
-            }
+    override val root = tabpane {
+        setPrefSize(200.0, 250.0)
+        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+        usePrefSize = true
+        tab<ClientForm>(){
+            usePrefSize = true
         }
-        center {
-            add(find(ClientForm::class))
+        tab<ServerForm> (){
+            usePrefSize = true
         }
     }
 }
@@ -48,9 +35,9 @@ class ClientForm: Fragment() {
     private val port = model.bind { SimpleStringProperty() }
 
     override val root = form {
-        setPrefSize(200.0, 200.0)
         usePrefSize = true
-        fieldset(labelPosition = Orientation.VERTICAL) {
+        title = "Клиент"
+        fieldset(labelPosition = Orientation.HORIZONTAL) {
             fieldset("IP") {
                 textfield(ip).required()
             }
@@ -84,17 +71,33 @@ class ServerForm: Fragment() {
     private val port = model.bind { SimpleStringProperty() }
 
     override val root = form {
-        fieldset(labelPosition = Orientation.VERTICAL) {
+        title = "Сервер"
+        usePrefSize = true
+        fieldset(labelPosition = Orientation.HORIZONTAL) {
             fieldset("PORT") {
                 textfield(port).required()
             }
-            button("Start server") {
-                enableWhen(model.valid)
-                isDefaultButton = true
-                useMaxWidth = true
-                action {
-                    runAsyncWithProgress {
-                        serverController.start(port.value)
+            vbox {
+                button("Start server") {
+                    enableWhen(!serverController.hasStarted)
+                    enableWhen(model.valid)
+                    isDefaultButton = true
+                    useMaxWidth = true
+                    action {
+                        runAsyncWithProgress {
+                            serverController.start(port.value)
+                        }
+                    }
+                }
+                paddingVertical = 30.0
+                button("Stop server") {
+                    enableWhen(serverController.hasStarted)
+                    isDefaultButton = true
+                    useMaxWidth = true
+                    action {
+                        runAsyncWithProgress {
+                            serverController.disconnect()
+                        }
                     }
                 }
             }

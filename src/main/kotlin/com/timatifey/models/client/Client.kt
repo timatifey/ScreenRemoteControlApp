@@ -5,6 +5,7 @@ import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MouseEventSender
 import java.io.*
 import java.net.Socket
+import kotlin.system.exitProcess
 
 class Client {
     private lateinit var clientSocket: Socket
@@ -42,6 +43,7 @@ class Client {
             screenReceiver.stop()
             clientSocket.close()
             socketForKeys.close()
+            exitProcess(0)
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
         }

@@ -80,7 +80,6 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                     val data = Gson().fromJson(json, DataPackage::class.java)
                     if (data.dataType == DataPackage.DataType.MOUSE) {
                         val mouse = data.mouse!!
-                        println(mouse)
                         mouseRealise(mouse)
                     }
                 }
