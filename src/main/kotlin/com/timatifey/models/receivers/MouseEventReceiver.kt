@@ -29,7 +29,7 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                             (mouse.relativelyY * screenSize.height).toInt()
                     )
                 }
-                MouseEventType.MOUSE_PRESSED -> {
+                MouseEventType.MOUSE_CLICKED -> {
                     val button = when (mouse.button) {
                         MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
                         MouseButton.SECONDARY -> InputEvent.BUTTON3_DOWN_MASK
@@ -37,18 +37,10 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                         else -> null
                     }
                     if (button != null) {
-                        robot.mousePress(button)
-                    }
-                }
-                MouseEventType.MOUSE_RELEASED -> {
-                    val button = when (mouse.button) {
-                        MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
-                        MouseButton.SECONDARY -> InputEvent.BUTTON3_DOWN_MASK
-                        MouseButton.MIDDLE -> InputEvent.BUTTON2_DOWN_MASK
-                        else -> null
-                    }
-                    if (button != null) {
-                        robot.mouseRelease(button)
+                        for (click in 1..mouse.clickCount) {
+                            robot.mousePress(button)
+                            robot.mouseRelease(button)
+                        }
                     }
                 }
                 MouseEventType.MOUSE_DRAGGED -> {

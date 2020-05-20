@@ -42,6 +42,7 @@ class ScreenControlView : View("") {
         }
         addEventHandler(KeyEvent.ANY) {
             keyController.sendKeyEvent(it!!)
+            println(it)
         }
     }
 

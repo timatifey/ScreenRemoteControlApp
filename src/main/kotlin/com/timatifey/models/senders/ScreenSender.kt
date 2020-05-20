@@ -46,7 +46,7 @@ class ScreenSender(private val client: Socket): Runnable {
                 } catch (e: IOException) {
                     println(e.message)
                 }
-                sleep(200)
+                sleep(400)
             }
             output.close()
             client.close()

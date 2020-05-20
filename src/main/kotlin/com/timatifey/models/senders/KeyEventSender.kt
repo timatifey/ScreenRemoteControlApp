@@ -5,7 +5,6 @@ import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Key
 import java.io.IOException
 import java.io.PrintWriter
-import java.lang.Thread.sleep
 import java.net.Socket
 import java.util.concurrent.LinkedBlockingQueue
 

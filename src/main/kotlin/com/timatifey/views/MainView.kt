@@ -26,11 +26,11 @@ class MainView : View("Screen Remote Control") {
                 action {
                     text = if (isSelected) "Выбрать режим сервера" else "Выбрать режим клиента"
                     if (isSelected) {
-                        // REMOVE ServerForm: Fragment from borderpane.center
-                        // ADD ClientForm: Fragment() to borderpane.center
+                        find(ClientForm::class.java).replaceWith(ServerForm::class)
+                        add(find(ServerForm::class))
                     } else {
-                        // REMOVE ClientForm: Fragment from borderpane.center
-                        // ADD ServerForm: Fragment() to borderpane.center
+                        find(ServerForm::class.java).replaceWith(ClientForm::class)
+                        add(find(ClientForm::class))
                     }
                 }
             }
