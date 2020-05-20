@@ -43,17 +43,6 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                         }
                     }
                 }
-                MouseEventType.MOUSE_RELEASED -> {
-                    val button = when (mouse.button) {
-                        MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
-                        MouseButton.SECONDARY -> InputEvent.BUTTON3_DOWN_MASK
-                        MouseButton.MIDDLE -> InputEvent.BUTTON2_DOWN_MASK
-                        else -> null
-                    }
-                    if (button != null) {
-                        robot.mouseRelease(button)
-                    }
-                }
                 MouseEventType.MOUSE_DRAGGED -> {
                     val button = when (mouse.button) {
                         MouseButton.PRIMARY -> InputEvent.BUTTON1_DOWN_MASK
@@ -65,6 +54,10 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                         robot.mousePress(button)
                         robot.mouseRelease(button)
                     }
+                    robot.mouseMove(
+                            (mouse.relativelyX * screenSize.width).toInt(),
+                            (mouse.relativelyY * screenSize.height).toInt()
+                    )
                 }
             }
         } catch (e: AWTException) {
