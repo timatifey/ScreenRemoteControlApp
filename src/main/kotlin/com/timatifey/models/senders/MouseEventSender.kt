@@ -23,7 +23,7 @@ class MouseEventSender(private val client: Socket): Runnable {
             needStop = false
             while (!needStop) {
                 val mouse = queueMouse.take()
-                val data = DataPackage(DataPackage.DataType.MOUSE, mouse)
+                val data = DataPackage(DataPackage.DataType.MOUSE, mouse = mouse)
                 val json = Gson().toJson(data)
                 output.println(json)
             }

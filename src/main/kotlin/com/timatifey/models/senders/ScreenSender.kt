@@ -28,29 +28,28 @@ class ScreenSender(private val client: Socket): Runnable {
     override fun run() {
         try {
             needStop = false
-            //val output = PrintWriter(client.getOutputStream(), true)
+            val output = PrintWriter(client.getOutputStream(), true)
             while (!needStop) {
-                if (!client.isConnected) {
+                if (client.isOutputShutdown) {
                     needStop = false
                     break
                 }
-//                val byteArrayOutputStream = ByteArrayOutputStream()
-                val screenSize = takeScreenSize()
-                val rectangle = takeRectangle(screenSize)
-                val screen = takeScreen(rectangle)
-//                ImageIO.write(screen, "png", byteArrayOutputStream)
-//                val byteArray = byteArrayOutputStream.toByteArray()
-//
-//                val image = Image(screen.height, screen.width, byteArray)
-//                val data = DataPackage(DataPackage.DataType.IMAGE, image)
-//                val json = Gson().toJson(data)
-//                println(json)
-//                output.println(json)
                 try {
-                    ImageIO.write(screen, "png", client.getOutputStream())
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    val screenSize = takeScreenSize()
+                    val rectangle = takeRectangle(screenSize)
+                    val screen = takeScreen(rectangle)
+                    ImageIO.write(screen, "png", byteArrayOutputStream)
+                    val byteArray = byteArrayOutputStream.toByteArray()
+                    val image = Image(screen.height, screen.width, byteArray)
+                    val data = DataPackage(DataPackage.DataType.IMAGE, image = image)
+                    val json = Gson().toJson(data)
+                    println(json)
+                    output.println(json)
+//                try {
+//                    ImageIO.write(screen, "png", client.getOutputStream())
                 } catch (e: IOException) {
                     println(e.message)
-                    e.printStackTrace()
                 }
                 sleep(200)
             }

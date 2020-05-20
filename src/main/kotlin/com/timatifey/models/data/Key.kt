@@ -10,7 +10,7 @@ data class Key(val eventType: KeyEventType,
                val controlDown: Boolean,
                val altDown: Boolean,
                val metaDown: Boolean
-): DataPackage.DataObject {
+) {
     enum class KeyEventType {
         ANY,
         KEY_PRESSED,

@@ -5,10 +5,10 @@ import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Mouse
 import com.timatifey.models.data.Mouse.MouseButton
 import com.timatifey.models.data.Mouse.MouseEventType
-import java.awt.event.*
 import java.awt.AWTException
 import java.awt.Robot
 import java.awt.Toolkit
+import java.awt.event.InputEvent
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -90,10 +90,9 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                 if (json != null) {
                     val data = Gson().fromJson(json, DataPackage::class.java)
                     if (data.dataType == DataPackage.DataType.MOUSE) {
-                        println(data.dataObject)
-                        val m =  data.dataObject as Mouse
-                        println(m)
-                        //mouseRealise(data.dataObject as Mouse)
+                        val mouse = data.mouse!!
+                        println(mouse)
+                        mouseRealise(mouse)
                     }
                 }
             }

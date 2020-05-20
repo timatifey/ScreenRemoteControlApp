@@ -1,12 +1,10 @@
 package com.timatifey.models.data
 
-import java.awt.image.BufferedImage
-
 data class Image (
         val height: Int,
         val width: Int,
         val bytes: ByteArray
-): DataPackage.DataObject {
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

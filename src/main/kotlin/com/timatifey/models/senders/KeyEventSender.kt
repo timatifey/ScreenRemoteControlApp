@@ -23,7 +23,7 @@ class KeyEventSender(private val client: Socket): Runnable {
             while (!needStop) {
                 val key = queueKey.take()
                 println(key)
-                val data = DataPackage(DataPackage.DataType.KEY, key)
+                val data = DataPackage(DataPackage.DataType.KEY, key = key)
                 val json = Gson().toJson(data)
                 output.println(json)
             }
