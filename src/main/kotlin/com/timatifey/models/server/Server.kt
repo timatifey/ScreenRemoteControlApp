@@ -15,6 +15,7 @@ class Server {
     private lateinit var mouseEventReceiver: MouseEventReceiver
     private lateinit var keyEventReceiver: KeyEventReceiver
     private lateinit var screenSender: ScreenSender
+    var wasInit = false
 
     fun start(port: Int): Boolean {
         try {
@@ -34,19 +35,24 @@ class Server {
             screenSender = ScreenSender(clientSocket)
             Thread(screenSender).start()
 
+            wasInit = true
+            return true
         } catch (e: IOException) {
             println("Starting Server Error: $e")
         }
-        return true
+        return false
     }
 
     fun stop() {
         try {
-            clientSocket.close()
-            socketForKeys.close()
-            mouseEventReceiver.stop()
-            keyEventReceiver.stop()
-            screenSender.stop()
+            if (wasInit) {
+                mouseEventReceiver.stop()
+                keyEventReceiver.stop()
+                screenSender.stop()
+
+                clientSocket.close()
+                socketForKeys.close()
+            }
             server.close()
             serverForKeys.close()
         } catch (e: IOException) {

@@ -13,6 +13,7 @@ class Client {
     lateinit var screenReceiver: ScreenReceiver private set
     lateinit var keyEventSender: KeyEventSender private set
     lateinit var socketForKeys: Socket
+    var wasInit = false
 
     fun startConnection(ip: String, port: Int): Boolean {
         try {
@@ -32,17 +33,21 @@ class Client {
 
         screenReceiver = ScreenReceiver(clientSocket)
         Thread(screenReceiver).start()
+        wasInit = true
 
         return true
     }
 
     fun stopConnection() {
         try {
-            mouseEventSender.stop()
-            keyEventSender.stop()
-            screenReceiver.stop()
-            clientSocket.close()
-            socketForKeys.close()
+            if (wasInit) {
+                mouseEventSender.stop()
+                keyEventSender.stop()
+                screenReceiver.stop()
+
+                clientSocket.close()
+                socketForKeys.close()
+            }
             exitProcess(0)
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")

@@ -1,10 +1,11 @@
 package com.timatifey.views
 
+import com.timatifey.app.Styles
 import com.timatifey.controllers.ClientController
 import com.timatifey.controllers.ServerController
 import javafx.beans.property.SimpleStringProperty
-import javafx.geometry.Orientation
 import javafx.scene.control.TabPane
+import javafx.scene.control.TextFormatter
 import javafx.scene.input.KeyEvent
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
@@ -15,13 +16,14 @@ class MainView : View("Screen Remote Control") {
     private val clientController: ClientController by inject()
 
     override val root = tabpane {
-        setPrefSize(200.0, 250.0)
+        addClass(Styles.wrapper)
+        setPrefSize(238.0, 250.0)
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
         usePrefSize = true
-        tab<ClientForm>(){
+        tab<ClientForm>{
             usePrefSize = true
         }
-        tab<ServerForm> (){
+        tab<ServerForm>{
             usePrefSize = true
         }
         addEventHandler(KeyEvent.ANY) {
@@ -47,24 +49,31 @@ class ClientForm: Fragment() {
     private val ip = model.bind { SimpleStringProperty() }
     private val port = model.bind { SimpleStringProperty() }
 
+    private val portFilter: (TextFormatter.Change) -> Boolean = { change ->
+        !change.isAdded || change.controlNewText.isInt()
+    }
+
     override val root = form {
         usePrefSize = true
-        title = "Клиент"
-        fieldset(labelPosition = Orientation.HORIZONTAL) {
-            fieldset("IP") {
-                textfield(ip).required()
-            }
-            fieldset("PORT") {
-                textfield(port).required()
-            }
-            button("Connect") {
-                enableWhen(model.valid)
-                isDefaultButton = true
-                useMaxWidth = true
-                action {
-                    runAsyncWithProgress {
-                        clientController.connect(ip.value, port.value)
-                    }
+        title = "Client"
+        fieldset("IP" ) {
+            usePrefSize = true
+            textfield(ip).required()
+        }
+        fieldset("PORT") {
+            usePrefSize = true
+            textfield(port) {
+                filterInput(portFilter)
+            }.required()
+        }
+
+        button("Connect") {
+            enableWhen(model.valid)
+            isDefaultButton = true
+            useMaxWidth = true
+            action {
+                runAsyncWithProgress {
+                    clientController.connect(ip.value, port.value)
                 }
             }
         }
@@ -75,6 +84,8 @@ class ClientForm: Fragment() {
                 fontWeight = FontWeight.BOLD
             }
         }
+
+        children.addClass(Styles.wrapper)
     }
 }
 
@@ -83,13 +94,20 @@ class ServerForm: Fragment() {
     private val model = ViewModel()
     private val port = model.bind { SimpleStringProperty() }
 
+    private val portFilter: (TextFormatter.Change) -> Boolean = { change ->
+        !change.isAdded || change.controlNewText.isInt()
+    }
+
     override val root = form {
-        title = "Сервер"
+        title = "Server"
         usePrefSize = true
-        fieldset(labelPosition = Orientation.HORIZONTAL) {
-            fieldset("PORT") {
-                textfield(port).required()
-            }
+        fieldset("PORT") {
+            textfield(port) {
+                filterInput(portFilter)
+
+            }.required()
+        }
+        vbox {
             button("Start server") {
                 enableWhen(!serverController.hasStarted)
                 enableWhen(model.valid)
@@ -99,6 +117,9 @@ class ServerForm: Fragment() {
                     runAsyncWithProgress {
                         serverController.start(port.value)
                     }
+                }
+                vboxConstraints {
+                    marginBottom = 10.0
                 }
             }
             button("Stop server") {
@@ -111,7 +132,6 @@ class ServerForm: Fragment() {
                     }
                 }
             }
-
         }
         label(serverController.statusProperty) {
             style {
