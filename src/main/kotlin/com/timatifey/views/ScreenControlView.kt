@@ -42,13 +42,7 @@ class ScreenControlView : View("") {
                         parent.layoutBounds.width
                     }, parent.layoutBoundsProperty()
             ))
-            addEventHandler(MouseEvent.MOUSE_MOVED) {
-                mouseController.sendMouseEvent(it!!)
-            }
-            addEventHandler(MouseEvent.MOUSE_CLICKED) {
-                mouseController.sendMouseEvent(it!!)
-            }
-            addEventHandler(MouseEvent.MOUSE_DRAGGED) {
+            addEventHandler(MouseEvent.ANY) {
                 mouseController.sendMouseEvent(it!!)
             }
         }
