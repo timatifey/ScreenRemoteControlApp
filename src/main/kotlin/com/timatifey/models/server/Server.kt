@@ -8,7 +8,7 @@ import java.lang.Thread.sleep
 import java.net.ServerSocket
 import java.net.Socket
 
-class Server: Runnable {
+class Server {
     private lateinit var server: ServerSocket
     private lateinit var serverForKeys: ServerSocket
     private lateinit var clientSocket: Socket
@@ -35,19 +35,9 @@ class Server: Runnable {
             screenSender = ScreenSender(clientSocket)
             Thread(screenSender).start()
 
-            Thread(this).start()
         } catch (e: IOException) {
             println("Starting Server Error: $e")
         }
-    }
-
-    override fun run() {
-        val input = BufferedReader(InputStreamReader(clientSocket.getInputStream()))
-        while (!input.readLine().equals("stop", ignoreCase = true)) {
-            sleep(1000)
-        }
-        input.close()
-        stop()
     }
 
     fun stop() {

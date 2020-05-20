@@ -37,9 +37,6 @@ class Client {
 
     fun stopConnection() {
         try {
-            val output = PrintWriter(clientSocket.getOutputStream(), true)
-            output.println("stop")
-            output.close()
             mouseEventSender.stop()
             keyEventSender.stop()
             screenReceiver.stop()
