@@ -26,9 +26,6 @@ class MainView : View("Screen Remote Control") {
         tab<ServerForm>{
             usePrefSize = true
         }
-        addEventHandler(KeyEvent.ANY) {
-            println(it.eventType.name)
-        }
     }
 
     override fun onDock() {

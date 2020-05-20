@@ -6,6 +6,7 @@ import com.timatifey.controllers.MouseController
 import javafx.beans.binding.Bindings
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
+import javafx.scene.paint.Color
 import tornadofx.*
 import java.util.concurrent.Callable
 
@@ -17,11 +18,16 @@ class ScreenControlView : View("") {
 
     override val root = form {
         title = "${clientController.ip}:${clientController.port}"
-        setPrefSize(1920.0, 1075.0)
+        setPrefSize(maxWidth, maxHeight)
+        useMaxSize = true
         usePrefSize = true
         minWidth = 256.0
         minHeight = 144.0
         imageview(image) {
+            style {
+                backgroundColor = multi(Color.BLACK)
+            }
+            isCenterShape = true
             paddingAll = 0.0
             isPreserveRatio = true
             fitHeightProperty().bind(Bindings.createDoubleBinding(

@@ -10,8 +10,11 @@ import java.awt.Toolkit
 
 class MouseController: Controller() {
     private val clientController: ClientController by inject()
-    var height = clientController.client.screenReceiver.imageScene.value?.height
-    var width = clientController.client.screenReceiver.imageScene.value?.width
+    var width = Toolkit.getDefaultToolkit().screenSize.width
+    var height = clientController.client.screenReceiver.imageScene.value!!.height * width /
+            clientController.client.screenReceiver.imageScene.value!!.width
+
+
 
     fun sendMouseEvent(eventMouse: MouseEvent) {
         println("width = ${width}   height = ${height}")
@@ -19,8 +22,8 @@ class MouseController: Controller() {
                 MouseEventType.valueOf(eventMouse.eventType.name),
                 eventMouse.x,
                 eventMouse.y,
-                eventMouse.x / width!!,
-                eventMouse.y / height!!,
+                eventMouse.x / width,
+                eventMouse.y / height,
                 eventMouse.screenX,
                 eventMouse.screenY,
                 MouseButton.valueOf(eventMouse.button.name),
