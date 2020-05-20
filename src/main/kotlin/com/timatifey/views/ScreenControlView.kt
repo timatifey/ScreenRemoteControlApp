@@ -22,13 +22,6 @@ class ScreenControlView : View("") {
         usePrefSize = true
         minWidth = 256.0
         minHeight = 144.0
-        button {
-            useMaxWidth = true
-            action {
-                clientController.disconnect()
-                find(ScreenControlView::class).replaceWith(MainView::class)
-            }
-        }
         imageview(image) {
             paddingAll = 0.0
             isPreserveRatio = true
@@ -43,10 +36,15 @@ class ScreenControlView : View("") {
                     }, parent.layoutBoundsProperty()
             ))
             addEventHandler(MouseEvent.ANY) {
-                mouseController.sendMouseEvent(it!!)
+                val need = listOf(MouseEvent.MOUSE_MOVED, MouseEvent.MOUSE_CLICKED, MouseEvent.MOUSE_DRAGGED,
+                MouseEvent.MOUSE_RELEASED)
+                if (it.eventType in need) mouseController.sendMouseEvent(it!!)
             }
         }
-        addEventHandler(KeyEvent.ANY) {
+        setOnKeyPressed {
+            keyController.sendKeyEvent(it!!)
+        }
+        setOnKeyReleased {
             keyController.sendKeyEvent(it!!)
         }
     }
