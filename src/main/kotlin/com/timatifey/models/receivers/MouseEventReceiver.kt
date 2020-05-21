@@ -65,9 +65,7 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                             (mouse.relativelyY * screenSize.height).toInt()
                     )
                 }
-                else -> {
-                    println(mouse)
-                }
+                else -> {}
             }
         } catch (e: AWTException) {
             println(e.message)

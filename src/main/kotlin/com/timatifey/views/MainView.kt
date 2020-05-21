@@ -133,7 +133,7 @@ class ServerForm: Fragment() {
         label(serverController.statusProperty) {
             style {
                 paddingTop = 10
-                textFill = Color.RED
+                textFill = Color.BLUE
                 fontWeight = FontWeight.BOLD
             }
         }

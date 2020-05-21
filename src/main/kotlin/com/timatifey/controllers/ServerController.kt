@@ -1,6 +1,8 @@
 package com.timatifey.controllers
 
 import com.timatifey.models.server.Server
+import com.timatifey.views.MainView
+import com.timatifey.views.ServerForm
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
