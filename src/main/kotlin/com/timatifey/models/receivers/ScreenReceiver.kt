@@ -24,12 +24,17 @@ class ScreenReceiver(private val client: Socket): Runnable {
                 }
                 val json = input.readLine()
                 if (json != null) {
-                    val data = Gson().fromJson(json, DataPackage::class.java)
-                    if (data.dataType == DataPackage.DataType.IMAGE) {
-                        val image = ImageIO.read(ByteArrayInputStream(data.image!!.bytes))
-                        if (image != null) {
-                            imageScene.value = SwingFXUtils.toFXImage(image, null)
+                    try {
+                        val data = Gson().fromJson(json, DataPackage::class.java)
+                        if (data.dataType == DataPackage.DataType.IMAGE) {
+                            val image = ImageIO.read(ByteArrayInputStream(data.image!!.bytes))
+                            if (image != null) {
+                                imageScene.value = SwingFXUtils.toFXImage(image, null)
+                            }
                         }
+                    } catch (e: EOFException) {
+                        println(e.message)
+                        stop()
                     }
                 }
             }

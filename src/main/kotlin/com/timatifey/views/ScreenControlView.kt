@@ -15,38 +15,36 @@ class ScreenControlView : View("") {
     private val mouseController: MouseController by inject()
     private val keyController: KeyController by inject()
     private val image = clientController.client.screenReceiver.imageScene
-
-    override val root = form {
+    override val root = borderpane {
         title = "${clientController.ip}:${clientController.port}"
-        setPrefSize(maxWidth, maxHeight)
-        useMaxSize = true
+        setPrefSize(mouseController.clientWidth.toDouble(), mouseController.clientHeight.toDouble())
         usePrefSize = true
-        minWidth = 256.0
-        minHeight = 144.0
-        imageview(image) {
+        center {
             style {
                 backgroundColor = multi(Color.BLACK)
             }
-            isCenterShape = true
-            paddingAll = 0.0
-            isPreserveRatio = true
-            fitHeightProperty().bind(Bindings.createDoubleBinding(
-                    Callable {
-                        parent.layoutBounds.height
-                    }, parent.layoutBoundsProperty()
-            ))
-            fitWidthProperty().bind(Bindings.createDoubleBinding(
-                    Callable {
-                        parent.layoutBounds.width
-                    }, parent.layoutBoundsProperty()
-            ))
+            imageview(image) {
+                isCenterShape = true
+                paddingAll = 0.0
+                isPreserveRatio = true
+                fitHeightProperty().bind(Bindings.createDoubleBinding(
+                        Callable {
+                            parent.layoutBounds.height
+                        }, parent.layoutBoundsProperty()
+                ))
+                fitWidthProperty().bind(Bindings.createDoubleBinding(
+                        Callable {
+                            parent.layoutBounds.width
+                        }, parent.layoutBoundsProperty()
+                ))
 
-            addEventHandler(MouseEvent.ANY) {
-                mouseController.sendMouseEvent(it!!)
+                addEventHandler(MouseEvent.ANY) {
+                    mouseController.sendMouseEvent(it!!)
+                }
             }
-        }
-        addEventHandler(KeyEvent.ANY) {
-            keyController.sendKeyEvent(it!!)
+            addEventHandler(KeyEvent.ANY) {
+                keyController.sendKeyEvent(it!!)
+            }
         }
     }
 

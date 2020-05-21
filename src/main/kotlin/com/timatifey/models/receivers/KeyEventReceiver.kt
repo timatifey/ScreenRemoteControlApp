@@ -32,6 +32,9 @@ class KeyEventReceiver(private val client: Socket): Runnable {
                         println(e.message)
                     }
                 }
+                else -> {
+                    println(key)
+                }
             }
         } catch (e: AWTException) {
             println(e.message)
