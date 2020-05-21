@@ -11,6 +11,8 @@ import javax.imageio.ImageIO
 
 class ScreenReceiver(private val client: Socket): Runnable {
     val imageScene = SimpleObjectProperty<Image?>()
+    @Volatile var height: Double = 0.0
+    @Volatile var width: Double = 0.0
     @Volatile var needStop = false
 
     override fun run() {
@@ -29,6 +31,8 @@ class ScreenReceiver(private val client: Socket): Runnable {
                         if (data.dataType == DataPackage.DataType.IMAGE) {
                             val image = ImageIO.read(ByteArrayInputStream(data.image!!.bytes))
                             if (image != null) {
+                                height = data.image.height.toDouble()
+                                width = data.image.width.toDouble()
                                 imageScene.value = SwingFXUtils.toFXImage(image, null)
                             }
                         }

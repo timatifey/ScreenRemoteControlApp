@@ -11,7 +11,7 @@ class ClientController: Controller() {
     var status: String by statusProperty
     var ip = ""
     var port = ""
-    val client = Client()
+    var client = Client()
 
     fun connect(ip: String, port: String) {
         runLater { status = "" }
@@ -35,6 +35,7 @@ class ClientController: Controller() {
 
     fun stopConnection() {
         client.stopConnection()
+        client = Client()
     }
 
 }

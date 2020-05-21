@@ -10,28 +10,25 @@ import javafx.scene.input.MouseEvent
 import java.awt.Toolkit
 
 class MouseController: Controller() {
+    private val view: ScreenControlView by inject()
     private val clientController: ClientController by inject()
-    val clientWidth = Toolkit.getDefaultToolkit().screenSize.width
-    val clientHeight = Toolkit.getDefaultToolkit().screenSize.height
-    private val serverWidth = clientController.client.screenReceiver.imageScene.value!!.width
-    private val serverHeight = clientController.client.screenReceiver.imageScene.value!!.height
-    private val height: Double
-    private val width: Double
 
-    init {
+    fun sendMouseEvent(eventMouse: MouseEvent) {
+        val clientWidth =  view.currentStage?.width
+        val clientHeight = view.currentStage?.height
+        val serverWidth = clientController.client.screenReceiver.width
+        val serverHeight = clientController.client.screenReceiver.height
         //if max_width
-        var newWidth = clientWidth.toDouble()
-        var newHeight =  serverHeight * clientWidth / serverWidth
-        if (newHeight > clientHeight) {
+        var newWidth = clientWidth!!.toDouble()
+        var newHeight =  serverHeight / serverWidth * clientWidth
+        if (newHeight > clientHeight!!) {
             //else max_height
             newHeight = clientHeight.toDouble()
             newWidth = serverWidth * clientHeight / serverHeight
         }
-        height = newHeight
-        width = newWidth
-    }
+        val height = newHeight
+        val width = newWidth
 
-    fun sendMouseEvent(eventMouse: MouseEvent) {
         clientController.client.mouseEventSender.putMouseEvent(Mouse(
                 MouseEventType.valueOf(eventMouse.eventType.name),
                 eventMouse.x,

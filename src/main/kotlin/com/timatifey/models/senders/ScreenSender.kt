@@ -7,6 +7,7 @@ import java.awt.Dimension
 import java.awt.Rectangle
 import java.awt.Robot
 import java.awt.Toolkit
+import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.PrintWriter
@@ -16,12 +17,6 @@ import javax.imageio.ImageIO
 
 class ScreenSender(private val client: Socket): Runnable {
     @Volatile var needStop = false
-
-    private fun takeScreenSize(): Dimension = Toolkit.getDefaultToolkit().screenSize
-
-    private fun takeRectangle(screenSize: Dimension) = Rectangle(screenSize)
-
-    private fun takeScreen(rectangle: Rectangle) = Robot().createScreenCapture(rectangle)
 
     override fun run() {
         try {
@@ -56,3 +51,9 @@ class ScreenSender(private val client: Socket): Runnable {
         needStop = true
     }
 }
+
+fun takeScreenSize(): Dimension = Toolkit.getDefaultToolkit().screenSize
+
+fun takeRectangle(screenSize: Dimension) = Rectangle(screenSize)
+
+fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScreenCapture(rectangle)

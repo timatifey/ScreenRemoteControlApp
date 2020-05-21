@@ -8,6 +8,9 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
 import tornadofx.*
+import com.timatifey.models.senders.takeScreenSize
+import javafx.scene.control.TextFormatter
+import java.security.Key
 import java.util.concurrent.Callable
 
 class ScreenControlView : View("") {
@@ -17,12 +20,24 @@ class ScreenControlView : View("") {
     private val image = clientController.client.screenReceiver.imageScene
     override val root = borderpane {
         title = "${clientController.ip}:${clientController.port}"
-        setPrefSize(mouseController.clientWidth.toDouble(), mouseController.clientHeight.toDouble())
-        usePrefSize = true
-        center {
+        setPrefSize(takeScreenSize().width.toDouble(), takeScreenSize().height.toDouble())
+        useMaxSize = true
+        bottom {
+            button("") {
+                useMaxWidth = true
+                style {
+                    backgroundColor = multi(Color.BLACK)
+                }
+                addEventHandler(KeyEvent.ANY) {
+                    keyController.sendKeyEvent(it!!)
+                }
+            }
+        }
+        top {
             style {
                 backgroundColor = multi(Color.BLACK)
             }
+            paddingAll = 5.0
             imageview(image) {
                 isCenterShape = true
                 paddingAll = 0.0
@@ -42,9 +57,6 @@ class ScreenControlView : View("") {
                     mouseController.sendMouseEvent(it!!)
                 }
             }
-            addEventHandler(KeyEvent.ANY) {
-                keyController.sendKeyEvent(it!!)
-            }
         }
     }
 
@@ -53,8 +65,6 @@ class ScreenControlView : View("") {
             it.consume()
             confirm("Вы уверены, что хотите разорвать соединение?") {
                 clientController.stopConnection()
-                currentWindow?.hide()
-                find(ScreenControlView::class).replaceWith(MainView::class)
             }
         }
     }
