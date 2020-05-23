@@ -56,7 +56,8 @@ class Client: Runnable {
                     if (text.equals("stop", ignoreCase = true)) {
                         println("SERVER STOP")
                         screenReceiver.imageScene.value =
-                                SwingFXUtils.toFXImage(ImageIO.read(File("server_shutdown.jpg")), null)
+                                SwingFXUtils.toFXImage(ImageIO.read(
+                                        File("src/main/resources/server_shutdown.jpg")), null)
                         input.close()
                         stopConnection()
                         break

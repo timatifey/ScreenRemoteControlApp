@@ -39,6 +39,5 @@ class ClientController: Controller() {
     fun stopConnection() {
         println("STOP CLIENT")
         client.stopConnection()
-        client = Client()
     }
 }

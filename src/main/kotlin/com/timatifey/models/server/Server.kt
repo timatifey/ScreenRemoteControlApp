@@ -74,12 +74,11 @@ class Server: Runnable {
                         val text = data.message!!
                         if (text.equals("stop", ignoreCase = true)) {
                             runLater {
-                                statusClient.value = "Client has disconnected"
+                                statusClient.value = "Client has disconnected, restart server"
                             }
                             hasConnected.value = false
                             println("CLIENT STOP")
                             input.close()
-                            initiatorOfDisconnectIsClient = true
                             break
                         }
                     }
@@ -112,6 +111,5 @@ class Server: Runnable {
         } catch (e: IOException) {
             println("Stopping Server Error: $e")
         }
-        if (initiatorOfDisconnectIsClient) start(oldPort)
     }
 }
