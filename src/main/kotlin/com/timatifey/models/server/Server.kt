@@ -84,7 +84,9 @@ class Server: Runnable {
                     }
                 }
             }
-        } catch (e: SocketException) {}
+        } catch (e: SocketException) {
+            println(e.message)
+        }
     }
 
     fun stop() {

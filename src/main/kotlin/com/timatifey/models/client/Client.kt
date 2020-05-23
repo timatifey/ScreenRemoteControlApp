@@ -11,6 +11,7 @@ import tornadofx.*
 import java.io.*
 import java.lang.Thread.sleep
 import java.net.Socket
+import java.net.SocketException
 import javax.imageio.ImageIO
 import kotlin.system.exitProcess
 
@@ -51,27 +52,31 @@ class Client: Runnable {
     }
 
     override fun run() {
-        val input = BufferedReader(InputStreamReader(socketForKeys.getInputStream()))
-        while (true) {
-            val json = input.readLine()
-            if (json != null) {
-                val data = Gson().fromJson(json, DataPackage::class.java)
-                if (data.dataType == DataPackage.DataType.MESSAGE) {
-                    val text = data.message!!
-                    if (text.equals("stop", ignoreCase = true)) {
-                        println("SERVER STOP")
-                        runLater {
-                            status.value = "Server has shutdown"
+        try {
+            val input = BufferedReader(InputStreamReader(socketForKeys.getInputStream()))
+            while (true) {
+                val json = input.readLine()
+                if (json != null) {
+                    val data = Gson().fromJson(json, DataPackage::class.java)
+                    if (data.dataType == DataPackage.DataType.MESSAGE) {
+                        val text = data.message!!
+                        if (text.equals("stop", ignoreCase = true)) {
+                            println("SERVER STOP")
+                            runLater {
+                                status.value = "Server has shutdown"
+                            }
+                            screenReceiver.imageScene.value =
+                                    SwingFXUtils.toFXImage(ImageIO.read(
+                                            File("src/main/resources/server_shutdown.jpg")), null)
+                            input.close()
+                            stopConnection()
+                            break
                         }
-                        screenReceiver.imageScene.value =
-                                SwingFXUtils.toFXImage(ImageIO.read(
-                                        File("src/main/resources/server_shutdown.jpg")), null)
-                        input.close()
-                        stopConnection()
-                        break
                     }
                 }
             }
+        } catch (e: SocketException) {
+            println(e.message)
         }
     }
 
