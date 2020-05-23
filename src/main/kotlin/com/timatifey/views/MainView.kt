@@ -16,7 +16,7 @@ class MainView : View("Screen Remote Control") {
 
     override val root = tabpane {
         addClass(Styles.wrapper)
-        setPrefSize(238.0, 250.0)
+        setPrefSize(238.0, 290.0)
         usePrefSize = true
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
         tab<ClientForm>()

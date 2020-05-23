@@ -79,14 +79,14 @@ class Server: Runnable {
                             hasConnected.value = false
                             println("CLIENT STOP")
                             input.close()
+                            stop()
                             start(oldPort)
                             break
                         }
                     }
                 }
-
             }
-            stop()
+
         } catch (e: SocketException) {}
     }
 
