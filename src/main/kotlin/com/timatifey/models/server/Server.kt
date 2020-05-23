@@ -22,7 +22,7 @@ class Server: Runnable {
     private lateinit var keyEventReceiver: KeyEventReceiver
     private lateinit var screenSender: ScreenSender
     private var oldPort = -1
-
+    private var initiatorOfDisconnectIsClient = false
     var wasInit = false
     val statusProperty = SimpleStringProperty("")
     val statusClient = SimpleStringProperty("")
@@ -79,14 +79,13 @@ class Server: Runnable {
                             hasConnected.value = false
                             println("CLIENT STOP")
                             input.close()
-                            stop()
-                            start(oldPort)
+                            initiatorOfDisconnectIsClient = true
                             break
                         }
                     }
                 }
             }
-
+            stop()
         } catch (e: SocketException) {}
     }
 
@@ -113,5 +112,6 @@ class Server: Runnable {
         } catch (e: IOException) {
             println("Stopping Server Error: $e")
         }
+        if (initiatorOfDisconnectIsClient) start(oldPort)
     }
 }
