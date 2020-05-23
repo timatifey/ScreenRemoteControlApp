@@ -27,6 +27,7 @@ class ServerController: Controller() {
         server.stop()
         runLater {
             server.statusProperty.value = "Server has stopped"
+            server.statusClient.value = ""
         }
     }
 }

@@ -66,9 +66,9 @@ class ScreenControlView : View() {
         currentWindow?.setOnCloseRequest {
             it.consume()
             confirm("Вы уверены, что хотите разорвать соединение?") {
+                println("IN DOCK")
                 currentStage?.hide()
                 clientController.stopConnection()
-                println("IN DOCK")
             }
         }
     }

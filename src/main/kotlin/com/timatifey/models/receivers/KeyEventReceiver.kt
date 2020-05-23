@@ -61,7 +61,6 @@ class KeyEventReceiver(private val client: Socket): Runnable {
             input.close()
             client.close()
         } catch (e: IOException) {
-            e.printStackTrace()
             println("Key Event Receiver Client Socket Error: $e")
         }
     }

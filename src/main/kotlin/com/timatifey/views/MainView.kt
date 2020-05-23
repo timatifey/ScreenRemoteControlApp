@@ -127,6 +127,13 @@ class ServerForm: Fragment() {
                 fontWeight = FontWeight.BOLD
             }
         }
+        label(serverController.server.statusClient) {
+            style {
+                paddingTop = 10
+                textFill = Color.BLUE
+                fontWeight = FontWeight.BOLD
+            }
+        }
         children.addClass(Styles.wrapper)
     }
 }

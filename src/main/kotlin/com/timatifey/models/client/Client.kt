@@ -7,6 +7,7 @@ import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MouseEventSender
 import javafx.embed.swing.SwingFXUtils
 import java.io.*
+import java.lang.Thread.sleep
 import java.net.Socket
 import javax.imageio.ImageIO
 import kotlin.system.exitProcess
@@ -62,7 +63,6 @@ class Client: Runnable {
                     }
                 }
             }
-
         }
     }
 

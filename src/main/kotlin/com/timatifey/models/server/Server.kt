@@ -21,14 +21,19 @@ class Server: Runnable {
     private lateinit var mouseEventReceiver: MouseEventReceiver
     private lateinit var keyEventReceiver: KeyEventReceiver
     private lateinit var screenSender: ScreenSender
-    var wasInit = false
+    private var oldPort = -1
 
+    var wasInit = false
     val statusProperty = SimpleStringProperty("")
+    val statusClient = SimpleStringProperty("")
+
+    private val hasConnected = SimpleBooleanProperty(false)
 
     fun start(port: Int) {
         try {
             server = ServerSocket(port)
             serverForKeys = ServerSocket(port + 1)
+            oldPort = port
             Thread(this).start()
         } catch (e: IOException) {
             println("Starting Server Error: $e")
@@ -44,8 +49,10 @@ class Server: Runnable {
             clientSocket = server.accept()
             socketForKeys = serverForKeys.accept()
             println("CLIENT HAS CONNECTED")
+            hasConnected.value = true
             runLater {
-                statusProperty.value = "Client has connected"
+                statusProperty.value = "Server is connected"
+                statusClient.value = "Client has connected"
             }
 
             mouseEventReceiver = MouseEventReceiver(clientSocket)
@@ -67,10 +74,12 @@ class Server: Runnable {
                         val text = data.message!!
                         if (text.equals("stop", ignoreCase = true)) {
                             runLater {
-                                statusProperty.value = "Client has disconnected"
+                                statusClient.value = "Client has disconnected"
                             }
+                            hasConnected.value = false
                             println("CLIENT STOP")
                             input.close()
+                            start(oldPort)
                             break
                         }
                     }
