@@ -22,13 +22,15 @@ class ScreenControlView : View() {
         title = "${clientController.ip}:${clientController.port}"
         setPrefSize(takeScreenSize().width.toDouble(), takeScreenSize().height.toDouble())
         bottom {
-            button("") {
-                useMaxWidth = true
-                style {
-                    backgroundColor = multi(Color.BLACK)
-                }
-                addEventHandler(KeyEvent.ANY) {
-                    keyController.sendKeyEvent(it!!)
+            hbox {
+                button("") {
+                    useMaxWidth = true
+                    style {
+                        backgroundColor = multi(Color.BLACK)
+                    }
+                    addEventHandler(KeyEvent.ANY) {
+                        keyController.sendKeyEvent(it!!)
+                    }
                 }
             }
         }
@@ -66,6 +68,7 @@ class ScreenControlView : View() {
             confirm("Вы уверены, что хотите разорвать соединение?") {
                 currentStage?.hide()
                 clientController.stopConnection()
+                println("IN DOCK")
             }
         }
     }

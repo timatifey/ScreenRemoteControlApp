@@ -88,7 +88,7 @@ class Server: Runnable {
                 keyEventReceiver.stop()
                 screenSender.stop()
                 try {
-                    val output = PrintWriter(clientSocket.getOutputStream(), true)
+                    val output = PrintWriter(socketForKeys.getOutputStream(), true)
                     val data = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE, message = "stop"))
                     output.println(data)
                     output.close()
