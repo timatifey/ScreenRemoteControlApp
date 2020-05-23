@@ -33,7 +33,6 @@ class KeyEventSender(private val client: Socket): Runnable {
             output.close()
             client.close()
         } catch (e: IOException) {
-            e.printStackTrace()
             println("Key Event Sender Client Socket Error: $e")
         }
     }

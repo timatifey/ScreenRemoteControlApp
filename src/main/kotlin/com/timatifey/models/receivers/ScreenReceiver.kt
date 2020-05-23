@@ -45,7 +45,6 @@ class ScreenReceiver(private val client: Socket): Runnable {
             input.close()
             client.close()
         } catch (e: IOException) {
-            e.printStackTrace()
             println("Screen Receiver Client Socket Error: $e")
         }
     }

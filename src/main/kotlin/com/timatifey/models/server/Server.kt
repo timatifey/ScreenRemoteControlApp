@@ -84,7 +84,6 @@ class Server: Runnable {
                     }
                 }
             }
-            stop()
         } catch (e: SocketException) {}
     }
 

@@ -38,7 +38,6 @@ class ScreenSender(private val client: Socket): Runnable {
             output.close()
             client.close()
         } catch (e: IOException) {
-            e.printStackTrace()
             println("Screen Sender Client Socket Error: $e")
         }
     }
