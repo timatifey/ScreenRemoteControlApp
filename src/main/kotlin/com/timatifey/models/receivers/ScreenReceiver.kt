@@ -37,7 +37,7 @@ class ScreenReceiver(private val client: Socket): Runnable {
                             }
                         }
                     } catch (e: EOFException) {
-                        println(e.message)
+                        println(e)
                         stop()
                     }
                 }

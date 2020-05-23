@@ -14,14 +14,14 @@ class MouseController: Controller() {
     private val clientController: ClientController by inject()
 
     fun sendMouseEvent(eventMouse: MouseEvent) {
-        val clientWidth =  view.currentStage?.width
-        val clientHeight = view.currentStage?.height
+        val clientWidth =  view.root.center.boundsInLocal.width
+        val clientHeight = view.root.center.boundsInLocal.height
         val serverWidth = clientController.client.screenReceiver.width
         val serverHeight = clientController.client.screenReceiver.height
         //if max_width
-        var newWidth = clientWidth!!.toDouble()
+        var newWidth = clientWidth.toDouble()
         var newHeight =  serverHeight / serverWidth * clientWidth
-        if (newHeight > clientHeight!!) {
+        if (newHeight > clientHeight) {
             //else max_height
             newHeight = clientHeight.toDouble()
             newWidth = serverWidth * clientHeight / serverHeight

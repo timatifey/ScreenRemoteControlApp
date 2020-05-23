@@ -1,8 +1,11 @@
 package com.timatifey.controllers
 
 import com.timatifey.models.client.Client
+import com.timatifey.views.MainView
 import com.timatifey.views.ScreenControlView
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.Scene
+import javafx.stage.Stage
 import tornadofx.*
 import java.lang.NumberFormatException
 
@@ -22,7 +25,7 @@ class ClientController: Controller() {
                 if (isConnected) {
                     this.ip = ip
                     this.port = port
-                    find(ScreenControlView::class).openModal()
+                    find(ScreenControlView::class).openWindow()
                 } else {
                     status = "Connection Error"
                 }
@@ -37,5 +40,4 @@ class ClientController: Controller() {
         client.stopConnection()
         client = Client()
     }
-
 }

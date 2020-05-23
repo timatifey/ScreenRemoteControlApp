@@ -1,13 +1,19 @@
 package com.timatifey.models.server
 
+import com.google.gson.Gson
+import com.timatifey.models.data.DataPackage
 import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.senders.ScreenSender
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleStringProperty
+import tornadofx.*
 import java.io.*
 import java.net.ServerSocket
 import java.net.Socket
+import java.net.SocketException
 
-class Server {
+class Server: Runnable {
     private lateinit var server: ServerSocket
     private lateinit var serverForKeys: ServerSocket
     private lateinit var clientSocket: Socket
@@ -17,14 +23,30 @@ class Server {
     private lateinit var screenSender: ScreenSender
     var wasInit = false
 
-    fun start(port: Int): Boolean {
+    val statusProperty = SimpleStringProperty("")
+
+    fun start(port: Int) {
         try {
             server = ServerSocket(port)
             serverForKeys = ServerSocket(port + 1)
-            println("SERVER IS WAITING OF CONNECTION")
+            Thread(this).start()
+        } catch (e: IOException) {
+            println("Starting Server Error: $e")
+        }
+    }
+
+    override fun run() {
+        println("SERVER IS WAITING OF CONNECTION")
+        runLater {
+            statusProperty.value = "Server is waiting of connection"
+        }
+        try {
             clientSocket = server.accept()
             socketForKeys = serverForKeys.accept()
             println("CLIENT HAS CONNECTED")
+            runLater {
+                statusProperty.value = "Client has connected"
+            }
 
             mouseEventReceiver = MouseEventReceiver(clientSocket)
             Thread(mouseEventReceiver).start()
@@ -36,11 +58,27 @@ class Server {
             Thread(screenSender).start()
 
             wasInit = true
-            return true
-        } catch (e: IOException) {
-            println("Starting Server Error: $e")
-        }
-        return false
+            val input = BufferedReader(InputStreamReader(socketForKeys.getInputStream()))
+            while (true) {
+                val json = input.readLine()
+                if (json != null) {
+                    val data = Gson().fromJson(json, DataPackage::class.java)
+                    if (data.dataType == DataPackage.DataType.MESSAGE) {
+                        val text = data.message!!
+                        if (text.equals("stop", ignoreCase = true)) {
+                            runLater {
+                                statusProperty.value = "Client has disconnected"
+                            }
+                            println("CLIENT STOP")
+                            input.close()
+                            break
+                        }
+                    }
+                }
+
+            }
+            stop()
+        } catch (e: SocketException) {}
     }
 
     fun stop() {
@@ -49,9 +87,17 @@ class Server {
                 mouseEventReceiver.stop()
                 keyEventReceiver.stop()
                 screenSender.stop()
-
-                clientSocket.close()
-                socketForKeys.close()
+                try {
+                    val output = PrintWriter(clientSocket.getOutputStream(), true)
+                    val data = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE, message = "stop"))
+                    output.println(data)
+                    output.close()
+                } finally {
+                    try {
+                        clientSocket.close()
+                        socketForKeys.close()
+                    } catch (e: SocketException) {}
+                }
             }
             server.close()
             serverForKeys.close()

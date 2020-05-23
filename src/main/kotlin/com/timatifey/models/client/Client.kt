@@ -1,13 +1,17 @@
 package com.timatifey.models.client
 
+import com.google.gson.Gson
+import com.timatifey.models.data.DataPackage
 import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MouseEventSender
+import javafx.embed.swing.SwingFXUtils
 import java.io.*
 import java.net.Socket
+import javax.imageio.ImageIO
 import kotlin.system.exitProcess
 
-class Client {
+class Client: Runnable {
     private lateinit var clientSocket: Socket
     lateinit var mouseEventSender: MouseEventSender private set
     lateinit var screenReceiver: ScreenReceiver private set
@@ -35,7 +39,31 @@ class Client {
         Thread(screenReceiver).start()
         wasInit = true
 
+        Thread(this).start()
+
         return true
+    }
+
+    override fun run() {
+        val input = BufferedReader(InputStreamReader(socketForKeys.getInputStream()))
+        while (true) {
+            val json = input.readLine()
+            if (json != null) {
+                val data = Gson().fromJson(json, DataPackage::class.java)
+                if (data.dataType == DataPackage.DataType.MESSAGE) {
+                    val text = data.message!!
+                    if (text.equals("stop", ignoreCase = true)) {
+                        println("SERVER STOP")
+                        screenReceiver.imageScene.value =
+                                SwingFXUtils.toFXImage(ImageIO.read(File("server_shutdown.jpg")), null)
+                        input.close()
+                        stopConnection()
+                        break
+                    }
+                }
+            }
+
+        }
     }
 
     fun stopConnection() {
@@ -44,9 +72,15 @@ class Client {
                 mouseEventSender.stop()
                 keyEventSender.stop()
                 screenReceiver.stop()
-
-                clientSocket.close()
-                socketForKeys.close()
+                try {
+                    val output = PrintWriter(clientSocket.getOutputStream(), true)
+                    val data = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE, message = "stop"))
+                    output.println(data)
+                    output.close()
+                } finally {
+                    clientSocket.close()
+                    socketForKeys.close()
+                }
             }
             exitProcess(0)
         } catch (e: IOException) {
