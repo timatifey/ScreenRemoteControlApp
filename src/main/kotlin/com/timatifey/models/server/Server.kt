@@ -22,7 +22,6 @@ class Server: Runnable {
     private lateinit var keyEventReceiver: KeyEventReceiver
     private lateinit var screenSender: ScreenSender
     private var oldPort = -1
-    private var initiatorOfDisconnectIsClient = false
     var wasInit = false
     val statusProperty = SimpleStringProperty("")
     val statusClient = SimpleStringProperty("")

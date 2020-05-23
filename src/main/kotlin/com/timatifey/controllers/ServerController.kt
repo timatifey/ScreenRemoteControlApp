@@ -8,9 +8,10 @@ import java.lang.NumberFormatException
 
 class ServerController: Controller() {
     var hasStarted = SimpleBooleanProperty(false)
-    val server = Server()
+    var server = Server()
 
     fun start(port: String) {
+        server = Server()
         runLater { server.statusProperty.value = "" }
         try {
             val intPort = port.toInt()

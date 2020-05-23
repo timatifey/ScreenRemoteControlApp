@@ -21,6 +21,8 @@ class ScreenControlView : View() {
     override val root = borderpane {
         title = "${clientController.ip}:${clientController.port}"
         setPrefSize(takeScreenSize().width.toDouble(), takeScreenSize().height.toDouble())
+        useMaxSize = true
+        isCenterShape = true
         bottom {
             hbox {
                 button("") {

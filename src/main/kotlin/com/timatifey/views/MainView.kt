@@ -105,6 +105,7 @@ class ServerForm: Fragment() {
         vbox {
             button("Start server") {
                 enableWhen(!serverController.hasStarted)
+                enableWhen(model.valid)
                 isDefaultButton = true
                 useMaxWidth = true
                 action {
