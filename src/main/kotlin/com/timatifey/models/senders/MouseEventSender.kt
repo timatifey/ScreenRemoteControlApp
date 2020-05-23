@@ -27,10 +27,14 @@ class MouseEventSender(private val client: Socket): Runnable {
                     needStop = true
                     break
                 }
-                val mouse = queueMouse.take()
-                val data = DataPackage(DataPackage.DataType.MOUSE, mouse = mouse)
-                val json = Gson().toJson(data)
-                output.println(json)
+                try {
+                    val mouse = queueMouse.take()
+                    val data = DataPackage(DataPackage.DataType.MOUSE, mouse = mouse)
+                    val json = Gson().toJson(data)
+                    output.println(json)
+                } catch (e: IllegalArgumentException) {
+                    println(e.message)
+                }
             }
             output.close()
             client.close()

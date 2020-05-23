@@ -5,7 +5,9 @@ import com.timatifey.models.data.DataPackage
 import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MouseEventSender
+import javafx.beans.property.SimpleStringProperty
 import javafx.embed.swing.SwingFXUtils
+import tornadofx.*
 import java.io.*
 import java.lang.Thread.sleep
 import java.net.Socket
@@ -19,6 +21,7 @@ class Client: Runnable {
     lateinit var keyEventSender: KeyEventSender private set
     lateinit var socketForKeys: Socket
     var wasInit = false
+    val status = SimpleStringProperty("")
 
     fun startConnection(ip: String, port: Int): Boolean {
         try {
@@ -28,7 +31,9 @@ class Client: Runnable {
         }
 
         if (clientSocket.isConnected && !clientSocket.isClosed) println("CLIENT CONNECTED TO $ip:$port")
-
+        runLater {
+            status.value = "Client connected"
+        }
         mouseEventSender = MouseEventSender(clientSocket)
         Thread(mouseEventSender).start()
 
@@ -55,6 +60,9 @@ class Client: Runnable {
                     val text = data.message!!
                     if (text.equals("stop", ignoreCase = true)) {
                         println("SERVER STOP")
+                        runLater {
+                            status.value = "Server has shutdown"
+                        }
                         screenReceiver.imageScene.value =
                                 SwingFXUtils.toFXImage(ImageIO.read(
                                         File("src/main/resources/server_shutdown.jpg")), null)

@@ -74,7 +74,7 @@ class Server: Runnable {
                         val text = data.message!!
                         if (text.equals("stop", ignoreCase = true)) {
                             runLater {
-                                statusClient.value = "Client has disconnected, restart server"
+                                statusClient.value = "Client has disconnected,\nrestart server"
                             }
                             hasConnected.value = false
                             println("CLIENT STOP")
