@@ -26,7 +26,7 @@ class ClientController: Controller() {
                 if (isConnected) {
                     this.ip = ip
                     this.port = port
-                    find(ScreenControlView::class).openWindow()
+                    find(ScreenControlView::class).openModal()
                 } else {
                     status = "Connection Error"
                 }

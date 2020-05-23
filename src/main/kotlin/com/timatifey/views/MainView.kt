@@ -6,6 +6,7 @@ import com.timatifey.controllers.ServerController
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import javafx.scene.control.TextFormatter
+import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import tornadofx.*
@@ -94,6 +95,7 @@ class ServerForm: Fragment() {
     private val portFilter: (TextFormatter.Change) -> Boolean = { change ->
         !change.isAdded || change.controlNewText.isInt()
     }
+
     override val root = form {
         title = "Server"
         usePrefSize = true
