@@ -92,7 +92,6 @@ class Server {
                         keyEventReceiver = KeyEventReceiver(socket)
                         Thread(keyEventReceiver).start()
                     }
-                    output.println("OK")
                 } else {
                     println("Client data types are NULL")
                     runLater { statusClient.value = "Client data types are NULL" }

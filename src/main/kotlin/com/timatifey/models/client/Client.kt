@@ -41,38 +41,22 @@ class Client: Runnable {
             val msg = dataTypesList.joinToString(separator = ", ")
             output.println(gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = msg)))
 
-            //Waiting server answer
-            val answerServer = input.readLine()
-            val answer = gson.fromJson(answerServer, DataPackage::class.java)
-
-            if (answer.message != null) {
-                if (answer.message == "OK") {
-                    //Starting threads
-                    if (DataPackage.DataType.IMAGE in dataTypesList) {
-                        screenReceiver = ScreenReceiver(socket)
-                        Thread(screenReceiver).start()
-                    }
-
-                    if (DataPackage.DataType.MOUSE in dataTypesList) {
-                        mouseEventSender = MouseEventSender(socket)
-                        Thread(mouseEventSender).start()
-                    }
-
-                    if (DataPackage.DataType.KEY in dataTypesList) {
-                        keyEventSender = KeyEventSender(socket)
-                        Thread(keyEventSender).start()
-                    }
-                }
-                else {
-                    println("Server answer is not OK")
-                    runLater { status.value = "Server answer is not OK" }
-                    return false
-                }
-            } else {
-                println("Server answer is NULL")
-                runLater { status.value = "Server answer is NULL" }
-                return false
+            //Starting threads
+            if (DataPackage.DataType.IMAGE in dataTypesList) {
+                screenReceiver = ScreenReceiver(socket)
+                Thread(screenReceiver).start()
             }
+
+            if (DataPackage.DataType.MOUSE in dataTypesList) {
+                mouseEventSender = MouseEventSender(socket)
+                Thread(mouseEventSender).start()
+            }
+
+            if (DataPackage.DataType.KEY in dataTypesList) {
+                keyEventSender = KeyEventSender(socket)
+                Thread(keyEventSender).start()
+            }
+
         } catch (e: IOException) {
             return false
         }
