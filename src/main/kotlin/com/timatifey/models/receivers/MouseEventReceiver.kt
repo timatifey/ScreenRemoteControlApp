@@ -14,7 +14,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
 
-class MouseEventReceiver(private val client: Socket): Runnable {
+class MouseEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
     private var prevMouse = mutableListOf<Mouse?>(null, null)
 
@@ -68,20 +68,15 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                 else -> {}
             }
         } catch (e: AWTException) {
-            println(e.message)
-            e.printStackTrace()
+            println("Mouse realise error: ${e.message}")
         }
     }
 
     override fun run() {
         try {
-            val input = BufferedReader(InputStreamReader(client.getInputStream()))
+            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             needStop = false
             while (!needStop) {
-                if (!client.isConnected || client.isClosed) {
-                    needStop = true
-                    break
-                }
                 val json = input.readLine()
                 if (json != null) {
                     val data = Gson().fromJson(json, DataPackage::class.java)
@@ -94,13 +89,11 @@ class MouseEventReceiver(private val client: Socket): Runnable {
                 }
             }
             input.close()
-            client.close()
+            socket.close()
         } catch (e: IOException) {
             println("Mouse Event Receiver Client Socket Error: $e")
         }
     }
 
-    fun stop() {
-        needStop = true
-    }
+    fun stop() { needStop = true }
 }

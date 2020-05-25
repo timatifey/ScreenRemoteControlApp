@@ -15,13 +15,16 @@ import java.lang.Thread.sleep
 import java.net.Socket
 import javax.imageio.ImageIO
 
-class ScreenSender(private val client: Socket): Runnable {
+fun takeScreenSize(): Dimension = Toolkit.getDefaultToolkit().screenSize
+private fun takeRectangle(screenSize: Dimension) = Rectangle(screenSize)
+private fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScreenCapture(rectangle)
+
+class ScreenSender(private val socket: Socket): Runnable {
     @Volatile var needStop = false
 
     override fun run() {
         try {
-            needStop = false
-            val output = PrintWriter(client.getOutputStream(), true)
+            val output = PrintWriter(socket.getOutputStream(), true)
             while (!needStop) {
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 val screenSize = takeScreenSize()
@@ -36,19 +39,13 @@ class ScreenSender(private val client: Socket): Runnable {
                 sleep(300)
             }
             output.close()
-            client.close()
+            socket.close()
         } catch (e: IOException) {
             println("Screen Sender Client Socket Error: $e")
         }
     }
 
-    fun stop() {
-        needStop = true
-    }
+    fun stop() { needStop = true }
 }
 
-fun takeScreenSize(): Dimension = Toolkit.getDefaultToolkit().screenSize
 
-fun takeRectangle(screenSize: Dimension) = Rectangle(screenSize)
-
-fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScreenCapture(rectangle)

@@ -9,7 +9,7 @@ import java.io.*
 import java.net.Socket
 import javax.imageio.ImageIO
 
-class ScreenReceiver(private val client: Socket): Runnable {
+class ScreenReceiver(private val socket: Socket): Runnable {
     val imageScene = SimpleObjectProperty<Image?>()
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0
@@ -18,12 +18,8 @@ class ScreenReceiver(private val client: Socket): Runnable {
     override fun run() {
         try {
             needStop = false
-            val input = BufferedReader(InputStreamReader(client.getInputStream()))
+            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             while (!needStop) {
-                if (!client.isConnected || client.isClosed) {
-                    needStop = true
-                    break
-                }
                 val json = input.readLine()
                 if (json != null) {
                     try {
@@ -43,13 +39,11 @@ class ScreenReceiver(private val client: Socket): Runnable {
                 }
             }
             input.close()
-            client.close()
+            socket.close()
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
         }
     }
 
-    fun stop() {
-        needStop = true
-    }
+    fun stop() { needStop = true }
 }

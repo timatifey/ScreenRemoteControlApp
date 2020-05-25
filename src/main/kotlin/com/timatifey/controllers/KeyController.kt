@@ -1,9 +1,8 @@
 package com.timatifey.controllers
 
 import com.timatifey.models.data.Key
-import com.timatifey.models.client.Client
 import javafx.scene.input.KeyEvent
-import tornadofx.*
+import tornadofx.Controller
 
 class KeyController: Controller() {
     private val clientController: ClientController by inject()

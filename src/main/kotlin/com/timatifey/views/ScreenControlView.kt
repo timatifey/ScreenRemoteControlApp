@@ -23,6 +23,34 @@ class ScreenControlView : View() {
         setPrefSize(takeScreenSize().width.toDouble(), takeScreenSize().height.toDouble())
         useMaxSize = true
         isCenterShape = true
+
+        center {
+            style {
+                backgroundColor = multi(Color.BLACK)
+            }
+            paddingAll = 5.0
+            if (clientController.imageCheck.value)
+                imageview(image) {
+                    nodeOrientation = NodeOrientation.INHERIT
+                    isCenterShape = true
+                    paddingAll = 0.0
+                    isPreserveRatio = true
+                    fitHeightProperty().bind(Bindings.createDoubleBinding(
+                            Callable {
+                                parent.layoutBounds.height
+                            }, parent.layoutBoundsProperty()
+                    ))
+                    fitWidthProperty().bind(Bindings.createDoubleBinding(
+                            Callable {
+                                parent.layoutBounds.width
+                            }, parent.layoutBoundsProperty()
+                    ))
+                    if (clientController.mouseCheck.value)
+                        addEventHandler(MouseEvent.ANY) {
+                            mouseController.sendMouseEvent(it!!)
+                        }
+                }
+        }
         bottom {
             hbox {
                 button("") {
@@ -30,35 +58,10 @@ class ScreenControlView : View() {
                     style {
                         backgroundColor = multi(Color.BLACK)
                     }
-                    addEventHandler(KeyEvent.ANY) {
-                        keyController.sendKeyEvent(it!!)
-                    }
-                }
-            }
-        }
-        center {
-            style {
-                backgroundColor = multi(Color.BLACK)
-            }
-            paddingAll = 5.0
-            imageview(image) {
-                nodeOrientation = NodeOrientation.INHERIT
-                isCenterShape = true
-                paddingAll = 0.0
-                isPreserveRatio = true
-                fitHeightProperty().bind(Bindings.createDoubleBinding(
-                        Callable {
-                            parent.layoutBounds.height
-                        }, parent.layoutBoundsProperty()
-                ))
-                fitWidthProperty().bind(Bindings.createDoubleBinding(
-                        Callable {
-                            parent.layoutBounds.width
-                        }, parent.layoutBoundsProperty()
-                ))
-
-                addEventHandler(MouseEvent.ANY) {
-                    mouseController.sendMouseEvent(it!!)
+                    if (clientController.keyCheck.value)
+                        addEventHandler(KeyEvent.ANY) {
+                            keyController.sendKeyEvent(it!!)
+                        }
                 }
             }
         }
@@ -73,5 +76,4 @@ class ScreenControlView : View() {
             }
         }
     }
-
 }

@@ -3,7 +3,6 @@ package com.timatifey.models.receivers
 import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Key
-import java.awt.AWTException
 import java.awt.Robot
 import java.io.BufferedReader
 import java.io.IOException
@@ -11,44 +10,27 @@ import java.io.InputStreamReader
 import java.lang.IllegalArgumentException
 import java.net.Socket
 
-class KeyEventReceiver(private val client: Socket): Runnable {
+class KeyEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
 
     private fun keyRealise(key: Key) {
+        val robot = Robot()
         try {
-            val robot = Robot()
             when (key.eventType) {
-                Key.KeyEventType.KEY_PRESSED -> {
-                    try {
-                        robot.keyPress(key.code.code)
-                    } catch (e: IllegalArgumentException) {
-                        println(e.message)
-                    }
-                }
-                Key.KeyEventType.KEY_RELEASED -> {
-                    try {
-                        robot.keyRelease(key.code.code)
-                    } catch (e: IllegalArgumentException) {
-                        println(e.message)
-                    }
-                }
+                Key.KeyEventType.KEY_PRESSED -> robot.keyPress(key.code.code)
+                Key.KeyEventType.KEY_RELEASED -> robot.keyRelease(key.code.code)
                 else -> {}
             }
-        } catch (e: AWTException) {
-            println(e.message)
-            e.printStackTrace()
+        } catch (e: IllegalArgumentException) {
+            println("Key realise error: ${e.message}")
         }
     }
 
     override fun run() {
         try {
-            val input = BufferedReader(InputStreamReader(client.getInputStream()))
+            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             needStop = false
             while (!needStop) {
-                if (!client.isConnected || client.isClosed) {
-                    needStop = true
-                    break
-                }
                 val json = input.readLine()
                 if (json != null) {
                     val data = Gson().fromJson(json, DataPackage::class.java)
@@ -59,13 +41,11 @@ class KeyEventReceiver(private val client: Socket): Runnable {
                 }
             }
             input.close()
-            client.close()
+            socket.close()
         } catch (e: IOException) {
             println("Key Event Receiver Client Socket Error: $e")
         }
     }
 
-    fun stop() {
-        needStop = true
-    }
+    fun stop() { needStop = true }
 }

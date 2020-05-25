@@ -2,16 +2,14 @@ package com.timatifey.controllers
 
 import com.timatifey.models.server.Server
 import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleStringProperty
-import tornadofx.*
-import java.lang.NumberFormatException
+import tornadofx.Controller
+import tornadofx.runLater
 
 class ServerController: Controller() {
     var hasStarted = SimpleBooleanProperty(false)
     var server = Server()
 
     fun start(port: String) {
-        server = Server()
         runLater { server.statusProperty.value = "" }
         try {
             val intPort = port.toInt()

@@ -8,7 +8,7 @@ import java.io.PrintWriter
 import java.net.Socket
 import java.util.concurrent.LinkedBlockingQueue
 
-class KeyEventSender(private val client: Socket): Runnable {
+class KeyEventSender(private val socket: Socket): Runnable {
     @Volatile private var needStop = false
     private val queueKey = LinkedBlockingQueue<Key>()
 
@@ -18,26 +18,19 @@ class KeyEventSender(private val client: Socket): Runnable {
 
     override fun run() {
         try {
-            val output = PrintWriter(client.getOutputStream(), true)
-            needStop = false
+            val output = PrintWriter(socket.getOutputStream(), true)
             while (!needStop) {
-                if (!client.isConnected || client.isClosed) {
-                    needStop = true
-                    break
-                }
                 val key = queueKey.take()
                 val data = DataPackage(DataPackage.DataType.KEY, key = key)
                 val json = Gson().toJson(data)
                 output.println(json)
             }
             output.close()
-            client.close()
+            socket.close()
         } catch (e: IOException) {
             println("Key Event Sender Client Socket Error: $e")
         }
     }
 
-    fun stop() {
-        needStop = true
-    }
+    fun stop() { needStop = true }
 }

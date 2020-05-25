@@ -8,7 +8,11 @@ import tornadofx.*
 class Main : App(MainView::class, Styles::class) {
     override fun start(stage: Stage) {
         stage.isResizable = false
-        stage.icons += Image("icon.png")
+        stage.icons += Image("file:src/main/resources/icon.png")
         super.start(stage)
     }
+}
+
+fun main(args: Array<String>) {
+    launch<Main>(args)
 }

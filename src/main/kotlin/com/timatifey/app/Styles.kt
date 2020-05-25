@@ -1,24 +1,19 @@
 package com.timatifey.app
 
-import javafx.css.FontFace
-import javafx.geometry.Orientation
-import javafx.scene.layout.BorderStroke
-import javafx.scene.layout.BorderStrokeStyle
-import tornadofx.*
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
-import javafx.util.Duration
-import javax.swing.text.StyledEditorKit
+import tornadofx.*
 
 class Styles: Stylesheet() {
     companion object {
         val mainColor = c("#04afff")
         val mainDarkColor = c("#007ab3")
+        val backColor = c("#f9feff")
         val wrapper by cssclass()
     }
     init {
         s(wrapper) {
-            backgroundColor = multi(Color.WHITE)
+            backgroundColor = multi(backColor)
             s(button) {
                 padding = box(10.0.px, 5.0.px)
                 textFill = Color.WHITE
@@ -28,18 +23,30 @@ class Styles: Stylesheet() {
                 and(hover) {
                     backgroundColor = multi(mainDarkColor)
                 }
-
             }
-            s(tab) {
+            s(toggleButton, checkBox) {
+                padding = box(10.0.px, 5.0.px)
+                textFill = Color.WHITE
                 backgroundColor = multi(mainColor)
-                padding = box(5.px, 33.px)
+                fontWeight = FontWeight.EXTRA_BOLD
                 fontFamily = "Arial Black"
-                fontSize = 13.px
+                borderRadius = multi(box(10.px))
+                and(hover) {
+                    backgroundColor = multi(mainDarkColor)
+                }
+            }
+            s(checkBox) {
+                padding = box(5.0.px)
             }
             s(label) {
                 fontFamily = "Arial"
                 fontSize = 14.px
                 textFill = Color.BLACK
+                padding = box(10.0.px, 0.px, 0.px, 0.px)
+                fontWeight = FontWeight.BOLD
+            }
+            s(textField) {
+                fontSize = 16.px
             }
             borderRadius = multi(box(20.px))
         }

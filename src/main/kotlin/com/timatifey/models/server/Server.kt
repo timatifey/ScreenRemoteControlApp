@@ -1,115 +1,146 @@
 package com.timatifey.models.server
 
 import com.google.gson.Gson
+import com.timatifey.models.data.ClientListElement
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.senders.ScreenSender
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
-import tornadofx.*
+import tornadofx.runLater
 import java.io.*
 import java.net.ServerSocket
 import java.net.Socket
 import java.net.SocketException
+import java.util.concurrent.ConcurrentLinkedDeque
 
-class Server: Runnable {
+class Server {
     private lateinit var server: ServerSocket
-    private lateinit var serverForKeys: ServerSocket
-    private lateinit var clientSocket: Socket
-    private lateinit var socketForKeys: Socket
-    private lateinit var mouseEventReceiver: MouseEventReceiver
-    private lateinit var keyEventReceiver: KeyEventReceiver
-    private lateinit var screenSender: ScreenSender
-    private var oldPort = -1
-    var wasInit = false
+    private val clientList = ConcurrentLinkedDeque<ClientListElement>()
+    private var needStop = false
+    private var wasInit = false
+
+    val gson = Gson()
     val statusProperty = SimpleStringProperty("")
     val statusClient = SimpleStringProperty("")
-
-    private val hasConnected = SimpleBooleanProperty(false)
 
     fun start(port: Int) {
         try {
             server = ServerSocket(port)
-            serverForKeys = ServerSocket(port + 1)
-            oldPort = port
-            Thread(this).start()
-        } catch (e: IOException) {
-            println("Starting Server Error: $e")
-        }
-    }
-
-    override fun run() {
-        println("SERVER IS WAITING OF CONNECTION")
-        runLater {
-            statusProperty.value = "Server is waiting of connection"
-        }
-        try {
-            clientSocket = server.accept()
-            socketForKeys = serverForKeys.accept()
-            println("CLIENT HAS CONNECTED")
-            hasConnected.value = true
-            runLater {
-                statusProperty.value = "Server is connected"
-                statusClient.value = "Client has connected"
-            }
-
-            mouseEventReceiver = MouseEventReceiver(clientSocket)
-            Thread(mouseEventReceiver).start()
-
-            keyEventReceiver = KeyEventReceiver(socketForKeys)
-            Thread(keyEventReceiver).start()
-
-            screenSender = ScreenSender(clientSocket)
-            Thread(screenSender).start()
-
+            println("Server is waiting of connection")
+            runLater { statusProperty.value = "Server is ready for connections" }
             wasInit = true
-            val input = BufferedReader(InputStreamReader(socketForKeys.getInputStream()))
-            while (true) {
-                val json = input.readLine()
-                if (json != null) {
-                    val data = Gson().fromJson(json, DataPackage::class.java)
-                    if (data.dataType == DataPackage.DataType.MESSAGE) {
-                        val text = data.message!!
-                        if (text.equals("stop", ignoreCase = true)) {
-                            runLater {
-                                statusClient.value = "Client has disconnected,\nrestart server"
-                            }
-                            hasConnected.value = false
-                            println("CLIENT STOP")
-                            input.close()
-                            break
-                        }
-                    }
-                }
+            while (!needStop) {
+                val client = ClientHandler(server.accept())
+                clientList.add(client)
+                Thread(client).start()
             }
-        } catch (e: SocketException) {
-            println(e.message)
+        } catch (e: IOException) {
+            println("Starting server error: $e")
         }
     }
 
     fun stop() {
         try {
             if (wasInit) {
-                mouseEventReceiver.stop()
-                keyEventReceiver.stop()
-                screenSender.stop()
+                needStop = true
+                server.close()
+                for (client in clientList) {
+                    client.needStop = true
+                }
+            }
+        } catch (e: IOException) {
+            println("Stopping Server Error: $e")
+        }
+    }
+
+    inner class ClientHandler(private val socket: Socket): Runnable, ClientListElement {
+        private lateinit var mouseEventReceiver: MouseEventReceiver
+        private lateinit var keyEventReceiver: KeyEventReceiver
+        private lateinit var screenSender: ScreenSender
+
+        private lateinit var input: BufferedReader
+        private lateinit var output: PrintWriter
+
+        override val ip: String = socket.inetAddress.hostAddress
+        override val dataSharingTypes: MutableList<DataPackage.DataType> = mutableListOf()
+        @Volatile override var needStop: Boolean = false
+
+        override fun run() {
+            try {
+                println("$ip has connected")
+                runLater { statusClient.value = "$ip has connected" }
+
+                //Confirmation types
+                input = BufferedReader(InputStreamReader(socket.getInputStream()))
+                output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+                val clientMsg = input.readLine()
+                val msg = gson.fromJson(clientMsg, DataPackage::class.java)
+                if (msg.message != null) {
+                    val dataTypes: List<DataPackage.DataType> = msg.message.split(", ")
+                        .map { DataPackage.DataType.valueOf(it) }
+
+                    if (DataPackage.DataType.IMAGE in dataTypes) {
+                        screenSender = ScreenSender(socket)
+                        Thread(screenSender).start()
+                    }
+                    if (DataPackage.DataType.MOUSE in dataTypes) {
+                        mouseEventReceiver = MouseEventReceiver(socket)
+                        Thread(mouseEventReceiver).start()
+                    }
+                    if (DataPackage.DataType.KEY in dataTypes) {
+                        keyEventReceiver = KeyEventReceiver(socket)
+                        Thread(keyEventReceiver).start()
+                    }
+                    output.println("OK")
+                } else {
+                    println("Client data types are NULL")
+                    runLater { statusClient.value = "Client data types are NULL" }
+                }
+                //Main part
+                while (!needStop) {
+                    val json = input.readLine()
+                    if (json != null) {
+                        val data = Gson().fromJson(json, DataPackage::class.java)
+                        if (data.dataType == DataPackage.DataType.MESSAGE) {
+                            val text = data.message!!
+                            if (text.equals("stop", ignoreCase = true)) {
+                                runLater { statusClient.value = "Client $ip has disconnected" }
+                                println("Client $ip has disconnected")
+                                input.close()
+                                break
+                            }
+                        }
+                    }
+                }
+                stop()
+            } catch (e: SocketException) {
+                println(e.message)
+            }
+        }
+
+        fun stop() {
+            try {
+                if (this::mouseEventReceiver.isInitialized)
+                    mouseEventReceiver.stop()
+                if (this::keyEventReceiver.isInitialized)
+                    keyEventReceiver.stop()
+                if (this::screenSender.isInitialized)
+                    screenSender.stop()
+
                 try {
-                    val output = PrintWriter(socketForKeys.getOutputStream(), true)
+                    val output = PrintWriter(socket.getOutputStream(), true)
                     val data = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE, message = "stop"))
                     output.println(data)
                     output.close()
                 } finally {
-                    try {
-                        clientSocket.close()
-                        socketForKeys.close()
-                    } catch (e: SocketException) {}
+                    try { socket.close() }
+                    catch (e: SocketException) { println(e.message) }
                 }
+                clientList.remove(this)
+            } catch (e: IOException) {
+                println("Stopping Server Error: $e")
             }
-            server.close()
-            serverForKeys.close()
-        } catch (e: IOException) {
-            println("Stopping Server Error: $e")
         }
     }
 }

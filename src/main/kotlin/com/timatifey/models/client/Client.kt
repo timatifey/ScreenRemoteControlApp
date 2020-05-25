@@ -7,68 +7,99 @@ import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MouseEventSender
 import javafx.beans.property.SimpleStringProperty
 import javafx.embed.swing.SwingFXUtils
-import tornadofx.*
+import tornadofx.runLater
 import java.io.*
-import java.lang.Thread.sleep
 import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
-import kotlin.system.exitProcess
 
 class Client: Runnable {
-    private lateinit var clientSocket: Socket
+    private lateinit var socket: Socket
+    private lateinit var input: BufferedReader
+    private lateinit var output: PrintWriter
+
+    private var wasInit = false
+    val gson = Gson()
+
     lateinit var mouseEventSender: MouseEventSender private set
     lateinit var screenReceiver: ScreenReceiver private set
     lateinit var keyEventSender: KeyEventSender private set
-    lateinit var socketForKeys: Socket
-    var wasInit = false
+
     val status = SimpleStringProperty("")
 
-    fun startConnection(ip: String, port: Int): Boolean {
+    fun startConnection(ip: String, port: Int, dataTypesList: List<DataPackage.DataType>): Boolean {
         try {
-            clientSocket = Socket(ip, port)
+            socket = Socket(ip, port)
+
+            println("Client connected to $ip:$port")
+            runLater { status.value = "Client connected" }
+
+            input = BufferedReader(InputStreamReader(socket.getInputStream()))
+            output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+
+            //Confirmation types
+            val msg = dataTypesList.joinToString(separator = ", ")
+            output.println(gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = msg)))
+
+            //Waiting server answer
+            val answerServer = input.readLine()
+            val answer = gson.fromJson(answerServer, DataPackage::class.java)
+
+            if (answer.message != null) {
+                if (answer.message == "OK") {
+                    //Starting threads
+                    if (DataPackage.DataType.IMAGE in dataTypesList) {
+                        screenReceiver = ScreenReceiver(socket)
+                        Thread(screenReceiver).start()
+                    }
+
+                    if (DataPackage.DataType.MOUSE in dataTypesList) {
+                        mouseEventSender = MouseEventSender(socket)
+                        Thread(mouseEventSender).start()
+                    }
+
+                    if (DataPackage.DataType.KEY in dataTypesList) {
+                        keyEventSender = KeyEventSender(socket)
+                        Thread(keyEventSender).start()
+                    }
+                }
+                else {
+                    println("Server answer is not OK")
+                    runLater { status.value = "Server answer is not OK" }
+                    return false
+                }
+            } else {
+                println("Server answer is NULL")
+                runLater { status.value = "Server answer is NULL" }
+                return false
+            }
         } catch (e: IOException) {
             return false
         }
 
-        if (clientSocket.isConnected && !clientSocket.isClosed) println("CLIENT CONNECTED TO $ip:$port")
-        runLater {
-            status.value = "Client connected"
-        }
-        mouseEventSender = MouseEventSender(clientSocket)
-        Thread(mouseEventSender).start()
-
-        socketForKeys = Socket(ip, port + 1)
-        keyEventSender = KeyEventSender(socketForKeys)
-        Thread(keyEventSender).start()
-
-        screenReceiver = ScreenReceiver(clientSocket)
-        Thread(screenReceiver).start()
-        wasInit = true
-
         Thread(this).start()
-
+        wasInit = true
         return true
     }
 
     override fun run() {
         try {
-            val input = BufferedReader(InputStreamReader(socketForKeys.getInputStream()))
             while (true) {
+                //Waiting of message
                 val json = input.readLine()
                 if (json != null) {
                     val data = Gson().fromJson(json, DataPackage::class.java)
+
                     if (data.dataType == DataPackage.DataType.MESSAGE) {
                         val text = data.message!!
+
                         if (text.equals("stop", ignoreCase = true)) {
-                            println("SERVER STOP")
-                            runLater {
-                                status.value = "Server has shutdown"
-                            }
-                            screenReceiver.imageScene.value =
-                                    SwingFXUtils.toFXImage(ImageIO.read(
-                                            File("src/main/resources/server_shutdown.jpg")), null)
-                            input.close()
+                            println("Server has stopped connection")
+                            runLater { status.value = "Server has stopped connection" }
+
+                            if (this::screenReceiver.isInitialized)
+                                setShutdownImage()
+
                             stopConnection()
                             break
                         }
@@ -83,22 +114,29 @@ class Client: Runnable {
     fun stopConnection() {
         try {
             if (wasInit) {
-                mouseEventSender.stop()
-                keyEventSender.stop()
-                screenReceiver.stop()
+                if (this::mouseEventSender.isInitialized)
+                    mouseEventSender.stop()
+                if (this::keyEventSender.isInitialized)
+                    keyEventSender.stop()
+                if (this::screenReceiver.isInitialized)
+                    screenReceiver.stop()
+
                 try {
-                    val output = PrintWriter(socketForKeys.getOutputStream(), true)
-                    val data = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE, message = "stop"))
-                    output.println(data)
+                    output.println(gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = "stop")))
                     output.close()
+                    input.close()
                 } finally {
-                    clientSocket.close()
-                    socketForKeys.close()
+                    try { socket.close() } catch (e: SocketException) { println(e.message) }
                 }
             }
-            exitProcess(0)
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
         }
+    }
+
+    private fun setShutdownImage() {
+        screenReceiver.imageScene.value =
+            SwingFXUtils.toFXImage(ImageIO.read(
+                File("server_shutdown.jpg")), null)
     }
 }
