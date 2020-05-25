@@ -79,12 +79,16 @@ class MouseEventReceiver(private val socket: Socket): Runnable {
             while (!needStop) {
                 val json = input.readLine()
                 if (json != null) {
-                    val data = Gson().fromJson(json, DataPackage::class.java)
-                    if (data.dataType == DataPackage.DataType.MOUSE) {
-                        val mouse = data.mouse!!
-                        mouseRealise(mouse)
-                        prevMouse[1] = prevMouse[0]
-                        prevMouse[0] = mouse.copy()
+                    try {
+                        val data = Gson().fromJson(json, DataPackage::class.java)
+                        if (data.dataType == DataPackage.DataType.MOUSE) {
+                            val mouse = data.mouse!!
+                            mouseRealise(mouse)
+                            prevMouse[1] = prevMouse[0]
+                            prevMouse[0] = mouse.copy()
+                        }
+                    } catch (e: IllegalStateException) {
+                        println("Mouse event receiver: ${e.message}")
                     }
                 }
             }

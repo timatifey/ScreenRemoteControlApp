@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TextFormatter
 import javafx.scene.paint.Color
 import tornadofx.*
+import kotlin.system.exitProcess
 
 private val isClientMode = SimpleBooleanProperty(true)
 private val portFilter: (TextFormatter.Change) -> Boolean = { change ->
@@ -55,6 +56,7 @@ class MainView : View("Screen Remote Control") {
                 currentWindow?.hide()
             }
         }
+        exitProcess(0)
     }
 }
 

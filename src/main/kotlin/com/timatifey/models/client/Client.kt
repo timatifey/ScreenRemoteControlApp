@@ -39,8 +39,9 @@ class Client: Runnable {
 
             //Confirmation types
             val msg = dataTypesList.joinToString(separator = ", ")
-            println(msg)
-            output.println(gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = msg)))
+            val data = gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = msg))
+            println(data)
+            output.println(data)
 
             //Starting threads
             if (DataPackage.DataType.IMAGE in dataTypesList) {
@@ -73,21 +74,25 @@ class Client: Runnable {
                 //Waiting of message
                 val json = input.readLine()
                 if (json != null) {
-                    println(json)
-                    val data = Gson().fromJson(json, DataPackage::class.java)
-                    if (data.dataType == DataPackage.DataType.MESSAGE) {
-                        val text = data.message!!
+                    try {
+                        println(json)
+                        val data = gson.fromJson(json, DataPackage::class.java)
+                        if (data.dataType == DataPackage.DataType.MESSAGE) {
+                            val text = data.message!!
 
-                        if (text.equals("stop", ignoreCase = true)) {
-                            println("Server has stopped connection")
-                            runLater { status.value = "Server has stopped connection" }
+                            if (text.equals("stop", ignoreCase = true)) {
+                                println("Server has stopped connection")
+                                runLater { status.value = "Server has stopped connection" }
 
-                            if (this::screenReceiver.isInitialized)
-                                setShutdownImage()
+                                if (this::screenReceiver.isInitialized)
+                                    setShutdownImage()
 
-                            stopConnection()
-                            break
+                                stopConnection()
+                                break
+                            }
                         }
+                    } catch (e: IllegalStateException) {
+                        println("Client: ${e.message}")
                     }
                 }
             }

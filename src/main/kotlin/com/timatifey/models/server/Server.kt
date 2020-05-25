@@ -100,15 +100,19 @@ class Server {
                 while (!needStop) {
                     val json = input.readLine()
                     if (json != null) {
-                        val data = Gson().fromJson(json, DataPackage::class.java)
-                        if (data.dataType == DataPackage.DataType.MESSAGE) {
-                            val text = data.message!!
-                            if (text.equals("stop", ignoreCase = true)) {
-                                runLater { statusClient.value = "Client $ip has disconnected" }
-                                println("Client $ip has disconnected")
-                                input.close()
-                                break
+                        try {
+                            val data = Gson().fromJson(json, DataPackage::class.java)
+                            if (data.dataType == DataPackage.DataType.MESSAGE) {
+                                val text = data.message!!
+                                if (text.equals("stop", ignoreCase = true)) {
+                                    runLater { statusClient.value = "Client $ip has disconnected" }
+                                    println("Client $ip has disconnected")
+                                    input.close()
+                                    break
+                                }
                             }
+                        } catch (e: IllegalStateException) {
+                            println("Server: ${e.message}")
                         }
                     }
                 }

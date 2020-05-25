@@ -33,10 +33,14 @@ class KeyEventReceiver(private val socket: Socket): Runnable {
             while (!needStop) {
                 val json = input.readLine()
                 if (json != null) {
-                    val data = Gson().fromJson(json, DataPackage::class.java)
-                    if (data.dataType == DataPackage.DataType.KEY) {
-                        val key = data.key!!
-                        keyRealise(key)
+                    try {
+                        val data = Gson().fromJson(json, DataPackage::class.java)
+                        if (data.dataType == DataPackage.DataType.KEY) {
+                            val key = data.key!!
+                            keyRealise(key)
+                        }
+                    } catch (e: IllegalStateException) {
+                        println("Key event receiver: ${e.message}")
                     }
                 }
             }
