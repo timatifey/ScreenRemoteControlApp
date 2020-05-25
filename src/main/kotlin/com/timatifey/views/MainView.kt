@@ -54,9 +54,9 @@ class MainView : View("Screen Remote Control") {
                 clientController.stopConnection()
                 serverController.stopServer()
                 currentWindow?.hide()
+                exitProcess(0)
             }
         }
-        exitProcess(0)
     }
 }
 
