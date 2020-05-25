@@ -40,14 +40,11 @@ class Client: Runnable {
             //Confirmation types
             val msg = dataTypesList.joinToString(separator = ", ")
             val data = gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = msg))
-            println(data)
             output.println(data)
 
             //Starting threads
-            if (DataPackage.DataType.IMAGE in dataTypesList) {
-                screenReceiver = ScreenReceiver(socket)
-                Thread(screenReceiver).start()
-            }
+            screenReceiver = ScreenReceiver(socket)
+            Thread(screenReceiver).start()
 
             if (DataPackage.DataType.MOUSE in dataTypesList) {
                 mouseEventSender = MouseEventSender(socket)
@@ -63,7 +60,7 @@ class Client: Runnable {
             return false
         }
 
-        Thread(this).start()
+        //Thread(this).start()
         wasInit = true
         return true
     }

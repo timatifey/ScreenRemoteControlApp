@@ -79,11 +79,6 @@ class ClientForm: Fragment() {
             }
             hbox {
                 spacer()
-                checkbox("Image") {
-                    bind(clientController.imageCheck)
-                    isSelected = true
-                }
-                spacer()
                 checkbox("Mouse") {
                     bind(clientController.mouseCheck)
                     isSelected = true

@@ -80,10 +80,9 @@ class Server {
                     val dataTypes: List<DataPackage.DataType> = msg.message.split(", ")
                         .map { DataPackage.DataType.valueOf(it) }
 
-                    if (DataPackage.DataType.IMAGE in dataTypes) {
-                        screenSender = ScreenSender(socket)
-                        Thread(screenSender).start()
-                    }
+                    screenSender = ScreenSender(socket)
+                    Thread(screenSender).start()
+
                     if (DataPackage.DataType.MOUSE in dataTypes) {
                         mouseEventReceiver = MouseEventReceiver(socket)
                         Thread(mouseEventReceiver).start()
@@ -97,26 +96,26 @@ class Server {
                     runLater { statusClient.value = "Client data types are NULL" }
                 }
                 //Main part
-                while (!needStop) {
-                    val json = input.readLine()
-                    if (json != null) {
-                        try {
-                            val data = Gson().fromJson(json, DataPackage::class.java)
-                            if (data.dataType == DataPackage.DataType.MESSAGE) {
-                                val text = data.message!!
-                                if (text.equals("stop", ignoreCase = true)) {
-                                    runLater { statusClient.value = "Client $ip has disconnected" }
-                                    println("Client $ip has disconnected")
-                                    input.close()
-                                    break
-                                }
-                            }
-                        } catch (e: IllegalStateException) {
-                            println("Server: ${e.message}")
-                        }
-                    }
-                }
-                stop()
+//                while (!needStop) {
+//                    val json = input.readLine()
+//                    if (json != null) {
+//                        try {
+//                            val data = Gson().fromJson(json, DataPackage::class.java)
+//                            if (data.dataType == DataPackage.DataType.MESSAGE) {
+//                                val text = data.message!!
+//                                if (text.equals("stop", ignoreCase = true)) {
+//                                    runLater { statusClient.value = "Client $ip has disconnected" }
+//                                    println("Client $ip has disconnected")
+//                                    input.close()
+//                                    break
+//                                }
+//                            }
+//                        } catch (e: IllegalStateException) {
+//                            println("Server: ${e.message}")
+//                        }
+//                    }
+//                }
+//                stop()
             } catch (e: SocketException) {
                 println(e.message)
             }

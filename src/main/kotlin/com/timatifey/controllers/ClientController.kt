@@ -16,7 +16,6 @@ class ClientController: Controller() {
     var ip = ""
     var port = ""
     var client = Client()
-    val imageCheck = SimpleBooleanProperty(true)
     val mouseCheck = SimpleBooleanProperty(true)
     val keyCheck = SimpleBooleanProperty(true)
 
@@ -27,7 +26,6 @@ class ClientController: Controller() {
             val intPort = port.toInt()
 
             val typeList = mutableListOf<DataPackage.DataType>()
-            if (imageCheck.value) typeList.add(DataPackage.DataType.IMAGE)
             if (mouseCheck.value) typeList.add(DataPackage.DataType.MOUSE)
             if (keyCheck.value) typeList.add(DataPackage.DataType.KEY)
 

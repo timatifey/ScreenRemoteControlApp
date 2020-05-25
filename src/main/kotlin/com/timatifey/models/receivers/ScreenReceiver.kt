@@ -38,8 +38,8 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                     } catch (e: IllegalStateException) {
                         println("Screen receiver: ${e.message}")
                     } catch (e: NumberFormatException) {
-                    println("Screen receiver: ${e.message}")
-                }
+                        println("Screen receiver: ${e.message}")
+                    }
                 }
             }
             input.close()

@@ -29,27 +29,26 @@ class ScreenControlView : View() {
                 backgroundColor = multi(Color.BLACK)
             }
             paddingAll = 5.0
-            if (clientController.imageCheck.value)
-                imageview(image) {
-                    nodeOrientation = NodeOrientation.INHERIT
-                    isCenterShape = true
-                    paddingAll = 0.0
-                    isPreserveRatio = true
-                    fitHeightProperty().bind(Bindings.createDoubleBinding(
-                            Callable {
-                                parent.layoutBounds.height
-                            }, parent.layoutBoundsProperty()
-                    ))
-                    fitWidthProperty().bind(Bindings.createDoubleBinding(
-                            Callable {
-                                parent.layoutBounds.width
-                            }, parent.layoutBoundsProperty()
-                    ))
-                    if (clientController.mouseCheck.value)
-                        addEventHandler(MouseEvent.ANY) {
-                            mouseController.sendMouseEvent(it!!)
-                        }
-                }
+            imageview(image) {
+                nodeOrientation = NodeOrientation.INHERIT
+                isCenterShape = true
+                paddingAll = 0.0
+                isPreserveRatio = true
+                fitHeightProperty().bind(Bindings.createDoubleBinding(
+                        Callable {
+                            parent.layoutBounds.height
+                        }, parent.layoutBoundsProperty()
+                ))
+                fitWidthProperty().bind(Bindings.createDoubleBinding(
+                        Callable {
+                            parent.layoutBounds.width
+                        }, parent.layoutBoundsProperty()
+                ))
+                if (clientController.mouseCheck.value)
+                    addEventHandler(MouseEvent.ANY) {
+                        mouseController.sendMouseEvent(it!!)
+                    }
+            }
         }
         bottom {
             hbox {
