@@ -23,6 +23,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                 val json = input.readLine()
                 if (json != null) {
                     try {
+                        println(json)
                         val data = Gson().fromJson(json, DataPackage::class.java)
                         if (data.dataType == DataPackage.DataType.IMAGE) {
                             val image = ImageIO.read(ByteArrayInputStream(data.image!!.bytes))

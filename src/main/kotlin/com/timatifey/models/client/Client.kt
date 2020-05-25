@@ -39,6 +39,7 @@ class Client: Runnable {
 
             //Confirmation types
             val msg = dataTypesList.joinToString(separator = ", ")
+            println(msg)
             output.println(gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = msg)))
 
             //Starting threads
@@ -72,8 +73,8 @@ class Client: Runnable {
                 //Waiting of message
                 val json = input.readLine()
                 if (json != null) {
+                    println(json)
                     val data = Gson().fromJson(json, DataPackage::class.java)
-
                     if (data.dataType == DataPackage.DataType.MESSAGE) {
                         val text = data.message!!
 
