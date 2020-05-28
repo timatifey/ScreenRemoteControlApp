@@ -23,6 +23,7 @@ class MessageSender(private val socket: Socket): Runnable, Sender {
                 val msg = queueMessages.take()
                 val data = DataPackage(DataPackage.DataType.MESSAGE, message = msg)
                 val json = Gson().toJson(data)
+                println("SEND $json")
                 output.println(json)
             }
             output.close()
