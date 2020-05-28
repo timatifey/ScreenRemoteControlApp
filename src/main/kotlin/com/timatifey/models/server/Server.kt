@@ -45,7 +45,7 @@ class Server: Runnable {
                 if (firstMsgFromSocket.message != null) {
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
-
+                    println(firstMsgFromSocket)
                     if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
                     else {
                         clientMap[clientId]?.sockets = mutableListOf(socket)

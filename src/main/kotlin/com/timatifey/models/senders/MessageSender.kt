@@ -20,10 +20,11 @@ class MessageSender(private val socket: Socket): Runnable, Sender {
     override fun run() {
         try {
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-            println("in sender")
+            val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
+                message = "$id:MESSAGE_SOCKET"))
+            output.println(firstMsg)
+
             while (!needStop) {
-                println("in sender")
-                output.println("hi")
                 val msg = queueMessages.take()
                 val data = DataPackage(DataPackage.DataType.MESSAGE, message = msg)
                 val json = Gson().toJson(data)

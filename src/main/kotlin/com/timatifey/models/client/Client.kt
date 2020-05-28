@@ -50,13 +50,6 @@ class Client {
         try {
             socket = Socket(ip, port)
 
-            input = BufferedReader(InputStreamReader(socket.getInputStream()))
-            output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-            val firstMsg = gson.toJson(DataPackage(DataPackage.DataType.MESSAGE,
-                message = "$id:MESSAGE_SOCKET"))
-            output.println(firstMsg)
-            output.close()
-
             //Starting threads
             messageReceiver = MessageReceiver(socket, Mode.CLIENT, client = this)
             messageSender = MessageSender(socket)
