@@ -19,7 +19,7 @@ class MouseEventSender(private val socket: Socket): Runnable {
     override fun run() {
         try {
             val output = PrintWriter(socket.getOutputStream(), true)
-
+            println("Mouse has connected")
             val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
                 message = "$id:MOUSE_SOCKET"))
             output.println(firstMsg)

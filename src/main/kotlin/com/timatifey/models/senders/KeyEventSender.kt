@@ -20,7 +20,7 @@ class KeyEventSender(private val socket: Socket): Runnable {
     override fun run() {
         try {
             val output = PrintWriter(socket.getOutputStream(), true)
-
+            println("Key has connected")
             val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
                 message = "$id:KEY_SOCKET"))
             output.println(firstMsg)

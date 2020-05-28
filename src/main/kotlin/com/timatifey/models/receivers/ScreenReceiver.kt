@@ -21,7 +21,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             needStop = false
             val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()))
-
+            println("Screen has connected")
             val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
                 message = "${id}:SCREEN_SOCKET"))
             output.println(firstMsg)

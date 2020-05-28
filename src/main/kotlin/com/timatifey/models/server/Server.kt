@@ -32,6 +32,7 @@ class Server {
             wasInit = true
             needStop = false
             while (!needStop) {
+                println("Server is waiting")
                 val socket = server.accept()
 
                 val input = BufferedReader(InputStreamReader(socket.getInputStream()))
