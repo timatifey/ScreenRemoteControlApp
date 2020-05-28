@@ -34,7 +34,7 @@ class Server {
             while (!needStop) {
                 println("Server is waiting")
                 val socket = server.accept()
-
+                println("Something has connected")
                 val input = BufferedReader(InputStreamReader(socket.getInputStream()))
                 val json = input.readLine()
                 val firstMsgFromSocket = gson.fromJson(json, DataPackage::class.java)

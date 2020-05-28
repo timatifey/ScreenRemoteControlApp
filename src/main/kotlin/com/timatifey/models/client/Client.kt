@@ -62,20 +62,20 @@ class Client {
             Thread(messageReceiver).start()
             Thread(messageSender).start()
 
-            sleep(200)
+            sleep(5000)
             socketScreen = Socket(ip, port)
             screenReceiver = ScreenReceiver(socketScreen)
             Thread(screenReceiver).start()
 
             if (DataPackage.DataType.MOUSE in dataTypesList) {
-                sleep(200)
+                sleep(5000)
                 socketMouse = Socket(ip, port)
                 mouseEventSender = MouseEventSender(socketMouse)
                 Thread(mouseEventSender).start()
             }
 
             if (DataPackage.DataType.KEY in dataTypesList) {
-                sleep(200)
+                sleep(5000)
                 socketKey = Socket(ip, port)
                 keyEventSender = KeyEventSender(socketKey)
                 Thread(keyEventSender).start()
