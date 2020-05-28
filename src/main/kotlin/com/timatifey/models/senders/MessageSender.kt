@@ -14,12 +14,16 @@ class MessageSender(private val socket: Socket): Runnable, Sender {
     @Volatile private var needStop = false
     private val queueMessages = LinkedBlockingQueue<String>()
 
-    fun sendMessage(msg: String) { queueMessages.put(msg) }
+    fun sendMessage(msg: String) { queueMessages.put(msg)
+    }
 
     override fun run() {
         try {
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+            println("in sender")
             while (!needStop) {
+                println("in sender")
+                output.println("hi")
                 val msg = queueMessages.take()
                 val data = DataPackage(DataPackage.DataType.MESSAGE, message = msg)
                 val json = Gson().toJson(data)

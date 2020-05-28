@@ -48,7 +48,7 @@ class Server: Runnable {
 
                     if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
                     else {
-                        clientMap[clientId]?.sockets = mutableListOf()
+                        clientMap[clientId]?.sockets = mutableListOf(socket)
                         println("${socket.inetAddress.hostAddress} has connected")
                         runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
                     }
