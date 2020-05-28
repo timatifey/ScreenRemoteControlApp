@@ -36,7 +36,6 @@ class Client {
     private lateinit var output: PrintWriter
 
     private var wasInit = false
-    private val gson = Gson()
 
     lateinit var messageReceiver: MessageReceiver private set
     lateinit var messageSender: MessageSender private set
@@ -48,14 +47,6 @@ class Client {
 
     fun startConnection(ip: String, port: Int, dataTypesList: List<DataPackage.DataType>): Boolean {
         try {
-//            socket = Socket(ip, port)
-
-            //Starting threads
-//            messageReceiver = MessageReceiver(socket, Mode.CLIENT, client = this)
-//            messageSender = MessageSender(socket)
-//            Thread(messageReceiver).start()
-//            Thread(messageSender).start()
-
             socketScreen = Socket(ip, port)
             screenReceiver = ScreenReceiver(socketScreen)
             Thread(screenReceiver).start()
@@ -71,7 +62,6 @@ class Client {
                 keyEventSender = KeyEventSender(socketKey)
                 Thread(keyEventSender).start()
             }
-
         } catch (e: IOException) {
             return false
         }

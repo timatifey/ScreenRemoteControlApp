@@ -45,26 +45,28 @@ class Server: Runnable {
                 if (firstMsgFromSocket.message != null) {
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
+                    println(clientId)
                     if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
                     else {
+                        clientMap[clientId] = ClientListElement()
                         clientMap[clientId]?.sockets = mutableListOf(socket)
                         println("${socket.inetAddress.hostAddress} has connected")
                         runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
                     }
 
                     when (msg[1]) {
-                        "MESSAGE_SOCKET" -> {
-                            val messageSender = MessageSender(socket)
-                            val messageReceiver = MessageReceiver(
-                                socket,
-                                Mode.SERVER,
-                                clientListElement = clientMap[clientId]
-                            )
-                            Thread(messageSender).start()
-                            Thread(messageReceiver).start()
-                            clientMap[clientId]?.messageReceiver = messageReceiver
-                            clientMap[clientId]?.messageSender = messageSender
-                        }
+//                        "MESSAGE_SOCKET" -> {
+//                            val messageSender = MessageSender(socket)
+//                            val messageReceiver = MessageReceiver(
+//                                socket,
+//                                Mode.SERVER,
+//                                clientListElement = clientMap[clientId]
+//                            )
+//                            Thread(messageSender).start()
+//                            Thread(messageReceiver).start()
+//                            clientMap[clientId]?.messageReceiver = messageReceiver
+//                            clientMap[clientId]?.messageSender = messageSender
+//                        }
                         "SCREEN_SOCKET" -> {
                             val screenSender = ScreenSender(socket)
                             Thread(screenSender).start()
@@ -109,7 +111,6 @@ class Server: Runnable {
                 needStop = true
                 server.close()
                 clientMap.forEachValue(1) {
-                    it.messageSender.sendMessage("stop")
                     it.stopAll()
                 }
             }

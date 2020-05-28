@@ -9,8 +9,8 @@ import java.net.Socket
 
 class ClientListElement {
     lateinit var sockets: MutableList<Socket>
-    lateinit var messageSender: MessageSender
-    lateinit var messageReceiver: MessageReceiver
+//    lateinit var messageSender: MessageSender
+//    lateinit var messageReceiver: MessageReceiver
     lateinit var screenSender: ScreenSender
     lateinit var mouseEventReceiver: MouseEventReceiver
     lateinit var keyEventReceiver: KeyEventReceiver
@@ -18,10 +18,10 @@ class ClientListElement {
 
     fun stopAll() {
         sockets.forEach { it.close() }
-        if (this::messageSender.isInitialized)
-            messageSender.stop()
-        if (this::messageReceiver.isInitialized)
-            messageReceiver.stop()
+//        if (this::messageSender.isInitialized)
+//            messageSender.stop()
+//        if (this::messageReceiver.isInitialized)
+//            messageReceiver.stop()
         if (this::screenSender.isInitialized)
             screenSender.stop()
         if (this::mouseEventReceiver.isInitialized)
