@@ -2,8 +2,10 @@ package com.timatifey.models.client
 
 import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
+import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.KeyEventSender
+import com.timatifey.models.senders.MessageSender
 import com.timatifey.models.senders.MouseEventSender
 import javafx.beans.property.SimpleStringProperty
 import javafx.embed.swing.SwingFXUtils
@@ -12,15 +14,29 @@ import java.io.*
 import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
+import kotlin.random.Random
 
-class Client: Runnable {
+val id = generateId()
+private const val idLength = 32
+private val random by lazy { Random }
+private fun generateId(): String {
+    return (1..idLength).map { (random.nextInt('A'.toInt(), 'Z'.toInt()).toChar()) }.joinToString(separator = "")
+}
+
+class Client {
     private lateinit var socket: Socket
+    private lateinit var socketScreen: Socket
+    private lateinit var socketMouse: Socket
+    private lateinit var socketKey: Socket
+
     private lateinit var input: BufferedReader
     private lateinit var output: PrintWriter
 
     private var wasInit = false
-    val gson = Gson()
+    private val gson = Gson()
 
+    lateinit var messageReceiver: MessageReceiver private set
+    lateinit var messageSender: MessageSender private set
     lateinit var mouseEventSender: MouseEventSender private set
     lateinit var screenReceiver: ScreenReceiver private set
     lateinit var keyEventSender: KeyEventSender private set
@@ -31,28 +47,32 @@ class Client: Runnable {
         try {
             socket = Socket(ip, port)
 
-            println("Client connected to $ip:$port")
-            runLater { status.value = "Client connected" }
-
             input = BufferedReader(InputStreamReader(socket.getInputStream()))
             output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-
-            //Confirmation types
-            val msg = dataTypesList.joinToString(separator = ", ")
-            val data = gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = msg))
-            output.println(data)
+            val firstMsg = gson.toJson(DataPackage(DataPackage.DataType.MESSAGE,
+                message = "$id:MESSAGE_SOCKET"))
+            output.println(firstMsg)
+            output.close()
 
             //Starting threads
-            screenReceiver = ScreenReceiver(socket)
+            messageReceiver = MessageReceiver(socket)
+            messageSender = MessageSender(socket)
+            Thread(messageReceiver).start()
+            Thread(messageSender).start()
+
+            socketScreen = Socket(ip, port)
+            screenReceiver = ScreenReceiver(socketScreen)
             Thread(screenReceiver).start()
 
             if (DataPackage.DataType.MOUSE in dataTypesList) {
-                mouseEventSender = MouseEventSender(socket)
+                socketMouse = Socket(ip, port)
+                mouseEventSender = MouseEventSender(socketMouse)
                 Thread(mouseEventSender).start()
             }
 
             if (DataPackage.DataType.KEY in dataTypesList) {
-                keyEventSender = KeyEventSender(socket)
+                socketKey = Socket(ip, port)
+                keyEventSender = KeyEventSender(socketKey)
                 Thread(keyEventSender).start()
             }
 
@@ -60,42 +80,10 @@ class Client: Runnable {
             return false
         }
 
-        //Thread(this).start()
         wasInit = true
+        println("Client connected to $ip:$port")
+        runLater { status.value = "Client connected" }
         return true
-    }
-
-    override fun run() {
-        try {
-            while (true) {
-                //Waiting of message
-                val json = input.readLine()
-                if (json != null) {
-                    try {
-                        println(json)
-                        val data = gson.fromJson(json, DataPackage::class.java)
-                        if (data.dataType == DataPackage.DataType.MESSAGE) {
-                            val text = data.message!!
-
-                            if (text.equals("stop", ignoreCase = true)) {
-                                println("Server has stopped connection")
-                                runLater { status.value = "Server has stopped connection" }
-
-                                if (this::screenReceiver.isInitialized)
-                                    setShutdownImage()
-
-                                stopConnection()
-                                break
-                            }
-                        }
-                    } catch (e: IllegalStateException) {
-                        println("Client: ${e.message}")
-                    }
-                }
-            }
-        } catch (e: SocketException) {
-            println(e.message)
-        }
     }
 
     fun stopConnection() {
@@ -109,11 +97,23 @@ class Client: Runnable {
                     screenReceiver.stop()
 
                 try {
-                    output.println(gson.toJson(DataPackage(DataPackage.DataType.MESSAGE, message = "stop")))
-                    output.close()
-                    input.close()
+                    if (this::messageSender.isInitialized) {
+                        messageSender.sendMessage("$id:stop")
+                        messageSender.stop()
+                    }
+                    if (this::messageReceiver.isInitialized)
+                        messageReceiver.stop()
                 } finally {
-                    try { socket.close() } catch (e: SocketException) { println(e.message) }
+                    try {
+                        if (this::socket.isInitialized)
+                            socket.close()
+                        if (this::socketKey.isInitialized)
+                            socketKey.close()
+                        if (this::socketMouse.isInitialized)
+                            socketMouse.close()
+                        if (this::socketScreen.isInitialized)
+                            socketScreen.close()
+                    } catch (e: SocketException) { println(e.message) }
                 }
             }
         } catch (e: IOException) {

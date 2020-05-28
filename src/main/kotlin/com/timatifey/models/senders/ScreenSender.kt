@@ -25,6 +25,7 @@ class ScreenSender(private val socket: Socket): Runnable {
     override fun run() {
         try {
             val output = PrintWriter(socket.getOutputStream(), true)
+
             while (!needStop) {
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 val screenSize = takeScreenSize()

@@ -1,6 +1,7 @@
 package com.timatifey.models.senders
 
 import com.google.gson.Gson
+import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Key
 import java.io.IOException
@@ -19,6 +20,11 @@ class KeyEventSender(private val socket: Socket): Runnable {
     override fun run() {
         try {
             val output = PrintWriter(socket.getOutputStream(), true)
+
+            val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
+                message = "$id:KEY_SOCKET"))
+            output.println(firstMsg)
+
             while (!needStop) {
                 val key = queueKey.take()
                 val data = DataPackage(DataPackage.DataType.KEY, key = key)

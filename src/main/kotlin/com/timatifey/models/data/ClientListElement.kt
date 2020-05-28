@@ -1,7 +1,8 @@
 package com.timatifey.models.data
 
+import java.net.Socket
+
 interface ClientListElement {
-    val ip: String
-    val dataSharingTypes: MutableList<DataPackage.DataType>
+    var sockets: MutableList<Socket>
     var needStop: Boolean
 }
