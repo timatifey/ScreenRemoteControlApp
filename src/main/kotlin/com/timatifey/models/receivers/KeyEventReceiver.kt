@@ -10,7 +10,7 @@ import java.io.InputStreamReader
 import java.lang.IllegalArgumentException
 import java.net.Socket
 
-class KeyEventReceiver(private val socket: Socket): Runnable {
+class KeyEventReceiver(private val socket: Socket): Runnable, Receiver {
     @Volatile var needStop = false
 
     private fun keyRealise(key: Key) {

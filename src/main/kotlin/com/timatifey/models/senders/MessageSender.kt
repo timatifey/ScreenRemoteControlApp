@@ -3,13 +3,14 @@ package com.timatifey.models.senders
 import com.google.gson.Gson
 import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.Mode
 import java.io.IOException
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.net.Socket
 import java.util.concurrent.LinkedBlockingQueue
 
-class MessageSender(private val socket: Socket): Runnable {
+class MessageSender(private val socket: Socket): Runnable, Sender {
     @Volatile private var needStop = false
     private val queueMessages = LinkedBlockingQueue<String>()
 

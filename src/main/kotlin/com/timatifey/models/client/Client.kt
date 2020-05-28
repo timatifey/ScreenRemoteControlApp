@@ -2,6 +2,7 @@ package com.timatifey.models.client
 
 import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.Mode
 import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.KeyEventSender
@@ -57,7 +58,7 @@ class Client {
             output.close()
 
             //Starting threads
-            messageReceiver = MessageReceiver(socket)
+            messageReceiver = MessageReceiver(socket, Mode.CLIENT, client = this)
             messageSender = MessageSender(socket)
             Thread(messageReceiver).start()
             Thread(messageSender).start()
@@ -100,6 +101,7 @@ class Client {
 
                 try {
                     if (this::messageSender.isInitialized) {
+                        messageSender.sendMessage("$id:stop")
                         messageSender.stop()
                     }
                     if (this::messageReceiver.isInitialized)
@@ -122,7 +124,7 @@ class Client {
         }
     }
 
-    private fun setShutdownImage() {
+    fun setShutdownImage() {
         screenReceiver.imageScene.value =
             SwingFXUtils.toFXImage(ImageIO.read(
                 File("server_shutdown.jpg")), null)
