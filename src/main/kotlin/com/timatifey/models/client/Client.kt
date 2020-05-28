@@ -17,10 +17,11 @@ import javax.imageio.ImageIO
 import kotlin.random.Random
 
 val id = generateId()
-private const val idLength = 32
-private val random by lazy { Random }
-private fun generateId(): String {
-    return (1..idLength).map { (random.nextInt('A'.toInt(), 'Z'.toInt()).toChar()) }.joinToString(separator = "")
+
+const val idLength = 32
+fun generateId(): String {
+    val random by lazy { Random }
+    return (1..idLength).map { random.nextInt('A'.toInt(), 'Z'.toInt()).toChar() }.joinToString(separator = "")
 }
 
 class Client {

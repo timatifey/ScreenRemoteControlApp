@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 class Server {
     private lateinit var server: ServerSocket
     private val clientMap = ConcurrentHashMap<String, ClientListElement>()
-    private var needStop = false
+    @Volatile private var needStop = false
     private var wasInit = false
 
     val gson = Gson()
@@ -30,6 +30,7 @@ class Server {
             println("Server is waiting of connection")
             runLater { statusProperty.value = "Server is ready for connections" }
             wasInit = true
+            needStop = false
             while (!needStop) {
                 val socket = server.accept()
 
