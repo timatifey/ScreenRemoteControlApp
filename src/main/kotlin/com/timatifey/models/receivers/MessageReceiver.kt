@@ -24,9 +24,9 @@ class MessageReceiver (
             needStop = false
             while (!needStop) {
                 val json = input.readLine()
-                println(json)
                 if (json != null) {
                     try {
+                        println(json)
                         val data = Gson().fromJson(json, DataPackage::class.java)
                         if (data.dataType == DataPackage.DataType.MESSAGE) {
                             val text = data.message!!
