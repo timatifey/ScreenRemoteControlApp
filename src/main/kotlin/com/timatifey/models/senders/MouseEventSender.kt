@@ -5,6 +5,7 @@ import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Mouse
 import java.io.IOException
+import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.net.Socket
 import java.util.concurrent.LinkedBlockingQueue
@@ -18,8 +19,7 @@ class MouseEventSender(private val socket: Socket): Runnable {
 
     override fun run() {
         try {
-            val output = PrintWriter(socket.getOutputStream(), true)
-            println("Mouse has connected")
+            val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
                 message = "$id:MOUSE_SOCKET"))
             output.println(firstMsg)

@@ -10,6 +10,7 @@ import java.awt.Toolkit
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.lang.Thread.sleep
 import java.net.Socket
@@ -24,8 +25,7 @@ class ScreenSender(private val socket: Socket): Runnable {
 
     override fun run() {
         try {
-            val output = PrintWriter(socket.getOutputStream(), true)
-            println("Screen sender has started")
+            val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             while (!needStop) {
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 val screenSize = takeScreenSize()

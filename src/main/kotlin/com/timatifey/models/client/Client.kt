@@ -63,20 +63,17 @@ class Client {
             Thread(messageSender).start()
 
             socketScreen = Socket(ip, port)
-            sleep(5000)
             screenReceiver = ScreenReceiver(socketScreen)
             Thread(screenReceiver).start()
 
             if (DataPackage.DataType.MOUSE in dataTypesList) {
                 socketMouse = Socket(ip, port)
-                sleep(5000)
                 mouseEventSender = MouseEventSender(socketMouse)
                 Thread(mouseEventSender).start()
             }
 
             if (DataPackage.DataType.KEY in dataTypesList) {
                 socketKey = Socket(ip, port)
-                sleep(5000)
                 keyEventSender = KeyEventSender(socketKey)
                 Thread(keyEventSender).start()
             }
@@ -103,7 +100,6 @@ class Client {
 
                 try {
                     if (this::messageSender.isInitialized) {
-                        messageSender.sendMessage("$id:stop")
                         messageSender.stop()
                     }
                     if (this::messageReceiver.isInitialized)
