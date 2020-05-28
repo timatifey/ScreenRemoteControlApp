@@ -48,13 +48,13 @@ class Client {
 
     fun startConnection(ip: String, port: Int, dataTypesList: List<DataPackage.DataType>): Boolean {
         try {
-            socket = Socket(ip, port)
+//            socket = Socket(ip, port)
 
             //Starting threads
-            messageReceiver = MessageReceiver(socket, Mode.CLIENT, client = this)
-            messageSender = MessageSender(socket)
-            Thread(messageReceiver).start()
-            Thread(messageSender).start()
+//            messageReceiver = MessageReceiver(socket, Mode.CLIENT, client = this)
+//            messageSender = MessageSender(socket)
+//            Thread(messageReceiver).start()
+//            Thread(messageSender).start()
 
             socketScreen = Socket(ip, port)
             screenReceiver = ScreenReceiver(socketScreen)
@@ -91,7 +91,12 @@ class Client {
                     keyEventSender.stop()
                 if (this::screenReceiver.isInitialized)
                     screenReceiver.stop()
-
+                if (this::socketKey.isInitialized)
+                    socketKey.close()
+                if (this::socketMouse.isInitialized)
+                    socketMouse.close()
+                if (this::socketScreen.isInitialized)
+                    socketScreen.close()
                 try {
                     if (this::messageSender.isInitialized) {
                         messageSender.sendMessage("$id:stop")
@@ -103,12 +108,7 @@ class Client {
                     try {
                         if (this::socket.isInitialized)
                             socket.close()
-                        if (this::socketKey.isInitialized)
-                            socketKey.close()
-                        if (this::socketMouse.isInitialized)
-                            socketMouse.close()
-                        if (this::socketScreen.isInitialized)
-                            socketScreen.close()
+
                     } catch (e: SocketException) { println(e.message) }
                 }
             }

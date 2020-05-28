@@ -75,7 +75,6 @@ class MouseEventReceiver(private val socket: Socket): Runnable, Receiver {
     override fun run() {
         try {
             val input = BufferedReader(InputStreamReader(socket.getInputStream()))
-            println("Mouse event receiver has started")
             needStop = false
             while (!needStop) {
                 val json = input.readLine()

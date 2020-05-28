@@ -82,6 +82,8 @@ class Server: Runnable {
                         }
                     }
                 }
+                println(clientMap)
+                input.close()
             }
         } catch (e: IOException) {
             println("Starting server error: $e")
@@ -90,6 +92,7 @@ class Server: Runnable {
 
     override fun run() {
         while (!needStop) {
+            println(clientMap)
             clientMap.entries.forEach {
                 if (it.value.needDelete) {
                     runLater { statusClient.value = "${it.value.sockets[0].inetAddress.hostAddress} has disconnected" }
