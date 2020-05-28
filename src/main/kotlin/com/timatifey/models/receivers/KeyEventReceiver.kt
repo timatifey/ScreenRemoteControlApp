@@ -29,6 +29,7 @@ class KeyEventReceiver(private val socket: Socket): Runnable {
     override fun run() {
         try {
             val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+            println("Key event receiver has started")
             needStop = false
             while (!needStop) {
                 val json = input.readLine()

@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.embed.swing.SwingFXUtils
 import tornadofx.runLater
 import java.io.*
+import java.lang.Thread.sleep
 import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
@@ -61,17 +62,20 @@ class Client {
             Thread(messageReceiver).start()
             Thread(messageSender).start()
 
+            sleep(200)
             socketScreen = Socket(ip, port)
             screenReceiver = ScreenReceiver(socketScreen)
             Thread(screenReceiver).start()
 
             if (DataPackage.DataType.MOUSE in dataTypesList) {
+                sleep(200)
                 socketMouse = Socket(ip, port)
                 mouseEventSender = MouseEventSender(socketMouse)
                 Thread(mouseEventSender).start()
             }
 
             if (DataPackage.DataType.KEY in dataTypesList) {
+                sleep(200)
                 socketKey = Socket(ip, port)
                 keyEventSender = KeyEventSender(socketKey)
                 Thread(keyEventSender).start()
