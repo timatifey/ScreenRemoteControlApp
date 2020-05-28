@@ -83,7 +83,6 @@ class Server: Runnable {
                     }
                 }
                 println(clientMap)
-                input.close()
             }
         } catch (e: IOException) {
             println("Starting server error: $e")
