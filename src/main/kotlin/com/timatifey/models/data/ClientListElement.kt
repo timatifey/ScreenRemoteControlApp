@@ -28,9 +28,12 @@ class ClientListElement {
 
     fun checkAll() {
         var result = true
-        result = result && screenSender.needStop
-        result = result && mouseEventReceiver.needStop
-        result = result && keyEventReceiver.needStop
+        if (this::screenSender.isInitialized)
+            result = result && screenSender.needStop
+        if (this::mouseEventReceiver.isInitialized)
+            result = result && mouseEventReceiver.needStop
+        if (this::keyEventReceiver.isInitialized)
+            result = result && keyEventReceiver.needStop
         needDelete = result
     }
 

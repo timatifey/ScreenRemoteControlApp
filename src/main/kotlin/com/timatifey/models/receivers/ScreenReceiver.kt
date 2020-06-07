@@ -41,6 +41,13 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                                 height = data.image.height.toDouble()
                                 width = data.image.width.toDouble()
                                 imageScene.value = SwingFXUtils.toFXImage(image, null)
+                                val msg = Gson().toJson(
+                                    DataPackage(
+                                        DataPackage.DataType.MESSAGE,
+                                        message = "${id}:IMAGE_OK"
+                                    )
+                                )
+                                output.println(msg)
                             }
                         }
                     } catch (e: EOFException) {

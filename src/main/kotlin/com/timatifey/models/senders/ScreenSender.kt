@@ -8,10 +8,7 @@ import java.awt.Rectangle
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.OutputStreamWriter
-import java.io.PrintWriter
+import java.io.*
 import java.lang.Thread.sleep
 import java.net.Socket
 import java.net.SocketException
@@ -27,9 +24,9 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
     override fun run() {
         try {
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             println("Screen Sender has started")
             while (!needStop) {
-                socket.getOutputStream()
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 val screenSize = takeScreenSize()
                 val rectangle = takeRectangle(screenSize)
@@ -41,6 +38,23 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
                 val json = Gson().toJson(data)
                 output.println(json)
                 sleep(300)
+
+                val inJson = input.readLine()
+                if (inJson != null) {
+                    val inData = Gson().fromJson(inJson, DataPackage::class.java)
+                    if (inData.dataType == DataPackage.DataType.MESSAGE) {
+                        val text = inData.message!!.split(":")
+                        if (text[1] == "IMAGE_OK") {
+                            continue
+                        } else {
+                            needStop = true
+                            break
+                        }
+                    }
+                } else {
+                    needStop = true
+                    break
+                }
             }
             output.close()
             socket.close()
