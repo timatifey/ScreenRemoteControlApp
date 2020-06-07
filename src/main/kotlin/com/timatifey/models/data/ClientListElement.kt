@@ -6,6 +6,7 @@ import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.senders.MessageSender
 import com.timatifey.models.senders.ScreenSender
 import java.net.Socket
+import java.net.SocketException
 
 class ClientListElement {
     lateinit var sockets: MutableList<Socket>
@@ -17,7 +18,9 @@ class ClientListElement {
     @Volatile var needDelete = false
 
     fun stopAll() {
-        sockets.forEach { it.close() }
+        try {
+            sockets.forEach { it.close() }
+        } catch (e: SocketException){}
 //        if (this::messageSender.isInitialized)
 //            messageSender.stop()
 //        if (this::messageReceiver.isInitialized)

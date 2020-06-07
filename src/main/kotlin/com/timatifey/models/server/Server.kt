@@ -17,9 +17,9 @@ import java.lang.Thread.sleep
 import java.net.ServerSocket
 import java.util.concurrent.ConcurrentHashMap
 
-class Server: Runnable {
+class Server(private val isConsole: Boolean = false): Runnable {
     private lateinit var server: ServerSocket
-    private val clientMap = ConcurrentHashMap<String, ClientListElement>()
+    @Volatile private var clientMap = ConcurrentHashMap<String, ClientListElement>()
     @Volatile private var needStop = false
     private var wasInit = false
 
@@ -32,7 +32,7 @@ class Server: Runnable {
             server = ServerSocket(port)
             Thread(this).start()
             println("Server is waiting of connection")
-            runLater { statusProperty.value = "Server is ready for connections" }
+            if (!isConsole) runLater { statusProperty.value = "Server is ready for connections" }
             wasInit = true
             needStop = false
             while (!needStop) {
@@ -51,7 +51,8 @@ class Server: Runnable {
                         clientMap[clientId] = ClientListElement()
                         clientMap[clientId]?.sockets = mutableListOf(socket)
                         println("${socket.inetAddress.hostAddress} has connected")
-                        runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
+                        if (!isConsole)
+                            runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
                     }
 
                     when (msg[1]) {
@@ -93,15 +94,15 @@ class Server: Runnable {
 
     override fun run() {
         while (!needStop) {
-            println(clientMap)
             clientMap.entries.forEach {
                 if (it.value.needDelete) {
-                    runLater { statusClient.value = "${it.value.sockets[0].inetAddress.hostAddress} has disconnected" }
+                    if (!isConsole)
+                        runLater { statusClient.value = "${it.value.sockets[0].inetAddress.hostAddress} has disconnected" }
                     clientMap.remove(it.key)
                     sleep(200)
                 }
             }
-            sleep(1000)
+            sleep(5000)
         }
     }
 
@@ -113,6 +114,7 @@ class Server: Runnable {
                 clientMap.forEachValue(1) {
                     it.stopAll()
                 }
+                clientMap.clear()
             }
         } catch (e: IOException) {
             println("Stopping Server Error: $e")
