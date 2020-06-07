@@ -97,6 +97,7 @@ class MouseEventReceiver(private val socket: Socket): Runnable, Receiver {
             }
             input.close()
             socket.close()
+            needStop = true
             println("Mouse Event Receiver Stop")
         } catch (e: IOException) {
             println("Mouse Event Receiver Client Socket Error: $e")

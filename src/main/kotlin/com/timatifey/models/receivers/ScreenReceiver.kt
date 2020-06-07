@@ -8,6 +8,7 @@ import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import java.io.*
 import java.net.Socket
+import java.net.SocketException
 import javax.imageio.ImageIO
 
 class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
@@ -31,7 +32,6 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
 
             while (!needStop) {
                 val json = input.readLine()
-                println(json)
                 if (json != null) {
                     try {
                         val data = Gson().fromJson(json, DataPackage::class.java)
@@ -54,6 +54,8 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                         println("Screen receiver: ${e.message}")
                     } catch (e: IllegalStateException) {
                         println("Screen receiver: ${e.message}")
+                    } catch (e: SocketException) {
+                        needStop = true
                     }
                 }
             }
