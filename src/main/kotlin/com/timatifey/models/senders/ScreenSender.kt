@@ -62,6 +62,7 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
             needStop = true
         } catch (e: IOException) {
             println("Screen Sender Client Socket Error: $e")
+            needStop = true
         } catch (e: SocketException) {
             needStop = true
         }
