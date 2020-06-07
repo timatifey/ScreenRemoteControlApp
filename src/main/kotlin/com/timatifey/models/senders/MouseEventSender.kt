@@ -35,6 +35,8 @@ class MouseEventSender(private val socket: Socket): Runnable, Sender {
             socket.close()
         } catch (e: IOException) {
             println("Mouse Event Sender Client Socket Error: $e")
+        } finally {
+            needStop = true
         }
     }
 

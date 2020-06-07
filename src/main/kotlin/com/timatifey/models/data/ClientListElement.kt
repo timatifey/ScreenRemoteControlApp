@@ -1,17 +1,13 @@
 package com.timatifey.models.data
 
 import com.timatifey.models.receivers.KeyEventReceiver
-import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
-import com.timatifey.models.senders.MessageSender
 import com.timatifey.models.senders.ScreenSender
 import java.net.Socket
 import java.net.SocketException
 
 class ClientListElement {
     lateinit var sockets: MutableList<Socket>
-//    lateinit var messageSender: MessageSender
-//    lateinit var messageReceiver: MessageReceiver
     lateinit var screenSender: ScreenSender
     lateinit var mouseEventReceiver: MouseEventReceiver
     lateinit var keyEventReceiver: KeyEventReceiver
@@ -21,10 +17,6 @@ class ClientListElement {
         try {
             sockets.forEach { it.close() }
         } catch (e: SocketException){}
-//        if (this::messageSender.isInitialized)
-//            messageSender.stop()
-//        if (this::messageReceiver.isInitialized)
-//            messageReceiver.stop()
         if (this::screenSender.isInitialized)
             screenSender.stop()
         if (this::mouseEventReceiver.isInitialized)
@@ -33,4 +25,17 @@ class ClientListElement {
             keyEventReceiver.stop()
         needDelete = true
     }
+
+    fun checkAll() {
+        var result = true
+        result = result && screenSender.needStop
+        result = result && mouseEventReceiver.needStop
+        result = result && keyEventReceiver.needStop
+        needDelete = result
+    }
+
+    override fun toString(): String {
+        return "ClientListElement(sockets=$sockets, screenSender=$screenSender, mouseEventReceiver=$mouseEventReceiver, keyEventReceiver=$keyEventReceiver, needDelete=$needDelete)"
+    }
+
 }

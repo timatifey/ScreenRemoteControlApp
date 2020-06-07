@@ -49,10 +49,13 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                     }
                 }
             }
+            output.close()
             input.close()
             socket.close()
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
+        } finally {
+            needStop = true
         }
     }
 

@@ -45,29 +45,16 @@ class Server(private val isConsole: Boolean = false): Runnable {
                 if (firstMsgFromSocket.message != null) {
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
-                    println(clientId)
                     if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
                     else {
                         clientMap[clientId] = ClientListElement()
                         clientMap[clientId]?.sockets = mutableListOf(socket)
-                        println("${socket.inetAddress.hostAddress} has connected")
+                        println("${socket.inetAddress.hostAddress} has connected ( ID = $clientId )")
                         if (!isConsole)
                             runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
                     }
 
                     when (msg[1]) {
-//                        "MESSAGE_SOCKET" -> {
-//                            val messageSender = MessageSender(socket)
-//                            val messageReceiver = MessageReceiver(
-//                                socket,
-//                                Mode.SERVER,
-//                                clientListElement = clientMap[clientId]
-//                            )
-//                            Thread(messageSender).start()
-//                            Thread(messageReceiver).start()
-//                            clientMap[clientId]?.messageReceiver = messageReceiver
-//                            clientMap[clientId]?.messageSender = messageSender
-//                        }
                         "SCREEN_SOCKET" -> {
                             val screenSender = ScreenSender(socket)
                             Thread(screenSender).start()
@@ -85,7 +72,6 @@ class Server(private val isConsole: Boolean = false): Runnable {
                         }
                     }
                 }
-                println(clientMap)
             }
         } catch (e: IOException) {
             println("Starting server error: $e")
@@ -95,14 +81,17 @@ class Server(private val isConsole: Boolean = false): Runnable {
     override fun run() {
         while (!needStop) {
             clientMap.entries.forEach {
+                it.value.checkAll()
                 if (it.value.needDelete) {
                     if (!isConsole)
                         runLater { statusClient.value = "${it.value.sockets[0].inetAddress.hostAddress} has disconnected" }
+                    println("${it.value.sockets[0].inetAddress.hostAddress} has disconnected")
                     clientMap.remove(it.key)
                     sleep(200)
                 }
             }
             sleep(5000)
+            println(clientMap)
         }
     }
 

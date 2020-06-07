@@ -35,6 +35,8 @@ class KeyEventSender(private val socket: Socket): Runnable, Sender {
             socket.close()
         } catch (e: IOException) {
             println("Key Event Sender Client Socket Error: $e")
+        } finally {
+            needStop = true
         }
     }
 
