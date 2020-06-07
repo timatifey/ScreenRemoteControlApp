@@ -27,6 +27,10 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
         try {
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             while (!needStop) {
+                if (socket.isClosed) {
+                    needStop = true
+                    break
+                }
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 val screenSize = takeScreenSize()
                 val rectangle = takeRectangle(screenSize)

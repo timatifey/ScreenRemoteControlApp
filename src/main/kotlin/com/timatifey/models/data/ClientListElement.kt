@@ -35,7 +35,7 @@ class ClientListElement {
     }
 
     override fun toString(): String {
-        return "ClientListElement(sockets=$sockets, screenSender=$screenSender, mouseEventReceiver=$mouseEventReceiver, keyEventReceiver=$keyEventReceiver, needDelete=$needDelete)"
+        return "ClientListElement(${sockets.size} sockets)"
     }
 
 }
