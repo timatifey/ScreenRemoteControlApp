@@ -37,24 +37,6 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
                 val data = DataPackage(DataPackage.DataType.IMAGE, image = image)
                 val json = Gson().toJson(data)
                 output.println(json)
-                sleep(300)
-
-                val inJson = input.readLine()
-                if (inJson != null) {
-                    val inData = Gson().fromJson(inJson, DataPackage::class.java)
-                    if (inData.dataType == DataPackage.DataType.MESSAGE) {
-                        val text = inData.message!!.split(":")
-                        if (text[1] == "IMAGE_OK") {
-                            continue
-                        } else {
-                            needStop = true
-                            break
-                        }
-                    }
-                } else {
-                    needStop = true
-                    break
-                }
             }
             output.close()
             socket.close()
