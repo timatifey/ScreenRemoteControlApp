@@ -27,7 +27,7 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
         try {
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             while (!needStop) {
-                if (socket.isClosed) {
+                if (socket.getInputStream().read() == -1) {
                     needStop = true
                     break
                 }

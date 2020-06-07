@@ -77,10 +77,6 @@ class MouseEventReceiver(private val socket: Socket): Runnable, Receiver {
             val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             needStop = false
             while (!needStop) {
-                if (socket.isClosed) {
-                    needStop = true
-                    break
-                }
                 val json = input.readLine()
                 if (json != null) {
                     try {
@@ -94,6 +90,9 @@ class MouseEventReceiver(private val socket: Socket): Runnable, Receiver {
                     } catch (e: IllegalStateException) {
                         println("Mouse event receiver: ${e.message}")
                     }
+                } else {
+                    needStop = true
+                    break
                 }
             }
             input.close()
