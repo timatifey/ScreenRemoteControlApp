@@ -35,6 +35,8 @@ class MessageSender(private val socket: Socket): Runnable, Sender {
             socket.close()
         } catch (e: IOException) {
             println("Message sender Socket Error: $e")
+        } finally {
+            needStop = true
         }
     }
 

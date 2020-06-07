@@ -27,7 +27,7 @@ fun generateId(): String {
 }
 
 class Client {
-    private lateinit var socket: Socket
+    private lateinit var socketMessage: Socket
     private lateinit var socketScreen: Socket
     private lateinit var socketMouse: Socket
     private lateinit var socketKey: Socket
@@ -37,7 +37,6 @@ class Client {
 
     private var wasInit = false
 
-    lateinit var messageReceiver: MessageReceiver private set
     lateinit var messageSender: MessageSender private set
     lateinit var mouseEventSender: MouseEventSender private set
     lateinit var screenReceiver: ScreenReceiver private set
@@ -47,6 +46,10 @@ class Client {
 
     fun startConnection(ip: String, port: Int, dataTypesList: List<DataPackage.DataType>): Boolean {
         try {
+            socketMessage = Socket(ip, port)
+            messageSender = MessageSender(socketMessage)
+            Thread(messageSender).start()
+
             socketScreen = Socket(ip, port)
             screenReceiver = ScreenReceiver(socketScreen)
             Thread(screenReceiver).start()
@@ -75,41 +78,39 @@ class Client {
     fun stopConnection() {
         try {
             if (wasInit) {
+                try {
+                    if (this::messageSender.isInitialized) {
+                        messageSender.sendMessage("$id:STOP")
+                        messageSender.stop()
+                    }
+                } finally {
+                    try {
+                        if (this::socketMessage.isInitialized)
+                            socketMessage.close()
+                    } catch (e: SocketException) { println(e.message) }
+                }
+
                 if (this::mouseEventSender.isInitialized)
                     mouseEventSender.stop()
                 if (this::keyEventSender.isInitialized)
                     keyEventSender.stop()
                 if (this::screenReceiver.isInitialized)
                     screenReceiver.stop()
+                if (this::messageSender.isInitialized)
+                    messageSender.stop()
+
                 if (this::socketKey.isInitialized)
                     socketKey.close()
                 if (this::socketMouse.isInitialized)
                     socketMouse.close()
                 if (this::socketScreen.isInitialized)
                     socketScreen.close()
-                try {
-                    if (this::messageSender.isInitialized) {
-                        messageSender.sendMessage("$id:stop")
-                        messageSender.stop()
-                    }
-                    if (this::messageReceiver.isInitialized)
-                        messageReceiver.stop()
-                } finally {
-                    try {
-                        if (this::socket.isInitialized)
-                            socket.close()
-
-                    } catch (e: SocketException) { println(e.message) }
-                }
+                if (this::socketMessage.isInitialized)
+                    socketMessage.close()
             }
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
         }
     }
 
-    fun setShutdownImage() {
-        screenReceiver.imageScene.value =
-            SwingFXUtils.toFXImage(ImageIO.read(
-                File("server_shutdown.jpg")), null)
-    }
 }

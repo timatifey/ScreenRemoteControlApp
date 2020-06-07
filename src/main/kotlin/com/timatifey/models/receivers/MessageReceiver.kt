@@ -10,12 +10,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
 
-class MessageReceiver (
-    private val socket: Socket,
-    private val mode: Mode,
-    private val clientListElement: ClientListElement? = null,
-    private val client: Client? = null
-): Runnable, Receiver {
+class MessageReceiver (private val socket: Socket): Runnable, Receiver {
     @Volatile var needStop = false
 
     override fun run() {
@@ -29,24 +24,12 @@ class MessageReceiver (
                         println(json)
                         val data = Gson().fromJson(json, DataPackage::class.java)
                         if (data.dataType == DataPackage.DataType.MESSAGE) {
-                            val text = data.message!!
+                            val text = data.message!!.split(":")
                             println(text)
-                            when (mode) {
-                                Mode.SERVER -> {
-                                    val msg = text.split(":")
-                                    if (msg[1] == "stop") {
-                                        println("${msg[0]} has disconnected")
-                                        clientListElement!!.stopAll()
-                                    }
-                                }
-                                Mode.CLIENT -> {
-                                    if (text == "stop") {
-                                        client?.setShutdownImage()
-                                        client?.stopConnection()
-                                    }
-                                }
+                            if (text[1] == "STOP") {
+                                needStop = true
+                                break
                             }
-
                         }
                     } catch (e: IllegalStateException) {
                         println("Message Receiver: ${e.message}")
@@ -57,6 +40,8 @@ class MessageReceiver (
             socket.close()
         } catch (e: IOException) {
             println("Message Receiver Socket Error: $e")
+        } finally {
+            needStop = true
         }
     }
 

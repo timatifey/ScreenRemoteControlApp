@@ -55,6 +55,11 @@ class Server(private val isConsole: Boolean = false): Runnable {
                     }
 
                     when (msg[1]) {
+                        "MESSAGE_SOCKET" -> {
+                            val messageReceiver = MessageReceiver(socket)
+                            Thread(messageReceiver).start()
+                            clientMap[clientId]?.messageReceiver = messageReceiver
+                        }
                         "SCREEN_SOCKET" -> {
                             val screenSender = ScreenSender(socket)
                             Thread(screenSender).start()

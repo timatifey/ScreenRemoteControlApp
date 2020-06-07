@@ -1,6 +1,7 @@
 package com.timatifey.models.data
 
 import com.timatifey.models.receivers.KeyEventReceiver
+import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.senders.ScreenSender
 import java.net.Socket
@@ -11,6 +12,7 @@ class ClientListElement {
     lateinit var screenSender: ScreenSender
     lateinit var mouseEventReceiver: MouseEventReceiver
     lateinit var keyEventReceiver: KeyEventReceiver
+    lateinit var messageReceiver: MessageReceiver
     @Volatile var needDelete = false
 
     fun stopAll() {
@@ -23,17 +25,19 @@ class ClientListElement {
             mouseEventReceiver.stop()
         if (this::keyEventReceiver.isInitialized)
             keyEventReceiver.stop()
+        if (this::messageReceiver.isInitialized)
+            messageReceiver.stop()
         needDelete = true
     }
 
     fun checkAll() {
         var result = true
-        if (this::screenSender.isInitialized)
-            result = result && screenSender.needStop
         if (this::mouseEventReceiver.isInitialized)
             result = result && mouseEventReceiver.needStop
         if (this::keyEventReceiver.isInitialized)
             result = result && keyEventReceiver.needStop
+        if (this::messageReceiver.isInitialized)
+            result = result && messageReceiver.needStop
         needDelete = result
     }
 

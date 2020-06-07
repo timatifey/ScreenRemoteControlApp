@@ -48,6 +48,7 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                         println("Screen receiver: ${e.message}")
                     } catch (e: IllegalStateException) {
                         println("Screen receiver: ${e.message}")
+                        setShutdownImage()
                     } catch (e: SocketException) {
                     } finally {
                         needStop = true
@@ -62,10 +63,17 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
             println("Screen Receiver Stop")
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
+            setShutdownImage()
         } finally {
             needStop = true
         }
     }
 
     fun stop() { needStop = true }
+
+    fun setShutdownImage() {
+        imageScene.value =
+            SwingFXUtils.toFXImage(ImageIO.read(
+                File("server_shutdown.jpg")), null)
+    }
 }
