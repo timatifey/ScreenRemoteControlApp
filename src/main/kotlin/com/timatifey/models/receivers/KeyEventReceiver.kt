@@ -33,6 +33,10 @@ class KeyEventReceiver(private val socket: Socket): Runnable, Receiver {
             println("Key event receiver has started")
             needStop = false
             while (!needStop) {
+                if (socket.getInputStream().read() == -1) {
+                    needStop = true
+                    break
+                }
                 val json = input.readLine()
                 if (json != null) {
                     try {
@@ -44,13 +48,11 @@ class KeyEventReceiver(private val socket: Socket): Runnable, Receiver {
                     } catch (e: IllegalStateException) {
                         println("Key event receiver: ${e.message}")
                     }
-                } else {
-                    needStop = true
-                    break
                 }
             }
             input.close()
             socket.close()
+            println("Key Event Receiver Stop")
         } catch (e: IOException) {
             println("Key Event Receiver Client Socket Error: $e")
         } finally {
