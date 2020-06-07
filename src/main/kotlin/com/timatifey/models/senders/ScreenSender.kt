@@ -14,6 +14,7 @@ import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.lang.Thread.sleep
 import java.net.Socket
+import java.net.SocketException
 import javax.imageio.ImageIO
 
 fun takeScreenSize(): Dimension = Toolkit.getDefaultToolkit().screenSize
@@ -28,10 +29,7 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             println("Screen Sender has started")
             while (!needStop) {
-                if (socket.getInputStream().read() == -1) {
-                    needStop = true
-                    break
-                }
+                socket.getOutputStream()
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 val screenSize = takeScreenSize()
                 val rectangle = takeRectangle(screenSize)

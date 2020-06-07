@@ -31,6 +31,7 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
 
             while (!needStop) {
                 val json = input.readLine()
+                println(json)
                 if (json != null) {
                     try {
                         val data = Gson().fromJson(json, DataPackage::class.java)
