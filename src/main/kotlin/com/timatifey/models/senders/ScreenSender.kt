@@ -59,11 +59,10 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
             output.close()
             socket.close()
             println("Screen Sender Stop")
-            needStop = true
         } catch (e: IOException) {
             println("Screen Sender Client Socket Error: $e")
-            needStop = true
         } catch (e: SocketException) {
+        } finally {
             needStop = true
         }
     }

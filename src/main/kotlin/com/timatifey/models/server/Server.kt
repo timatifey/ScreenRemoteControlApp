@@ -90,8 +90,8 @@ class Server(private val isConsole: Boolean = false): Runnable {
                     sleep(200)
                 }
             }
-            sleep(5000)
-            println(clientMap)
+            sleep(1000)
+            println("clientMap = $clientMap")
         }
     }
 

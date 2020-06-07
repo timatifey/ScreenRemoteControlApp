@@ -55,8 +55,11 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                     } catch (e: IllegalStateException) {
                         println("Screen receiver: ${e.message}")
                     } catch (e: SocketException) {
+                    } finally {
                         needStop = true
                     }
+                } else {
+                    needStop = true
                 }
             }
             output.close()
