@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import java.io.*
+import java.lang.Thread.sleep
 import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
@@ -41,13 +42,14 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                                 height = data.image.height.toDouble()
                                 width = data.image.width.toDouble()
                                 imageScene.value = SwingFXUtils.toFXImage(image, null)
-//                                val msg = Gson().toJson(
-//                                    DataPackage(
-//                                        DataPackage.DataType.MESSAGE,
-//                                        message = "${id}:IMAGE_OK"
-//                                    )
-//                                )
-//                                output.println(msg)
+                                val msg = Gson().toJson(
+                                    DataPackage(
+                                        DataPackage.DataType.MESSAGE,
+                                        message = "${id}:IMAGE_OK"
+                                    )
+                                )
+                                output.println(msg)
+                                sleep(200)
                             }
                         }
                     } catch (e: EOFException) {
