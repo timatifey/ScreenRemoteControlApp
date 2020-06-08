@@ -3,12 +3,9 @@ package com.timatifey.models.server
 import com.google.gson.Gson
 import com.timatifey.models.data.ClientListElement
 import com.timatifey.models.data.DataPackage
-import com.timatifey.models.data.Mode
-import com.timatifey.models.data.Mouse
 import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
-import com.timatifey.models.senders.MessageSender
 import com.timatifey.models.senders.ScreenSender
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.runLater
@@ -41,7 +38,6 @@ class Server(private val isConsole: Boolean = false): Runnable {
                 val input = BufferedReader(InputStreamReader(socket.getInputStream()))
                 val json = input.readLine()
                 val firstMsgFromSocket = gson.fromJson(json, DataPackage::class.java)
-
                 if (firstMsgFromSocket.message != null) {
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
@@ -88,8 +84,9 @@ class Server(private val isConsole: Boolean = false): Runnable {
             clientMap.entries.forEach {
                 it.value.checkAll()
                 if (it.value.needDelete) {
-                    if (!isConsole)
-                        runLater { statusClient.value = "${it.value.sockets[0].inetAddress.hostAddress} has disconnected" }
+                    if (!isConsole) runLater {
+                            statusClient.value = "${it.value.sockets[0].inetAddress.hostAddress} has disconnected"
+                        }
                     println("${it.value.sockets[0].inetAddress.hostAddress} has disconnected")
                     clientMap.remove(it.key)
                     sleep(200)
@@ -105,9 +102,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
             if (wasInit) {
                 needStop = true
                 server.close()
-                clientMap.forEachValue(1) {
-                    it.stopAll()
-                }
+                clientMap.forEachValue(1) { it.stopAll() }
                 clientMap.clear()
             }
         } catch (e: IOException) {

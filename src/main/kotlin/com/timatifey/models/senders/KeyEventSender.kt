@@ -37,6 +37,7 @@ class KeyEventSender(private val socket: Socket): Runnable, Sender {
             println("Key Event Sender Client Socket Error: $e")
         } finally {
             needStop = true
+            println("Key Event Sender Stop")
         }
     }
 

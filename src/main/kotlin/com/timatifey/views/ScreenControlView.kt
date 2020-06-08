@@ -1,16 +1,15 @@
 package com.timatifey.views
 
-import com.sun.javafx.binding.BidirectionalBinding.bind
 import com.timatifey.controllers.ClientController
 import com.timatifey.controllers.KeyController
 import com.timatifey.controllers.MouseController
+import com.timatifey.models.senders.takeScreenSize
 import javafx.beans.binding.Bindings
+import javafx.geometry.NodeOrientation
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
 import tornadofx.*
-import com.timatifey.models.senders.takeScreenSize
-import javafx.geometry.NodeOrientation
 import java.util.concurrent.Callable
 
 class ScreenControlView : View() {
@@ -45,10 +44,9 @@ class ScreenControlView : View() {
                             parent.layoutBounds.width
                         }, parent.layoutBoundsProperty()
                 ))
-                if (clientController.mouseCheck.value)
-                    addEventHandler(MouseEvent.ANY) {
-                        mouseController.sendMouseEvent(it!!)
-                    }
+                addEventHandler(MouseEvent.ANY) {
+                    mouseController.sendMouseEvent(it!!)
+                }
             }
         }
         bottom {
@@ -58,10 +56,9 @@ class ScreenControlView : View() {
                     style {
                         backgroundColor = multi(Color.BLACK)
                     }
-                    if (clientController.keyCheck.value)
-                        addEventHandler(KeyEvent.ANY) {
-                            keyController.sendKeyEvent(it!!)
-                        }
+                    addEventHandler(KeyEvent.ANY) {
+                        keyController.sendKeyEvent(it!!)
+                    }
                 }
             }
         }

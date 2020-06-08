@@ -38,7 +38,3 @@ class StartLauncher {
         }
     }
 }
-
-fun main(args: Array<String>) {
-    StartLauncher().launch(args)
-}

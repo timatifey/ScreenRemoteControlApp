@@ -1,10 +1,7 @@
 package com.timatifey.models.receivers
 
 import com.google.gson.Gson
-import com.timatifey.models.client.Client
-import com.timatifey.models.data.ClientListElement
 import com.timatifey.models.data.DataPackage
-import com.timatifey.models.data.Mode
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -28,7 +25,6 @@ class MessageReceiver (private val socket: Socket): Runnable, Receiver {
                             val text = data.message!!.split(":")
                             if (text[1] == "STOP") {
                                 needStop = true
-                                break
                             }
                         }
                     } catch (e: IllegalStateException) {
@@ -36,7 +32,6 @@ class MessageReceiver (private val socket: Socket): Runnable, Receiver {
                     }
                 } else {
                     needStop = true
-                    break
                 }
             }
             input.close()

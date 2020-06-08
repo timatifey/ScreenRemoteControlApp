@@ -7,9 +7,7 @@ import com.timatifey.models.senders.MessageSender
 import com.timatifey.models.senders.MouseEventSender
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.runLater
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.PrintWriter
 import java.net.Socket
 import java.net.SocketException
 import kotlin.random.Random
@@ -76,12 +74,9 @@ class Client {
                         messageSender.sendMessage("$id:STOP")
                         messageSender.stop()
                     }
-                } finally {
-                    try {
-                        if (this::socketMessage.isInitialized)
-                            socketMessage.close()
-                    } catch (e: SocketException) { println(e.message) }
-                }
+                    if (this::socketMessage.isInitialized)
+                        socketMessage.close()
+                } catch (e: SocketException) { println(e.message) }
 
                 if (this::mouseEventSender.isInitialized)
                     mouseEventSender.stop()

@@ -3,7 +3,6 @@ package com.timatifey.models.senders
 import com.google.gson.Gson
 import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
-import com.timatifey.models.data.Mode
 import com.timatifey.models.data.Mouse
 import java.io.IOException
 import java.io.OutputStreamWriter

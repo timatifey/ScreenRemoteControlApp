@@ -1,14 +1,12 @@
 package com.timatifey.models.receivers
 
 import com.google.gson.Gson
-import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Key
 import java.awt.Robot
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.lang.IllegalArgumentException
 import java.net.Socket
 
 class KeyEventReceiver(private val socket: Socket): Runnable, Receiver {

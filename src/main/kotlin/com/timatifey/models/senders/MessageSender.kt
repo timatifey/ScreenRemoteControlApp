@@ -3,7 +3,6 @@ package com.timatifey.models.senders
 import com.google.gson.Gson
 import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
-import com.timatifey.models.data.Mode
 import java.io.IOException
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
@@ -36,6 +35,7 @@ class MessageSender(private val socket: Socket): Runnable, Sender {
             println("Message sender Socket Error: $e")
         } finally {
             needStop = true
+            println("Message sender Stop")
         }
     }
 

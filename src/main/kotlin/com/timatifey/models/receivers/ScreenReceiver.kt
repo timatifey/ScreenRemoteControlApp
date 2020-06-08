@@ -38,7 +38,7 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                 if (json != null) {
                     try {
                         if (countTryingReconnect < maxTryingReconnect)
-                            countTryingReconnect++
+                            countTryingReconnect = maxTryingReconnect
                         val data = Gson().fromJson(json, DataPackage::class.java)
                         if (data.dataType == DataPackage.DataType.IMAGE) {
                             val image = ImageIO.read(ByteArrayInputStream(data.image!!.bytes))

@@ -8,15 +8,17 @@ class KeyController: Controller() {
     private val clientController: ClientController by inject()
 
     fun sendKeyEvent(eventKey: KeyEvent) {
-        clientController.client.keyEventSender.putKeyEvent(Key(
-                Key.KeyEventType.valueOf(eventKey.eventType.name),
-                eventKey.character,
-                eventKey.text,
-                eventKey.code,
-                eventKey.isShiftDown,
-                eventKey.isControlDown,
-                eventKey.isAltDown,
-                eventKey.isMetaDown
-        ))
+        if (clientController.keyCheck.value) {
+            clientController.client.keyEventSender.putKeyEvent(Key(
+                    Key.KeyEventType.valueOf(eventKey.eventType.name),
+                    eventKey.character,
+                    eventKey.text,
+                    eventKey.code,
+                    eventKey.isShiftDown,
+                    eventKey.isControlDown,
+                    eventKey.isAltDown,
+                    eventKey.isMetaDown
+            ))
+        }
     }
 }
