@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import java.io.*
-import java.lang.Thread.sleep
 import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
@@ -53,7 +52,7 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                         println("Screen receiver: ${e.message}")
                     } catch (e: IllegalStateException) {
                         println("Screen receiver: ${e.message}")
-                        setShutdownImage()
+                        setNullImage()
                     } catch (e: SocketException) {
                     } finally {
                         countTryingReconnect--
@@ -67,18 +66,15 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
             socket.close()
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
-            setShutdownImage()
         } finally {
             needStop = true
-            println("Screen Receiver Stop")
+            setNullImage()
         }
     }
 
     fun stop() { needStop = true }
 
-    fun setShutdownImage() {
-        imageScene.value =
-            SwingFXUtils.toFXImage(ImageIO.read(
-                File("server_shutdown.jpg")), null)
+    private fun setNullImage() {
+        imageScene.value = null
     }
 }

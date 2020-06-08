@@ -36,6 +36,7 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
                 val data = DataPackage(DataPackage.DataType.IMAGE, image = image)
                 val json = Gson().toJson(data)
                 output.println(json)
+                sleep(400)
             }
             output.close()
             socket.close()
