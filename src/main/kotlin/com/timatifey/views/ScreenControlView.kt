@@ -19,9 +19,10 @@ class ScreenControlView : View() {
     private val image = clientController.client.screenReceiver.imageScene
 
     override val root = borderpane {
-        title = "${clientController.ip}:${clientController.port}"
-        setPrefSize(takeScreenSize().width.toDouble(), takeScreenSize().height.toDouble())
-        useMaxSize = true
+        setPrefSize(
+                takeScreenSize().width.toDouble(),
+                takeScreenSize().height.toDouble()
+        )
         isCenterShape = true
 
         center {

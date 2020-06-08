@@ -11,7 +11,7 @@ import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
 
-class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
+class ScreenReceiver(private val socket: Socket): Runnable {
     val imageScene = SimpleObjectProperty<Image?>()
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0

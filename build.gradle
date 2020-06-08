@@ -31,3 +31,18 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+task uberJar(type: Jar) {
+    archiveClassifier = 'uber'
+
+    manifest {
+        attributes 'Main-Class': 'com.timatifey.MainKt'
+    }
+
+    from sourceSets.main.output
+
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+}

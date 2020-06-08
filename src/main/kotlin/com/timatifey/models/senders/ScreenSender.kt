@@ -18,7 +18,7 @@ fun takeScreenSize(): Dimension = Toolkit.getDefaultToolkit().screenSize
 private fun takeRectangle(screenSize: Dimension) = Rectangle(screenSize)
 private fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScreenCapture(rectangle)
 
-class ScreenSender(private val socket: Socket): Runnable, Sender {
+class ScreenSender(private val socket: Socket): Runnable {
     @Volatile var needStop = false
 
     override fun run() {

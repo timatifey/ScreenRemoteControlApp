@@ -10,7 +10,7 @@ import java.io.PrintWriter
 import java.net.Socket
 import java.util.concurrent.LinkedBlockingQueue
 
-class KeyEventSender(private val socket: Socket): Runnable, Sender {
+class KeyEventSender(private val socket: Socket): Runnable {
     @Volatile private var needStop = false
     private val queueKey = LinkedBlockingQueue<Key>()
 

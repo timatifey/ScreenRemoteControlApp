@@ -9,7 +9,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
 
-class KeyEventReceiver(private val socket: Socket): Runnable, Receiver {
+class KeyEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
 
     private fun keyRealise(key: Key) {

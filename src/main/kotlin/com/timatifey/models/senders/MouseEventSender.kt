@@ -10,7 +10,7 @@ import java.io.PrintWriter
 import java.net.Socket
 import java.util.concurrent.LinkedBlockingQueue
 
-class MouseEventSender(private val socket: Socket): Runnable, Sender {
+class MouseEventSender(private val socket: Socket): Runnable {
 
     @Volatile private var needStop = false
     private val queueMouse = LinkedBlockingQueue<Mouse>()

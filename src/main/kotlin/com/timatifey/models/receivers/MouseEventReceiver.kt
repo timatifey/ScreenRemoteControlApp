@@ -14,7 +14,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
 
-class MouseEventReceiver(private val socket: Socket): Runnable, Receiver {
+class MouseEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
     private var prevMouse = mutableListOf<Mouse?>(null, null)
 
