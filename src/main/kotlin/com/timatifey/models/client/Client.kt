@@ -1,21 +1,17 @@
 package com.timatifey.models.client
 
-import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
-import com.timatifey.models.data.Mode
-import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MessageSender
 import com.timatifey.models.senders.MouseEventSender
 import javafx.beans.property.SimpleStringProperty
-import javafx.embed.swing.SwingFXUtils
 import tornadofx.runLater
-import java.io.*
-import java.lang.Thread.sleep
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.PrintWriter
 import java.net.Socket
 import java.net.SocketException
-import javax.imageio.ImageIO
 import kotlin.random.Random
 
 val id = generateId()
@@ -31,9 +27,6 @@ class Client {
     private lateinit var socketScreen: Socket
     private lateinit var socketMouse: Socket
     private lateinit var socketKey: Socket
-
-    private lateinit var input: BufferedReader
-    private lateinit var output: PrintWriter
 
     private var wasInit = false
 

@@ -24,7 +24,6 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
     override fun run() {
         try {
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             println("Screen Sender has started")
             while (!needStop) {
                 val byteArrayOutputStream = ByteArrayOutputStream()
@@ -40,12 +39,12 @@ class ScreenSender(private val socket: Socket): Runnable, Sender {
             }
             output.close()
             socket.close()
-            println("Screen Sender Stop")
         } catch (e: IOException) {
             println("Screen Sender Client Socket Error: $e")
         } catch (e: SocketException) {
         } finally {
             needStop = true
+            println("Screen Sender Stop")
         }
     }
 

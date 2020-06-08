@@ -1,5 +1,6 @@
 package com.timatifey.views
 
+import com.sun.javafx.binding.BidirectionalBinding.bind
 import com.timatifey.controllers.ClientController
 import com.timatifey.controllers.KeyController
 import com.timatifey.controllers.MouseController

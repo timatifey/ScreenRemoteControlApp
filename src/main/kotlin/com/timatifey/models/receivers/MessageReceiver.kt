@@ -26,7 +26,6 @@ class MessageReceiver (private val socket: Socket): Runnable, Receiver {
                         val data = Gson().fromJson(json, DataPackage::class.java)
                         if (data.dataType == DataPackage.DataType.MESSAGE) {
                             val text = data.message!!.split(":")
-                            println(text)
                             if (text[1] == "STOP") {
                                 needStop = true
                                 break
@@ -46,6 +45,7 @@ class MessageReceiver (private val socket: Socket): Runnable, Receiver {
             println("Message Receiver Socket Error: $e")
         } finally {
             needStop = true
+            println("Message Receiver Stop")
         }
     }
 
