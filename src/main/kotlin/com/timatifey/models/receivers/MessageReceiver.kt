@@ -16,6 +16,7 @@ class MessageReceiver (private val socket: Socket): Runnable, Receiver {
     override fun run() {
         try {
             val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+            println("Message Receiver Start")
             needStop = false
             while (!needStop) {
                 val json = input.readLine()
@@ -34,6 +35,9 @@ class MessageReceiver (private val socket: Socket): Runnable, Receiver {
                     } catch (e: IllegalStateException) {
                         println("Message Receiver: ${e.message}")
                     }
+                } else {
+                    needStop = true
+                    break
                 }
             }
             input.close()

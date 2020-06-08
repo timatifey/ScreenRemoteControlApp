@@ -4,6 +4,7 @@ import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.senders.ScreenSender
+import java.lang.StringBuilder
 import java.net.Socket
 import java.net.SocketException
 
@@ -42,7 +43,23 @@ class ClientListElement {
     }
 
     override fun toString(): String {
-        return "ClientListElement(${sockets.size} sockets)"
+        val mainStringBuilder = StringBuilder("ClientListElement(${sockets.size} sockets, (")
+
+        val sendersAndReceivers = mutableListOf<String>()
+        if (this::messageReceiver.isInitialized)
+            sendersAndReceivers.add("messageReceiver")
+        if (this::screenSender.isInitialized)
+            sendersAndReceivers.add("screenSender")
+        if (this::mouseEventReceiver.isInitialized)
+            sendersAndReceivers.add("mouseEventReceiver")
+        if (this::keyEventReceiver.isInitialized)
+            sendersAndReceivers.add("keyEventReceiver")
+
+        mainStringBuilder.append(sendersAndReceivers.joinToString(separator = ", "))
+
+        mainStringBuilder.append("))")
+
+        return mainStringBuilder.toString()
     }
 
 }
