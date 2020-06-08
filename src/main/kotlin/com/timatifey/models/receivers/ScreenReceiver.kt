@@ -18,6 +18,9 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
     @Volatile var width: Double = 0.0
     @Volatile var needStop = false
 
+    private val maxTryingReconnect = 5
+    var countTryingReconnect = maxTryingReconnect
+
     override fun run() {
         try {
             needStop = false
@@ -35,6 +38,8 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                 val json = input.readLine()
                 if (json != null) {
                     try {
+                        if (countTryingReconnect < maxTryingReconnect)
+                            countTryingReconnect++
                         val data = Gson().fromJson(json, DataPackage::class.java)
                         if (data.dataType == DataPackage.DataType.IMAGE) {
                             val image = ImageIO.read(ByteArrayInputStream(data.image!!.bytes))
@@ -51,7 +56,9 @@ class ScreenReceiver(private val socket: Socket): Runnable, Receiver {
                         setShutdownImage()
                     } catch (e: SocketException) {
                     } finally {
-                        needStop = true
+                        countTryingReconnect--
+                        if (countTryingReconnect == 0)
+                            needStop = true
                     }
                 }
             }
