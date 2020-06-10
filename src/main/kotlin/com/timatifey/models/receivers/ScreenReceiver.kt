@@ -43,9 +43,12 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                         if (data.dataType == DataPackage.DataType.IMAGE) {
                             val image = ImageIO.read(ByteArrayInputStream(data.image!!.bytes))
                             if (image != null) {
-                                height = data.image.height.toDouble()
-                                width = data.image.width.toDouble()
-                                imageScene.value = SwingFXUtils.toFXImage(image, null)
+                                val sceneImage = SwingFXUtils.toFXImage(image, null)
+                                imageScene.value = sceneImage
+                                height = sceneImage.height
+                                width = sceneImage.width
+//                                height = data.image.height.toDouble()
+//                                width = data.image.width.toDouble()
                             }
                         }
                     } catch (e: EOFException) {
