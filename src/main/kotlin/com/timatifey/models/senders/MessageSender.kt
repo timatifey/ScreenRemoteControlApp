@@ -23,6 +23,7 @@ class MessageSender(private val socket: Socket): Runnable {
                 message = "$id:MESSAGE_SOCKET"))
             output.println(firstMsg)
 
+            needStop = false
             while (!needStop) {
                 val msg = queueMessages.take()
                 val data = DataPackage(DataPackage.DataType.MESSAGE, message = msg)

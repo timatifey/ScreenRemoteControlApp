@@ -25,6 +25,7 @@ class KeyEventSender(private val socket: Socket): Runnable {
                 message = "$id:KEY_SOCKET"))
             output.println(firstMsg)
 
+            needStop = false
             while (!needStop) {
                 val key = queueKey.take()
                 val data = DataPackage(DataPackage.DataType.KEY, key = key)

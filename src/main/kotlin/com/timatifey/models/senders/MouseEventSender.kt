@@ -24,6 +24,7 @@ class MouseEventSender(private val socket: Socket): Runnable {
                 message = "$id:MOUSE_SOCKET"))
             output.println(firstMsg)
 
+            needStop = false
             while (!needStop) {
                 val mouse = queueMouse.take()
                 val data = DataPackage(DataPackage.DataType.MOUSE, mouse = mouse)
@@ -36,6 +37,7 @@ class MouseEventSender(private val socket: Socket): Runnable {
             println("Mouse Event Sender Client Socket Error: $e")
         } finally {
             needStop = true
+            println("Mouse Event Sender Stop")
         }
     }
 
