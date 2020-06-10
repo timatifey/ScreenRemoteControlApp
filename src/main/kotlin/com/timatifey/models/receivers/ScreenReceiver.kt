@@ -33,37 +33,50 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             )
             output.println(firstMsg)
 
-            while (!needStop) {
-                val json = input.readLine()
-                if (json != null) {
-                    try {
-                        if (countTryingReconnect < maxTryingReconnect)
-                            countTryingReconnect = maxTryingReconnect
-                        val data = Gson().fromJson(json, DataPackage::class.java)
-                        if (data.dataType == DataPackage.DataType.IMAGE) {
-                            val image = ImageIO.read(ByteArrayInputStream(data.image!!))
-                            if (image != null) {
-                                val sceneImage = SwingFXUtils.toFXImage(image, null)
-                                imageScene.value = sceneImage
-                                height = sceneImage.height
-                                width = sceneImage.width
-                            }
-                        }
-                    } catch (e: EOFException) {
-                        println("Screen receiver: ${e.message}")
-                    } catch (e: IllegalStateException) {
-                        println("Screen receiver: ${e.message}")
-                        setNullImage()
-                    } catch (e: SocketException) {
-                    } finally {
-                        countTryingReconnect--
-                        if (countTryingReconnect == 0)
-                            needStop = true
-                    }
+            val json = input.readLine()
+            if (json != null) {
+                val data = Gson().fromJson(json, DataPackage::class.java)
+                if (data.dataType == DataPackage.DataType.IMAGE_SIZE) {
+                    height = data.imageSize!!.height
+                    width = data.imageSize!!.width
                 }
             }
             output.close()
             input.close()
+
+            val inObjStream = ObjectInputStream(socket.getInputStream())
+            while (!needStop) {
+//                val json = input.readLine()
+//                println(json)
+//                if (json != null) {
+//                    try {
+//                        if (countTryingReconnect < maxTryingReconnect)
+//                            countTryingReconnect = maxTryingReconnect
+//                        val data = Gson().fromJson(json, DataPackage::class.java)
+//                        if (data.dataType == DataPackage.DataType.IMAGE) {
+//                            val image = ImageIO.read(ByteArrayInputStream(data.image!!))
+//                            if (image != null) {
+//                                val sceneImage = SwingFXUtils.toFXImage(image, null)
+//                                imageScene.value = sceneImage
+//                                height = sceneImage.height
+//                                width = sceneImage.width
+//                            }
+//                        }
+//                    } catch (e: EOFException) {
+//                        println("Screen receiver: ${e.message}")
+//                    } catch (e: IllegalStateException) {
+//                        println("Screen receiver: ${e.message}")
+//                        setNullImage()
+//                    } catch (e: SocketException) {
+//                    } finally {
+//                        countTryingReconnect--
+//                        if (countTryingReconnect == 0)
+//                            needStop = true
+//                    }
+//                }
+                imageScene.value = Image(inObjStream, width, height, false, false)
+            }
+            inObjStream.close()
             socket.close()
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")

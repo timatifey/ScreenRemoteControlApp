@@ -2,6 +2,7 @@ package com.timatifey.models.senders
 
 import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.ImageSize
 import java.awt.Dimension
 import java.awt.Rectangle
 import java.awt.Robot
@@ -28,19 +29,30 @@ class ScreenSender(private val socket: Socket): Runnable {
             val screenSize = takeScreenSize()
             val rectangle = takeRectangle(screenSize)
 
+            val dataScreen = DataPackage(
+                DataPackage.DataType.IMAGE_SIZE,
+                imageSize = ImageSize(screenSize.getHeight(), screenSize.getWidth())
+            )
+            val jsonScreen = Gson().toJson(dataScreen)
+            output.println(jsonScreen)
+            output.close()
+
+            val outScreen = ObjectOutputStream(socket.getOutputStream())
             while (!needStop) {
                 val screen = takeScreen(rectangle)
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                ImageIO.write(screen, "png", byteArrayOutputStream)
-                val byteArray = byteArrayOutputStream.toByteArray()
-                byteArrayOutputStream.close()
-
-                val data = DataPackage(DataPackage.DataType.IMAGE, image = byteArray)
-                val json = Gson().toJson(data)
-                output.println(json)
+//                val byteArrayOutputStream = ByteArrayOutputStream()
+//                ImageIO.write(screen, "jpg", byteArrayOutputStream)
+//                val byteArray = byteArrayOutputStream.toByteArray()
+//                byteArrayOutputStream.close()
+//
+//                val data = DataPackage(DataPackage.DataType.IMAGE, image = byteArray)
+//                val json = Gson().toJson(data)
+//                output.println(json)
+                ImageIO.write(screen, "jpg", outScreen)
+                outScreen.flush()
                 sleep(200)
             }
-            output.close()
+            outScreen.close()
             socket.close()
         } catch (e: IOException) {
             println("Screen Sender Client Socket Error: $e")
