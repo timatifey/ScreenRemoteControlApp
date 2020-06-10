@@ -2,7 +2,6 @@ package com.timatifey.models.senders
 
 import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
-import com.timatifey.models.data.Image
 import java.awt.Dimension
 import java.awt.Rectangle
 import java.awt.Robot
@@ -29,15 +28,12 @@ class ScreenSender(private val socket: Socket): Runnable {
             val byteArrayOutputStream = ByteArrayOutputStream()
             val screenSize = takeScreenSize()
             val rectangle = takeRectangle(screenSize)
-            lateinit var screen: BufferedImage
 
             while (!needStop) {
-                screen = takeScreen(rectangle)
+                val screen = takeScreen(rectangle)
                 ImageIO.write(screen, "png", byteArrayOutputStream)
                 val byteArray = byteArrayOutputStream.toByteArray()
-//                val image = Image(screen.height, screen.width, byteArray)
-                val image = Image(byteArray)
-                val data = DataPackage(DataPackage.DataType.IMAGE, image = image)
+                val data = DataPackage(DataPackage.DataType.IMAGE, image = byteArray)
                 val json = Gson().toJson(data)
                 output.println(json)
                 sleep(200)

@@ -84,6 +84,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
             clientMap.entries.forEach {
                 it.value.checkAll()
                 if (it.value.needDelete) {
+                    it.value.stopAll()
                     if (!isConsole) runLater {
                             statusClient.value = "${it.value.sockets[0].inetAddress.hostAddress} has disconnected"
                         }

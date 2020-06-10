@@ -41,14 +41,12 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                             countTryingReconnect = maxTryingReconnect
                         val data = Gson().fromJson(json, DataPackage::class.java)
                         if (data.dataType == DataPackage.DataType.IMAGE) {
-                            val image = ImageIO.read(ByteArrayInputStream(data.image!!.bytes))
+                            val image = ImageIO.read(ByteArrayInputStream(data.image!!))
                             if (image != null) {
                                 val sceneImage = SwingFXUtils.toFXImage(image, null)
                                 imageScene.value = sceneImage
                                 height = sceneImage.height
                                 width = sceneImage.width
-//                                height = data.image.height.toDouble()
-//                                width = data.image.width.toDouble()
                             }
                         }
                     } catch (e: EOFException) {
