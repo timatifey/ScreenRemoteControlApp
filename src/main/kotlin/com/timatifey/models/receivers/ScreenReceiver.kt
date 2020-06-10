@@ -42,8 +42,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                 }
             }
             println("Has sizes: $height, $width")
-            output.close()
-            input.close()
 
             val inObjStream = ObjectInputStream(socket.getInputStream())
             println("Opened stream")
@@ -79,6 +77,8 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                 imageScene.value = Image(inObjStream, width, height, false, false)
             }
             inObjStream.close()
+            output.close()
+            input.close()
             socket.close()
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
