@@ -77,11 +77,8 @@ class Client {
                     if (this::socketMessage.isInitialized)
                         socketMessage.close()
 
-
-                    if (this::mouseEventSender.isInitialized) {
+                    if (this::mouseEventSender.isInitialized)
                         mouseEventSender.stop()
-                        println("mouse event sender stop")
-                    }
                     if (this::keyEventSender.isInitialized)
                         keyEventSender.stop()
                     if (this::screenReceiver.isInitialized)

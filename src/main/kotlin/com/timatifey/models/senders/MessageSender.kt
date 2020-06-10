@@ -22,7 +22,7 @@ class MessageSender(private val socket: Socket): Runnable {
             val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
                 message = "$id:MESSAGE_SOCKET"))
             output.println(firstMsg)
-
+            println("Message Sender Start")
             needStop = false
             while (!needStop) {
                 val msg = queueMessages.take()

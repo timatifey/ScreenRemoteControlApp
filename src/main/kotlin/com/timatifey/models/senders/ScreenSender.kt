@@ -12,6 +12,7 @@ import java.io.IOException
 import java.io.ObjectOutputStream
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
+import java.lang.Thread.sleep
 import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
@@ -47,6 +48,7 @@ class ScreenSender(private val socket: Socket): Runnable {
                 if (previousImage == null || !compareImages(screen, previousImage)) {
                     ImageIO.write(screen, "jpg", outScreen)
                     outScreen.flush()
+                    sleep(100)
                 }
                 previousImage = screen
             }

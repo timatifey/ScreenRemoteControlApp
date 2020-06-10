@@ -24,9 +24,10 @@ class KeyEventSender(private val socket: Socket): Runnable {
             val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
                 message = "$id:KEY_SOCKET"))
             output.println(firstMsg)
-
+            println("Key Event Sender Start")
             needStop = false
             while (!needStop) {
+                if (queueKey.isEmpty()) continue
                 val key = queueKey.take()
                 val data = DataPackage(DataPackage.DataType.KEY, key = key)
                 val json = Gson().toJson(data)

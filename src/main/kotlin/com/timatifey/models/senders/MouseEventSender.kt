@@ -23,9 +23,10 @@ class MouseEventSender(private val socket: Socket): Runnable {
             val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
                 message = "$id:MOUSE_SOCKET"))
             output.println(firstMsg)
-
+            println("Mouse Event Sender Start")
             needStop = false
             while (!needStop) {
+                if (queueMouse.isEmpty()) continue
                 val mouse = queueMouse.take()
                 val data = DataPackage(DataPackage.DataType.MOUSE, mouse = mouse)
                 val json = Gson().toJson(data)

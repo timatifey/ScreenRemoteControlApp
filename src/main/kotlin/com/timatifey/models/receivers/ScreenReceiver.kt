@@ -4,21 +4,15 @@ import com.google.gson.Gson
 import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
 import javafx.beans.property.SimpleObjectProperty
-import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import java.io.*
 import java.net.Socket
-import java.net.SocketException
-import javax.imageio.ImageIO
 
 class ScreenReceiver(private val socket: Socket): Runnable {
     val imageScene = SimpleObjectProperty<Image?>()
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0
     @Volatile var needStop = false
-
-    private val maxTryingReconnect = 5
-    var countTryingReconnect = maxTryingReconnect
 
     override fun run() {
         try {
@@ -57,8 +51,10 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             socket.close()
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
+            e.printStackTrace()
         } finally {
             needStop = true
+            println("Screen Receiver Stop")
             setNullImage()
         }
     }

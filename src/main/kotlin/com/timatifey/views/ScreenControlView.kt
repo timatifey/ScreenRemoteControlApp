@@ -16,7 +16,6 @@ class ScreenControlView : View() {
     private val clientController: ClientController by inject()
     private val mouseController: MouseController by inject()
     private val keyController: KeyController by inject()
-    private val image = clientController.client.screenReceiver.imageScene
 
     override val root = borderpane {
         setPrefSize(
@@ -30,7 +29,7 @@ class ScreenControlView : View() {
                 backgroundColor = multi(Color.BLACK)
             }
             paddingAll = 5.0
-            imageview(image) {
+            imageview(clientController.client.screenReceiver.imageScene) {
                 nodeOrientation = NodeOrientation.INHERIT
                 isCenterShape = true
                 paddingAll = 0.0
