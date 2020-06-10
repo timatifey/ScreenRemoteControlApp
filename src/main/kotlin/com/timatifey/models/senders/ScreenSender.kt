@@ -8,8 +8,10 @@ import java.awt.Rectangle
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
-import java.io.*
-import java.lang.Thread.sleep
+import java.io.IOException
+import java.io.ObjectOutputStream
+import java.io.OutputStreamWriter
+import java.io.PrintWriter
 import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
@@ -39,10 +41,14 @@ class ScreenSender(private val socket: Socket): Runnable {
 
             //Sending Screen image
             val outScreen = ObjectOutputStream(socket.getOutputStream())
+            var previousImage: BufferedImage? = null
             while (!needStop) {
                 val screen = takeScreen(rectangle)
-                ImageIO.write(screen, "jpg", outScreen)
-                outScreen.flush()
+                if (previousImage == null || !compareImages(screen, previousImage)) {
+                    ImageIO.write(screen, "jpg", outScreen)
+                    outScreen.flush()
+                }
+                previousImage = screen
             }
             output.close()
             outScreen.close()
@@ -57,6 +63,19 @@ class ScreenSender(private val socket: Socket): Runnable {
     }
 
     fun stop() { needStop = true }
+
+    fun compareImages(imgA: BufferedImage, imgB: BufferedImage): Boolean {
+        val width = imgA.width
+        val height = imgA.height
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                if (imgA.getRGB(x, y) != imgB.getRGB(x, y)) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 }
 
 

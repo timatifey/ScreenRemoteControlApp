@@ -76,25 +76,29 @@ class Client {
                     }
                     if (this::socketMessage.isInitialized)
                         socketMessage.close()
+
+
+                    if (this::mouseEventSender.isInitialized) {
+                        mouseEventSender.stop()
+                        println("mouse event sender stop")
+                    }
+                    if (this::keyEventSender.isInitialized)
+                        keyEventSender.stop()
+                    if (this::screenReceiver.isInitialized)
+                        screenReceiver.stop()
+                    if (this::messageSender.isInitialized)
+                        messageSender.stop()
+
+                    if (this::socketKey.isInitialized)
+                        socketKey.close()
+                    if (this::socketMouse.isInitialized)
+                        socketMouse.close()
+                    if (this::socketScreen.isInitialized)
+                        socketScreen.close()
+                    if (this::socketMessage.isInitialized)
+                        socketMessage.close()
                 } catch (e: SocketException) { println(e.message) }
-
-                if (this::mouseEventSender.isInitialized)
-                    mouseEventSender.stop()
-                if (this::keyEventSender.isInitialized)
-                    keyEventSender.stop()
-                if (this::screenReceiver.isInitialized)
-                    screenReceiver.stop()
-                if (this::messageSender.isInitialized)
-                    messageSender.stop()
-
-                if (this::socketKey.isInitialized)
-                    socketKey.close()
-                if (this::socketMouse.isInitialized)
-                    socketMouse.close()
-                if (this::socketScreen.isInitialized)
-                    socketScreen.close()
-                if (this::socketMessage.isInitialized)
-                    socketMessage.close()
+                wasInit = false
             }
         } catch (e: IOException) {
             println("Client Stop connection Error: $e")
