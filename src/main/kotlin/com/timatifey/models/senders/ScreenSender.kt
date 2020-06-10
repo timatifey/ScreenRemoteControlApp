@@ -25,14 +25,16 @@ class ScreenSender(private val socket: Socket): Runnable {
             val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             println("Screen Sender has started")
 
-            val byteArrayOutputStream = ByteArrayOutputStream()
             val screenSize = takeScreenSize()
             val rectangle = takeRectangle(screenSize)
 
             while (!needStop) {
                 val screen = takeScreen(rectangle)
+                val byteArrayOutputStream = ByteArrayOutputStream()
                 ImageIO.write(screen, "png", byteArrayOutputStream)
                 val byteArray = byteArrayOutputStream.toByteArray()
+                byteArrayOutputStream.close()
+
                 val data = DataPackage(DataPackage.DataType.IMAGE, image = byteArray)
                 val json = Gson().toJson(data)
                 output.println(json)
