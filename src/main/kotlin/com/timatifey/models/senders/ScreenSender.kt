@@ -35,6 +35,7 @@ class ScreenSender(private val socket: Socket): Runnable {
             )
             val jsonScreen = Gson().toJson(dataScreen)
             output.println(jsonScreen)
+            println("SENDED SCREEN")
             output.close()
 
             val outScreen = ObjectOutputStream(socket.getOutputStream())

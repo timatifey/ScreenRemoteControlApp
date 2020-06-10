@@ -32,7 +32,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                 )
             )
             output.println(firstMsg)
-
+            println("Sended first msg")
             val json = input.readLine()
             if (json != null) {
                 val data = Gson().fromJson(json, DataPackage::class.java)
@@ -41,10 +41,12 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                     width = data.imageSize!!.width
                 }
             }
+            println("Has sizes: $height, $width")
             output.close()
             input.close()
 
             val inObjStream = ObjectInputStream(socket.getInputStream())
+            println("Opened stream")
             while (!needStop) {
 //                val json = input.readLine()
 //                println(json)
