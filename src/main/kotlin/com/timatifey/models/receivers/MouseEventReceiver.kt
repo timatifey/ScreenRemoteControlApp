@@ -19,7 +19,7 @@ import java.net.SocketException
 class MouseEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
     private var prevMouse = mutableListOf<Mouse?>(null, null)
-    private lateinit var input: BufferedReader
+    private lateinit var input: ObjectInputStream
 
     private fun mouseRealise(mouse: Mouse) {
         try {
@@ -77,34 +77,17 @@ class MouseEventReceiver(private val socket: Socket): Runnable {
 
     override fun run() {
         try {
-            input = BufferedReader(InputStreamReader(socket.getInputStream()))
-            val inObjStream = ObjectInputStream(socket.getInputStream())
+            input = ObjectInputStream(socket.getInputStream())
             needStop = false
             println("Mouse event receiver has started")
             while (!needStop) {
-                val data = inObjStream.readObject() as DataPackage
+                val data = input.readObject() as DataPackage
                 if (data.dataType == DataPackage.DataType.MOUSE) {
                     val mouse = data.mouse!!
                     mouseRealise(mouse)
                     prevMouse[1] = prevMouse[0]
                     prevMouse[0] = mouse.copy()
                 }
-//                val json = input.readLine()
-//                if (json != null) {
-//                    try {
-//                        val data = Gson().fromJson(json, DataPackage::class.java)
-//                        if (data.dataType == DataPackage.DataType.MOUSE) {
-//                            val mouse = data.mouse!!
-//                            mouseRealise(mouse)
-//                            prevMouse[1] = prevMouse[0]
-//                            prevMouse[0] = mouse.copy()
-//                        }
-//                    } catch (e: IllegalStateException) {
-//                        println("Mouse event receiver: ${e.message}")
-//                    }
-//                } else {
-//                    needStop = true
-//                }
             }
         } catch (e: IOException) {
             println("Mouse Event Receiver Client Socket Error: $e")

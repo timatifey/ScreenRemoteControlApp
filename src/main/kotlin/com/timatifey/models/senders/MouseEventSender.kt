@@ -35,6 +35,7 @@ class MouseEventSender(private val socket: Socket): Runnable {
                 if (queueMouse.isEmpty()) continue
                 val mouse = queueMouse.take()
                 val data = DataPackage(DataPackage.DataType.MOUSE, mouse = mouse)
+                println(data)
                 output.writeObject(data)
                 output.flush()
             }

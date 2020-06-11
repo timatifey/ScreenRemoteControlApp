@@ -21,7 +21,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
         try {
             output = ObjectOutputStream(socket.getOutputStream())
             needStop = false
-            println("HERE")
             //First message
             val firstMsg =
                 DataPackage(
