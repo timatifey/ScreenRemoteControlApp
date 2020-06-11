@@ -20,7 +20,7 @@ class MainView : View("Screen Remote Control") {
     private val clientController: ClientController by inject()
     private val serverController: ServerController by inject()
     private val width = 300.0
-    private val height = 340.0
+    private val height = 350.0
 
     override val root = form {
         addClass(Styles.wrapper)

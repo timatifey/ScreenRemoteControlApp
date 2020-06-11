@@ -5,10 +5,10 @@ import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MessageSender
 import com.timatifey.models.senders.MouseEventSender
+import com.timatifey.models.senders.ScrollEventSender
 import javafx.beans.property.SimpleStringProperty
-import tornadofx.runLater
+import tornadofx.*
 import java.io.IOException
-import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.net.Socket
 import java.net.SocketException
@@ -27,6 +27,7 @@ class Client {
     private lateinit var socketScreen: Socket
     private lateinit var socketMouse: Socket
     private lateinit var socketKey: Socket
+    private lateinit var socketScroll: Socket
 
     private var wasInit = false
 
@@ -34,6 +35,7 @@ class Client {
     lateinit var mouseEventSender: MouseEventSender private set
     lateinit var screenReceiver: ScreenReceiver private set
     lateinit var keyEventSender: KeyEventSender private set
+    lateinit var scrollEventSender: ScrollEventSender private set
 
     val status = SimpleStringProperty("")
 
@@ -53,6 +55,10 @@ class Client {
                 socketMouse = Socket(ip, port)
                 mouseEventSender = MouseEventSender(ObjectOutputStream(socketMouse.getOutputStream()))
                 Thread(mouseEventSender).start()
+
+                socketScroll = Socket(ip, port)
+                scrollEventSender = ScrollEventSender(ObjectOutputStream(socketScroll.getOutputStream()))
+                Thread(scrollEventSender).start()
             }
 
             if (DataPackage.DataType.KEY in dataTypesList) {
@@ -89,6 +95,8 @@ class Client {
                         screenReceiver.stop()
                     if (this::messageSender.isInitialized)
                         messageSender.stop()
+                    if (this::scrollEventSender.isInitialized)
+                        scrollEventSender.stop()
 
                     if (this::socketKey.isInitialized)
                         socketKey.close()
@@ -98,6 +106,8 @@ class Client {
                         socketScreen.close()
                     if (this::socketMessage.isInitialized)
                         socketMessage.close()
+                    if (this::socketScroll.isInitialized)
+                        socketScroll.close()
                 } catch (e: SocketException) { println(e.message) }
                 wasInit = false
             }

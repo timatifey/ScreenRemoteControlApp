@@ -3,8 +3,8 @@ package com.timatifey.models.data
 import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
+import com.timatifey.models.receivers.ScrollEventReceiver
 import com.timatifey.models.senders.ScreenSender
-import java.lang.StringBuilder
 import java.net.Socket
 import java.net.SocketException
 
@@ -14,6 +14,7 @@ class ClientListElement {
     lateinit var mouseEventReceiver: MouseEventReceiver
     lateinit var keyEventReceiver: KeyEventReceiver
     lateinit var messageReceiver: MessageReceiver
+    lateinit var scrollEventReceiver: ScrollEventReceiver
     @Volatile var needDelete = false
 
     fun stopAll() {
@@ -28,6 +29,8 @@ class ClientListElement {
             keyEventReceiver.stop()
         if (this::messageReceiver.isInitialized)
             messageReceiver.stop()
+        if (this::scrollEventReceiver.isInitialized)
+            scrollEventReceiver.stop()
         needDelete = true
     }
 
@@ -37,6 +40,8 @@ class ClientListElement {
             result = result && mouseEventReceiver.needStop
         if (this::keyEventReceiver.isInitialized)
             result = result && keyEventReceiver.needStop
+        if (this::scrollEventReceiver.isInitialized)
+            result = result && scrollEventReceiver.needStop
         if (this::messageReceiver.isInitialized)
             result = result && messageReceiver.needStop
         needDelete = result
@@ -54,6 +59,8 @@ class ClientListElement {
             sendersAndReceivers.add("mouseEventReceiver")
         if (this::keyEventReceiver.isInitialized)
             sendersAndReceivers.add("keyEventReceiver")
+        if (this::scrollEventReceiver.isInitialized)
+            sendersAndReceivers.add("scrollEventReceiver")
 
         mainStringBuilder.append(sendersAndReceivers.joinToString(separator = ", "))
 

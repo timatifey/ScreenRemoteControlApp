@@ -3,11 +3,13 @@ package com.timatifey.views
 import com.timatifey.controllers.ClientController
 import com.timatifey.controllers.KeyController
 import com.timatifey.controllers.MouseController
+import com.timatifey.controllers.ScrollController
 import com.timatifey.models.senders.takeScreenSize
 import javafx.beans.binding.Bindings
 import javafx.geometry.NodeOrientation
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
+import javafx.scene.input.ScrollEvent
 import javafx.scene.paint.Color
 import tornadofx.*
 import java.util.concurrent.Callable
@@ -16,6 +18,7 @@ class ScreenControlView : View() {
     private val clientController: ClientController by inject()
     private val mouseController: MouseController by inject()
     private val keyController: KeyController by inject()
+    private val scrollController: ScrollController by inject()
 
     override val root = borderpane {
         setPrefSize(
@@ -46,6 +49,9 @@ class ScreenControlView : View() {
                 ))
                 addEventHandler(MouseEvent.ANY) {
                     mouseController.sendMouseEvent(it!!)
+                }
+                addEventHandler(ScrollEvent.ANY) {
+                    scrollController.sendScrollEvent(it!!)
                 }
             }
         }

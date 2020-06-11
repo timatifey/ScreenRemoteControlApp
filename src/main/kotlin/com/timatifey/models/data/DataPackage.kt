@@ -6,6 +6,7 @@ data class DataPackage(
     val dataType: DataType,
     val mouse: Mouse? = null,
     val key: Key? = null,
+    val scroll: Scroll? = null,
     val imageSize: ImageSize? = null,
     val message: String? = null
 ): Serializable {
@@ -13,6 +14,7 @@ data class DataPackage(
         KEY,
         MOUSE,
         MESSAGE,
-        IMAGE_SIZE
+        IMAGE_SIZE,
+        SCROLL
     }
 }

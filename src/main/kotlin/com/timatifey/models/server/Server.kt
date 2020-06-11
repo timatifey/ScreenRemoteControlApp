@@ -5,6 +5,7 @@ import com.timatifey.models.data.DataPackage
 import com.timatifey.models.receivers.KeyEventReceiver
 import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
+import com.timatifey.models.receivers.ScrollEventReceiver
 import com.timatifey.models.senders.ScreenSender
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
@@ -71,6 +72,11 @@ class Server(private val isConsole: Boolean = false): Runnable {
                                 val keyEventReceiver = KeyEventReceiver(input)
                                 Thread(keyEventReceiver).start()
                                 clientMap[clientId]?.keyEventReceiver = keyEventReceiver
+                            }
+                            "SCROLL_SOCKET" -> {
+                                val scrollEventReceiver = ScrollEventReceiver(input)
+                                Thread(scrollEventReceiver).start()
+                                clientMap[clientId]?.scrollEventReceiver = scrollEventReceiver
                             }
                         }
                     }
