@@ -17,7 +17,7 @@ class ScrollEventReceiver(private val input: ObjectInputStream): Runnable {
             println(scroll)
             when (scroll.eventType) {
                 Scroll.ScrollEventType.SCROLL -> {
-                    robot.mouseWheel(scroll.totalDeltaY.toInt())
+                    robot.mouseWheel((scroll.deltaY * 0.75).toInt())
                 }
                 else -> {}
             }
