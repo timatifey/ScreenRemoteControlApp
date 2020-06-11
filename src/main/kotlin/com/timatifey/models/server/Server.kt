@@ -37,6 +37,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                 val socket = server.accept()
                 val inObjStream = ObjectInputStream(socket.getInputStream())
                 val firstMsgFromSocket = inObjStream.readObject() as DataPackage
+                inObjStream.close()
                 if (firstMsgFromSocket.message != null) {
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
