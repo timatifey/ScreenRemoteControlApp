@@ -12,7 +12,7 @@ import java.net.Socket
 import java.net.SocketException
 import kotlin.random.Random
 
-val id = generateId()
+var id = "emptyID"
 
 const val idLength = 32
 fun generateId(): String {
@@ -37,6 +37,7 @@ class Client {
 
     fun startConnection(ip: String, port: Int, dataTypesList: List<DataPackage.DataType>): Boolean {
         try {
+            id = generateId()
             socketMessage = Socket(ip, port)
             messageSender = MessageSender(socketMessage)
             Thread(messageSender).start()
