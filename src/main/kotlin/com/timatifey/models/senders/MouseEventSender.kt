@@ -35,9 +35,9 @@ class MouseEventSender(private val socket: Socket): Runnable {
                 if (queueMouse.isEmpty()) continue
                 val mouse = queueMouse.take()
                 val data = DataPackage(DataPackage.DataType.MOUSE, mouse = mouse)
-                println(data)
                 output.writeObject(data)
                 output.flush()
+                println("send mouse")
             }
         } catch (e: IOException) {
             println("Mouse Event Sender Client Socket Error: $e")
