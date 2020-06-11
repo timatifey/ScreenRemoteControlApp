@@ -8,6 +8,7 @@ import java.awt.AWTException
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.event.InputEvent
+import java.io.EOFException
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.net.SocketException
@@ -75,12 +76,16 @@ class MouseEventReceiver(private val input: ObjectInputStream): Runnable {
             needStop = false
             println("Mouse event receiver has started")
             while (!needStop) {
-                val data = input.readObject() as DataPackage
-                if (data.dataType == DataPackage.DataType.MOUSE) {
-                    val mouse = data.mouse!!
-                    mouseRealise(mouse)
-                    prevMouse[1] = prevMouse[0]
-                    prevMouse[0] = mouse.copy()
+                try {
+                    val data = input.readObject() as DataPackage
+                    if (data.dataType == DataPackage.DataType.MOUSE) {
+                        val mouse = data.mouse!!
+                        mouseRealise(mouse)
+                        prevMouse[1] = prevMouse[0]
+                        prevMouse[0] = mouse.copy()
+                    }
+                } catch (e: EOFException) {
+                    needStop = true
                 }
             }
         } catch (e: IOException) {

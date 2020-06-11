@@ -1,6 +1,7 @@
 package com.timatifey.models.receivers
 
 import com.timatifey.models.data.DataPackage
+import java.io.EOFException
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.net.SocketException
@@ -13,12 +14,16 @@ class MessageReceiver (private val input: ObjectInputStream): Runnable {
             needStop = false
             println("Message Receiver Start")
             while (!needStop) {
-                val data = input.readObject() as DataPackage
-                if (data.dataType == DataPackage.DataType.MESSAGE) {
-                    val text = data.message!!.split(":")
-                    if (text[1] == "STOP") {
-                        needStop = true
+                try {
+                    val data = input.readObject() as DataPackage
+                    if (data.dataType == DataPackage.DataType.MESSAGE) {
+                        val text = data.message!!.split(":")
+                        if (text[1] == "STOP") {
+                            needStop = true
+                        }
                     }
+                } catch (e: EOFException) {
+                    needStop = true
                 }
             }
         } catch (e: IOException) {

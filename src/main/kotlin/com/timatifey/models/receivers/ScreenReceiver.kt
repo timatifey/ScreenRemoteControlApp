@@ -4,6 +4,7 @@ import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.image.Image
+import java.io.EOFException
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
@@ -33,18 +34,17 @@ class ScreenReceiver(private val socket: Socket): Runnable {
 
             println("Send first msg")
             //Get screen size
-            val data = input.readObject() as DataPackage
-            println(data)
-            if (data != null) {
+            input = ObjectInputStream(socket.getInputStream())
+            try {
+                val data = input.readObject() as DataPackage
                 if (data.dataType == DataPackage.DataType.IMAGE_SIZE) {
                     height = data.imageSize!!.height
                     width = data.imageSize.width
                 }
-            } else {
+            } catch (e: EOFException) {
                 needStop = true
             }
             println("Screen receiver start")
-            input = ObjectInputStream(socket.getInputStream())
             //Get screen image
             while (!needStop) {
                 imageScene.value = Image(input, width, height, false, false)
@@ -57,8 +57,10 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             println("Screen Receiver Stop")
             setNullImage()
             try {
-                input.close()
-                output.close()
+                if (this::input.isInitialized)
+                    input.close()
+                if (this::output.isInitialized)
+                    output.close()
             } catch (e: SocketException) {}
         }
     }

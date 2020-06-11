@@ -32,7 +32,6 @@ class ScreenSender(private val output: ObjectOutputStream): Runnable {
                 DataPackage.DataType.IMAGE_SIZE,
                 imageSize = ImageSize(screenSize.getHeight(), screenSize.getWidth())
             )
-            println(dataScreen)
             output.writeObject(dataScreen)
             output.flush()
 
@@ -45,7 +44,6 @@ class ScreenSender(private val output: ObjectOutputStream): Runnable {
                 if (previousImage == null || !compareImages(screen, previousImage)) {
                     ImageIO.write(screen, "jpg", output)
                     output.flush()
-                    sleep(100)
                 }
                 previousImage = screen
             }

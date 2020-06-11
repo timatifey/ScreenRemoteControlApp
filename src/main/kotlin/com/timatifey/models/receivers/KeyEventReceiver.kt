@@ -4,10 +4,7 @@ import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Key
 import java.awt.Robot
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.ObjectInputStream
+import java.io.*
 import java.net.Socket
 import java.net.SocketException
 
@@ -33,10 +30,14 @@ class KeyEventReceiver(private val input: ObjectInputStream): Runnable {
             println("Key event receiver has started")
 
             while (!needStop) {
-                val data = input.readObject() as DataPackage
-                if (data.dataType == DataPackage.DataType.KEY) {
-                    val key = data.key!!
-                    keyRealise(key)
+                try {
+                    val data = input.readObject() as DataPackage
+                    if (data.dataType == DataPackage.DataType.KEY) {
+                        val key = data.key!!
+                        keyRealise(key)
+                    }
+                } catch (e: EOFException) {
+                    needStop = true
                 }
             }
         } catch (e: IOException) {
