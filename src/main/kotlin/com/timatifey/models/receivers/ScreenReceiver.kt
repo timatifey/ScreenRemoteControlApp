@@ -14,7 +14,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0
     @Volatile var needStop = false
-    private val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+//    private val input = BufferedReader(InputStreamReader(socket.getInputStream()))
     private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
     private val inObjStream = ObjectInputStream(socket.getInputStream())
 
@@ -32,9 +32,11 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             output.println(firstMsg)
 
             //Get screen size
-            val json = input.readLine()
-            if (json != null) {
-                val data = Gson().fromJson(json, DataPackage::class.java)
+//            val json = input.readLine()
+            val data = inObjStream.readObject() as DataPackage
+            println(data)
+            if (data != null) {
+//                val data = Gson().fromJson(json, DataPackage::class.java)
                 if (data.dataType == DataPackage.DataType.IMAGE_SIZE) {
                     height = data.imageSize!!.height
                     width = data.imageSize.width
@@ -59,7 +61,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             try {
                 inObjStream.close()
                 output.close()
-                input.close()
+//                input.close()
                 socket.close()
             } catch (e: SocketException) {}
         }

@@ -23,7 +23,7 @@ private fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScre
 
 class ScreenSender(private val socket: Socket): Runnable {
     @Volatile var needStop = false
-    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+//    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
     private val outScreen = ObjectOutputStream(socket.getOutputStream())
 
     override fun run() {
@@ -39,7 +39,9 @@ class ScreenSender(private val socket: Socket): Runnable {
                 imageSize = ImageSize(screenSize.getHeight(), screenSize.getWidth())
             )
             val jsonScreen = Gson().toJson(dataScreen)
-            output.println(jsonScreen)
+            outScreen.writeObject(dataScreen)
+            outScreen.flush()
+//            output.println(jsonScreen)
 
             println("Screen Sender has started")
 
@@ -61,7 +63,7 @@ class ScreenSender(private val socket: Socket): Runnable {
             needStop = true
             println("Screen Sender Stop")
             try {
-                output.close()
+//                output.close()
                 outScreen.close()
                 socket.close()
             } catch (e: SocketException) {}
