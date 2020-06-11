@@ -2,15 +2,13 @@ package com.timatifey.controllers
 
 import com.timatifey.models.server.Server
 import javafx.beans.property.SimpleBooleanProperty
-import tornadofx.Controller
-import tornadofx.runLater
+import tornadofx.*
 
 class ServerController: Controller() {
     var hasStarted = SimpleBooleanProperty(false)
     var server = Server()
 
     fun start(port: String) {
-        server = Server()
         runLater { server.statusProperty.value = "" }
         try {
             val intPort = port.toInt()
@@ -25,6 +23,7 @@ class ServerController: Controller() {
     fun stopServer() {
         hasStarted.value = false
         server.stop()
+        server = Server()
         runLater {
             server.statusProperty.value = "Server has stopped"
             server.statusClient.value = ""

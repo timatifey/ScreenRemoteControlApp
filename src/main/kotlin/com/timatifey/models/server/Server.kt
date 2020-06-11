@@ -16,8 +16,6 @@ import java.lang.Thread.sleep
 import java.net.ServerSocket
 import java.net.SocketException
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.forEach
-import kotlin.collections.mutableListOf
 import kotlin.collections.set
 
 class Server(private val isConsole: Boolean = false): Runnable {
@@ -101,11 +99,9 @@ class Server(private val isConsole: Boolean = false): Runnable {
                         }
                     println("${it.value.sockets[0].inetAddress.hostAddress} has disconnected")
                     clientMap.remove(it.key)
-                    sleep(200)
                 }
             }
             sleep(1000)
-            println("clientMap = $clientMap")
         }
     }
 

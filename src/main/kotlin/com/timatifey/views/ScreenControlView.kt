@@ -69,7 +69,7 @@ class ScreenControlView : View() {
             it.consume()
             confirm("Вы уверены, что хотите разорвать соединение?") {
                 clientController.stopConnection()
-                currentStage?.close()
+                currentStage?.hide()
             }
         }
     }

@@ -5,10 +5,7 @@ import com.timatifey.models.data.DataPackage
 import com.timatifey.views.ScreenControlView
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
-import tornadofx.Controller
-import tornadofx.getValue
-import tornadofx.runLater
-import tornadofx.setValue
+import tornadofx.*
 
 class ClientController: Controller() {
     val statusProperty = SimpleStringProperty("")
@@ -20,7 +17,6 @@ class ClientController: Controller() {
     val keyCheck = SimpleBooleanProperty(true)
 
     fun connect(ip: String, port: String) {
-        client = Client()
         runLater { status = "" }
         try {
             val intPort = port.toInt()
@@ -51,5 +47,6 @@ class ClientController: Controller() {
     fun stopConnection() {
         println("STOP CLIENT")
         client.stopConnection()
+        client = Client()
     }
 }
