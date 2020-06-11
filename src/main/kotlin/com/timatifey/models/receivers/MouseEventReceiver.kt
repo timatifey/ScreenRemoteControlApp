@@ -86,6 +86,8 @@ class MouseEventReceiver(private val input: ObjectInputStream): Runnable {
                     }
                 } catch (e: EOFException) {
                     needStop = true
+                } catch (e: SocketException) {
+                    needStop = true
                 }
             }
         } catch (e: IOException) {

@@ -10,6 +10,7 @@ class ServerController: Controller() {
     var server = Server()
 
     fun start(port: String) {
+        server = Server()
         runLater { server.statusProperty.value = "" }
         try {
             val intPort = port.toInt()

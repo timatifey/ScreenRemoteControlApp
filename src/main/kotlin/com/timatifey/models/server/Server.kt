@@ -1,6 +1,5 @@
 package com.timatifey.models.server
 
-import com.google.gson.Gson
 import com.timatifey.models.data.ClientListElement
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.receivers.KeyEventReceiver
@@ -8,11 +7,18 @@ import com.timatifey.models.receivers.MessageReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.senders.ScreenSender
 import javafx.beans.property.SimpleStringProperty
-import tornadofx.runLater
-import java.io.*
+import tornadofx.*
+import java.io.EOFException
+import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.lang.Thread.sleep
 import java.net.ServerSocket
+import java.net.SocketException
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.forEach
+import kotlin.collections.mutableListOf
+import kotlin.collections.set
 
 class Server(private val isConsole: Boolean = false): Runnable {
     private lateinit var server: ServerSocket
@@ -35,48 +41,52 @@ class Server(private val isConsole: Boolean = false): Runnable {
                 println("Server is waiting")
                 val socket = server.accept()
                 val input = ObjectInputStream(socket.getInputStream())
-
-                val firstMsgFromSocket = input.readObject() as DataPackage
-
-                if (firstMsgFromSocket.message != null) {
-                    val msg = firstMsgFromSocket.message.split(":")
-                    println(msg)
-                    val clientId = msg[0]
-                    if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
-                    else {
-                        clientMap[clientId] = ClientListElement()
-                        clientMap[clientId]?.sockets = mutableListOf(socket)
-                        println("${socket.inetAddress.hostAddress} has connected ( ID = $clientId )")
-                        if (!isConsole)
-                            runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
-                    }
-
-                    when (msg[1]) {
-                        "MESSAGE_SOCKET" -> {
-                            val messageReceiver = MessageReceiver(input)
-                            Thread(messageReceiver).start()
-                            clientMap[clientId]?.messageReceiver = messageReceiver
+                try {
+                    val firstMsgFromSocket = input.readObject() as DataPackage
+                    if (firstMsgFromSocket.message != null) {
+                        val msg = firstMsgFromSocket.message.split(":")
+                        val clientId = msg[0]
+                        if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
+                        else {
+                            clientMap[clientId] = ClientListElement()
+                            clientMap[clientId]?.sockets = mutableListOf(socket)
+                            println("${socket.inetAddress.hostAddress} has connected ( ID = $clientId )")
+                            if (!isConsole)
+                                runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
                         }
-                        "SCREEN_SOCKET" -> {
-                            val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
-                            Thread(screenSender).start()
-                            clientMap[clientId]?.screenSender = screenSender
-                        }
-                        "MOUSE_SOCKET" -> {
-                            val mouseEventReceiver = MouseEventReceiver(input)
-                            Thread(mouseEventReceiver).start()
-                            clientMap[clientId]?.mouseEventReceiver = mouseEventReceiver
-                        }
-                        "KEY_SOCKET" -> {
-                            val keyEventReceiver = KeyEventReceiver(input)
-                            Thread(keyEventReceiver).start()
-                            clientMap[clientId]?.keyEventReceiver = keyEventReceiver
+                        when (msg[1]) {
+                            "MESSAGE_SOCKET" -> {
+                                val messageReceiver = MessageReceiver(input)
+                                Thread(messageReceiver).start()
+                                clientMap[clientId]?.messageReceiver = messageReceiver
+                            }
+                            "SCREEN_SOCKET" -> {
+                                val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
+                                Thread(screenSender).start()
+                                clientMap[clientId]?.screenSender = screenSender
+                            }
+                            "MOUSE_SOCKET" -> {
+                                val mouseEventReceiver = MouseEventReceiver(input)
+                                Thread(mouseEventReceiver).start()
+                                clientMap[clientId]?.mouseEventReceiver = mouseEventReceiver
+                            }
+                            "KEY_SOCKET" -> {
+                                val keyEventReceiver = KeyEventReceiver(input)
+                                Thread(keyEventReceiver).start()
+                                clientMap[clientId]?.keyEventReceiver = keyEventReceiver
+                            }
                         }
                     }
+                } catch (e: EOFException) {
+                    needStop = true
+                    print("Server first message error: $e")
+                } catch (e: SocketException) {
+                    needStop = true
+                    print("Server first message error: $e")
                 }
             }
         } catch (e: IOException) {
-            println("Starting server error: $e")
+                println("Starting server error: $e")
         }
     }
 
@@ -95,7 +105,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                 }
             }
             sleep(1000)
-//            println("clientMap = $clientMap")
+            println("clientMap = $clientMap")
         }
     }
 

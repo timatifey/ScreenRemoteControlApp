@@ -31,7 +31,6 @@ class MouseEventSender(private val output: ObjectOutputStream): Runnable {
                 val data = DataPackage(DataPackage.DataType.MOUSE, mouse = mouse)
                 output.writeObject(data)
                 output.flush()
-                println("send mouse")
             }
         } catch (e: IOException) {
             println("Mouse Event Sender Client Socket Error: $e")
