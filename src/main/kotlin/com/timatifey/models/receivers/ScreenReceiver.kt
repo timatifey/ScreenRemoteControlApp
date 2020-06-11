@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.image.Image
 import java.io.*
 import java.net.Socket
+import java.net.SocketException
 
 class ScreenReceiver(private val socket: Socket): Runnable {
     val imageScene = SimpleObjectProperty<Image?>()
@@ -40,7 +41,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             } else {
                 needStop = true
             }
-
+            println("$height, $width")
             val inObjStream = ObjectInputStream(socket.getInputStream())
             while (!needStop) {
                 imageScene.value = Image(inObjStream, width, height, false, false)
@@ -48,7 +49,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             inObjStream.close()
             output.close()
             input.close()
-            socket.close()
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
             e.printStackTrace()
@@ -56,6 +56,9 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             needStop = true
             println("Screen Receiver Stop")
             setNullImage()
+            try {
+                socket.close()
+            } catch (e: SocketException) {}
         }
     }
 

@@ -13,6 +13,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
+import java.net.SocketException
 
 class MouseEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
@@ -96,12 +97,14 @@ class MouseEventReceiver(private val socket: Socket): Runnable {
                 }
             }
             input.close()
-            socket.close()
         } catch (e: IOException) {
             println("Mouse Event Receiver Client Socket Error: $e")
         } finally {
             needStop = true
             println("Mouse Event Receiver Stop")
+            try {
+                socket.close()
+            } catch (e: SocketException) {}
         }
     }
 

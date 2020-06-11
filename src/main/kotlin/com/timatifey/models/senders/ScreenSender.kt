@@ -54,13 +54,15 @@ class ScreenSender(private val socket: Socket): Runnable {
             }
             output.close()
             outScreen.close()
-            socket.close()
         } catch (e: IOException) {
             println("Screen Sender Client Socket Error: $e")
         } catch (e: SocketException) {
         } finally {
             needStop = true
             println("Screen Sender Stop")
+            try {
+                socket.close()
+            } catch (e: SocketException) {}
         }
     }
 

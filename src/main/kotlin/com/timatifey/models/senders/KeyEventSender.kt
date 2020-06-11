@@ -8,6 +8,7 @@ import java.io.IOException
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.net.Socket
+import java.net.SocketException
 import java.util.concurrent.LinkedBlockingQueue
 
 class KeyEventSender(private val socket: Socket): Runnable {
@@ -34,12 +35,14 @@ class KeyEventSender(private val socket: Socket): Runnable {
                 output.println(json)
             }
             output.close()
-            socket.close()
         } catch (e: IOException) {
             println("Key Event Sender Client Socket Error: $e")
         } finally {
             needStop = true
             println("Key Event Sender Stop")
+            try {
+                socket.close()
+            } catch (e: SocketException) {}
         }
     }
 

@@ -6,6 +6,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
+import java.net.SocketException
 
 class MessageReceiver (private val socket: Socket): Runnable {
     @Volatile var needStop = false
@@ -35,12 +36,14 @@ class MessageReceiver (private val socket: Socket): Runnable {
                 }
             }
             input.close()
-            socket.close()
         } catch (e: IOException) {
             println("Message Receiver Socket Error: $e")
         } finally {
             needStop = true
             println("Message Receiver Stop")
+            try {
+                socket.close()
+            } catch (e: SocketException) {}
         }
     }
 

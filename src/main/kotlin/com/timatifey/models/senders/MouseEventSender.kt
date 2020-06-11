@@ -8,6 +8,7 @@ import java.io.IOException
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.net.Socket
+import java.net.SocketException
 import java.util.concurrent.LinkedBlockingQueue
 
 class MouseEventSender(private val socket: Socket): Runnable {
@@ -33,12 +34,14 @@ class MouseEventSender(private val socket: Socket): Runnable {
                 output.println(json)
             }
             output.close()
-            socket.close()
         } catch (e: IOException) {
             println("Mouse Event Sender Client Socket Error: $e")
         } finally {
             needStop = true
             println("Mouse Event Sender Stop")
+            try {
+                socket.close()
+            } catch (e: SocketException) {}
         }
     }
 

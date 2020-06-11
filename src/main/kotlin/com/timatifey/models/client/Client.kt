@@ -38,6 +38,7 @@ class Client {
     fun startConnection(ip: String, port: Int, dataTypesList: List<DataPackage.DataType>): Boolean {
         try {
             id = generateId()
+
             socketMessage = Socket(ip, port)
             messageSender = MessageSender(socketMessage)
             Thread(messageSender).start()

@@ -8,6 +8,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Socket
+import java.net.SocketException
 
 class KeyEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
@@ -47,12 +48,14 @@ class KeyEventReceiver(private val socket: Socket): Runnable {
                 }
             }
             input.close()
-            socket.close()
-            println("Key Event Receiver Stop")
         } catch (e: IOException) {
             println("Key Event Receiver Client Socket Error: $e")
         } finally {
             needStop = true
+            println("Key Event Receiver Stop")
+            try {
+                socket.close()
+            } catch (e: SocketException) {}
         }
     }
 

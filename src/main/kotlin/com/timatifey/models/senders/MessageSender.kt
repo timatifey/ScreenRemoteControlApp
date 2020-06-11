@@ -7,6 +7,7 @@ import java.io.IOException
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.net.Socket
+import java.net.SocketException
 import java.util.concurrent.LinkedBlockingQueue
 
 class MessageSender(private val socket: Socket): Runnable {
@@ -31,12 +32,14 @@ class MessageSender(private val socket: Socket): Runnable {
                 output.println(json)
             }
             output.close()
-            socket.close()
         } catch (e: IOException) {
             println("Message sender Socket Error: $e")
         } finally {
             needStop = true
             println("Message sender Stop")
+            try {
+                socket.close()
+            } catch (e: SocketException) {}
         }
     }
 
