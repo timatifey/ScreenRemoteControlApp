@@ -31,12 +31,11 @@ class Server(private val isConsole: Boolean = false): Runnable {
         try {
             server = ServerSocket(port)
             Thread(this).start()
-            println("Server is waiting of connection")
             if (!isConsole) runLater { statusProperty.value = "Server is ready for connections" }
             wasInit = true
             needStop = false
             while (!needStop) {
-                println("Server is waiting")
+                println("Server is waiting of connection")
                 val socket = server.accept()
                 val input = ObjectInputStream(socket.getInputStream())
                 try {
@@ -82,6 +81,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                     needStop = true
                     print("Server first message error: $e")
                 }
+                println()
             }
         } catch (e: IOException) {
                 println("Starting server error: $e")

@@ -10,9 +10,11 @@ import tornadofx.*
 class ClientController: Controller() {
     val statusProperty = SimpleStringProperty("")
     var status: String by statusProperty
+
     var ip = ""
     var port = ""
-    var client = Client()
+    @Volatile var client = Client()
+
     val mouseCheck = SimpleBooleanProperty(true)
     val keyCheck = SimpleBooleanProperty(true)
 

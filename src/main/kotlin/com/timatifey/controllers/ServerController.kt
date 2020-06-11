@@ -6,7 +6,7 @@ import tornadofx.*
 
 class ServerController: Controller() {
     var hasStarted = SimpleBooleanProperty(false)
-    var server = Server()
+    @Volatile var server = Server()
 
     fun start(port: String) {
         runLater { server.statusProperty.value = "" }
