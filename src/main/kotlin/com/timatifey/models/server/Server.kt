@@ -35,9 +35,11 @@ class Server(private val isConsole: Boolean = false): Runnable {
             while (!needStop) {
                 println("Server is waiting")
                 val socket = server.accept()
-                val input = BufferedReader(InputStreamReader(socket.getInputStream()))
-                val json = input.readLine()
-                val firstMsgFromSocket = gson.fromJson(json, DataPackage::class.java)
+//                val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+                val inObjStream = ObjectInputStream(socket.getInputStream())
+                val firstMsgFromSocket = inObjStream.readObject() as DataPackage
+//                val json = input.readLine()
+//                val firstMsgFromSocket = gson.fromJson(json, DataPackage::class.java)
                 if (firstMsgFromSocket.message != null) {
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
