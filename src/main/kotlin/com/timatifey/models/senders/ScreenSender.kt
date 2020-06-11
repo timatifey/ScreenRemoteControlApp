@@ -23,11 +23,12 @@ private fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScre
 
 class ScreenSender(private val socket: Socket): Runnable {
     @Volatile var needStop = false
+    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+    private val outScreen = ObjectOutputStream(socket.getOutputStream())
 
     override fun run() {
         try {
-            val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-            println("Screen Sender has started")
+            needStop = false
 
             val screenSize = takeScreenSize()
             val rectangle = takeRectangle(screenSize)
@@ -40,8 +41,9 @@ class ScreenSender(private val socket: Socket): Runnable {
             val jsonScreen = Gson().toJson(dataScreen)
             output.println(jsonScreen)
 
+            println("Screen Sender has started")
+
             //Sending Screen image
-            val outScreen = ObjectOutputStream(socket.getOutputStream())
             var previousImage: BufferedImage? = null
             while (!needStop) {
                 val screen = takeScreen(rectangle)
@@ -52,8 +54,6 @@ class ScreenSender(private val socket: Socket): Runnable {
                 }
                 previousImage = screen
             }
-            output.close()
-            outScreen.close()
         } catch (e: IOException) {
             println("Screen Sender Client Socket Error: $e")
         } catch (e: SocketException) {
@@ -61,6 +61,8 @@ class ScreenSender(private val socket: Socket): Runnable {
             needStop = true
             println("Screen Sender Stop")
             try {
+                output.close()
+                outScreen.close()
                 socket.close()
             } catch (e: SocketException) {}
         }
@@ -68,7 +70,7 @@ class ScreenSender(private val socket: Socket): Runnable {
 
     fun stop() { needStop = true }
 
-    fun compareImages(imgA: BufferedImage, imgB: BufferedImage): Boolean {
+    private fun compareImages(imgA: BufferedImage, imgB: BufferedImage): Boolean {
         val width = imgA.width
         val height = imgA.height
         for (y in 0 until height) {

@@ -14,19 +14,22 @@ import java.util.concurrent.LinkedBlockingQueue
 class KeyEventSender(private val socket: Socket): Runnable {
     @Volatile private var needStop = false
     private val queueKey = LinkedBlockingQueue<Key>()
-
+    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
     fun putKeyEvent(key: Key) {
         queueKey.put(key)
     }
 
     override fun run() {
         try {
-            val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+            needStop = false
+
+            //First message
             val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
                 message = "$id:KEY_SOCKET"))
             output.println(firstMsg)
+
             println("Key Event Sender Start")
-            needStop = false
+
             while (!needStop) {
                 if (queueKey.isEmpty()) continue
                 val key = queueKey.take()
@@ -34,13 +37,13 @@ class KeyEventSender(private val socket: Socket): Runnable {
                 val json = Gson().toJson(data)
                 output.println(json)
             }
-            output.close()
         } catch (e: IOException) {
             println("Key Event Sender Client Socket Error: $e")
         } finally {
             needStop = true
             println("Key Event Sender Stop")
             try {
+                output.close()
                 socket.close()
             } catch (e: SocketException) {}
         }

@@ -14,12 +14,13 @@ class ScreenReceiver(private val socket: Socket): Runnable {
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0
     @Volatile var needStop = false
+    private val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+    private val inObjStream = ObjectInputStream(socket.getInputStream())
 
     override fun run() {
         try {
             needStop = false
-            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
-            val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
 
             //First message
             val firstMsg = Gson().toJson(
@@ -41,14 +42,13 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             } else {
                 needStop = true
             }
-            println("$height, $width")
-            val inObjStream = ObjectInputStream(socket.getInputStream())
+
+            println("Screen receiver start")
+
+            //Get screen image
             while (!needStop) {
                 imageScene.value = Image(inObjStream, width, height, false, false)
             }
-            inObjStream.close()
-            output.close()
-            input.close()
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
             e.printStackTrace()
@@ -57,6 +57,9 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             println("Screen Receiver Stop")
             setNullImage()
             try {
+                inObjStream.close()
+                output.close()
+                input.close()
                 socket.close()
             } catch (e: SocketException) {}
         }
@@ -64,7 +67,5 @@ class ScreenReceiver(private val socket: Socket): Runnable {
 
     fun stop() { needStop = true }
 
-    private fun setNullImage() {
-        imageScene.value = null
-    }
+    private fun setNullImage() { imageScene.value = null }
 }

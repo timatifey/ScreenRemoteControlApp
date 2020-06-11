@@ -20,7 +20,6 @@ class ClientController: Controller() {
     val keyCheck = SimpleBooleanProperty(true)
 
     fun connect(ip: String, port: String) {
-        client = Client()
         runLater { status = "" }
         try {
             val intPort = port.toInt()

@@ -10,12 +10,12 @@ import java.net.SocketException
 
 class MessageReceiver (private val socket: Socket): Runnable {
     @Volatile var needStop = false
+    private val input = BufferedReader(InputStreamReader(socket.getInputStream()))
 
     override fun run() {
         try {
-            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
-            println("Message Receiver Start")
             needStop = false
+            println("Message Receiver Start")
             while (!needStop) {
                 val json = input.readLine()
                 if (json != null) {
@@ -35,13 +35,13 @@ class MessageReceiver (private val socket: Socket): Runnable {
                     needStop = true
                 }
             }
-            input.close()
         } catch (e: IOException) {
             println("Message Receiver Socket Error: $e")
         } finally {
             needStop = true
             println("Message Receiver Stop")
             try {
+                input.close()
                 socket.close()
             } catch (e: SocketException) {}
         }

@@ -18,6 +18,7 @@ import java.net.SocketException
 class MouseEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
     private var prevMouse = mutableListOf<Mouse?>(null, null)
+    private  val input = BufferedReader(InputStreamReader(socket.getInputStream()))
 
     private fun mouseRealise(mouse: Mouse) {
         try {
@@ -75,9 +76,8 @@ class MouseEventReceiver(private val socket: Socket): Runnable {
 
     override fun run() {
         try {
-            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
-            println("Mouse event receiver has started")
             needStop = false
+            println("Mouse event receiver has started")
             while (!needStop) {
                 val json = input.readLine()
                 if (json != null) {
@@ -96,13 +96,13 @@ class MouseEventReceiver(private val socket: Socket): Runnable {
                     needStop = true
                 }
             }
-            input.close()
         } catch (e: IOException) {
             println("Mouse Event Receiver Client Socket Error: $e")
         } finally {
             needStop = true
             println("Mouse Event Receiver Stop")
             try {
+                input.close()
                 socket.close()
             } catch (e: SocketException) {}
         }
