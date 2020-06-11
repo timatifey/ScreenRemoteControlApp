@@ -1,32 +1,28 @@
 package com.timatifey.models.senders
 
-import com.google.gson.Gson
 import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Key
 import java.io.IOException
-import java.io.OutputStreamWriter
-import java.io.PrintWriter
-import java.net.Socket
+import java.io.ObjectOutputStream
 import java.net.SocketException
 import java.util.concurrent.LinkedBlockingQueue
 
-class KeyEventSender(private val socket: Socket): Runnable {
+class KeyEventSender(private val output: ObjectOutputStream): Runnable {
     @Volatile private var needStop = false
     private val queueKey = LinkedBlockingQueue<Key>()
-    private lateinit var output: PrintWriter
 
     fun putKeyEvent(key: Key) { queueKey.put(key) }
 
     override fun run() {
         try {
-            output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             needStop = false
 
             //First message
-            val firstMsg = Gson().toJson(DataPackage(DataPackage.DataType.MESSAGE,
-                message = "$id:KEY_SOCKET"))
-            output.println(firstMsg)
+            val firstMsg = DataPackage(DataPackage.DataType.MESSAGE,
+                message = "$id:KEY_SOCKET")
+            output.writeObject(firstMsg)
+            output.flush()
 
             println("Key Event Sender Start")
 
@@ -34,8 +30,8 @@ class KeyEventSender(private val socket: Socket): Runnable {
                 if (queueKey.isEmpty()) continue
                 val key = queueKey.take()
                 val data = DataPackage(DataPackage.DataType.KEY, key = key)
-                val json = Gson().toJson(data)
-                output.println(json)
+                output.writeObject(data)
+                output.flush()
             }
         } catch (e: IOException) {
             println("Key Event Sender Client Socket Error: $e")
@@ -44,7 +40,6 @@ class KeyEventSender(private val socket: Socket): Runnable {
             println("Key Event Sender Stop")
             try {
                 output.close()
-                socket.close()
             } catch (e: SocketException) {}
         }
     }

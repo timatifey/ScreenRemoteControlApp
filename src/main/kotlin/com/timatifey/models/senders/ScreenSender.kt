@@ -1,6 +1,5 @@
 package com.timatifey.models.senders
 
-import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.ImageSize
 import java.awt.Dimension
@@ -10,10 +9,7 @@ import java.awt.Toolkit
 import java.awt.image.BufferedImage
 import java.io.IOException
 import java.io.ObjectOutputStream
-import java.io.OutputStreamWriter
-import java.io.PrintWriter
 import java.lang.Thread.sleep
-import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
 
@@ -21,13 +17,11 @@ fun takeScreenSize(): Dimension = Toolkit.getDefaultToolkit().screenSize
 private fun takeRectangle(screenSize: Dimension) = Rectangle(screenSize)
 private fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScreenCapture(rectangle)
 
-class ScreenSender(private val socket: Socket): Runnable {
+class ScreenSender(private val output: ObjectOutputStream): Runnable {
     @Volatile var needStop = false
-    private lateinit var output: ObjectOutputStream
 
     override fun run() {
         try {
-            output = ObjectOutputStream(socket.getOutputStream())
             needStop = false
 
             val screenSize = takeScreenSize()
@@ -62,7 +56,6 @@ class ScreenSender(private val socket: Socket): Runnable {
             println("Screen Sender Stop")
             try {
                 output.close()
-                socket.close()
             } catch (e: SocketException) {}
         }
     }

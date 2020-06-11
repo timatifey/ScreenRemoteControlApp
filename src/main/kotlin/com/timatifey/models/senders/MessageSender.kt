@@ -11,16 +11,14 @@ import java.net.Socket
 import java.net.SocketException
 import java.util.concurrent.LinkedBlockingQueue
 
-class MessageSender(private val socket: Socket): Runnable {
+class MessageSender(private val output: ObjectOutputStream): Runnable {
     @Volatile private var needStop = false
     private val queueMessages = LinkedBlockingQueue<String>()
-    private lateinit var output: ObjectOutputStream
 
     fun sendMessage(msg: String) { queueMessages.put(msg) }
 
     override fun run() {
         try {
-            output = ObjectOutputStream(socket.getOutputStream())
             needStop = false
 
             //First message
@@ -44,7 +42,6 @@ class MessageSender(private val socket: Socket): Runnable {
             println("Message sender Stop")
             try {
                 output.close()
-                socket.close()
             } catch (e: SocketException) {}
         }
     }

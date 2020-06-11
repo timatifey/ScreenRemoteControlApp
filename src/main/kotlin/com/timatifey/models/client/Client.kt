@@ -8,6 +8,8 @@ import com.timatifey.models.senders.MouseEventSender
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.runLater
 import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.net.Socket
 import java.net.SocketException
 import kotlin.random.Random
@@ -40,22 +42,25 @@ class Client {
             id = generateId()
 
             socketMessage = Socket(ip, port)
-            messageSender = MessageSender(socketMessage)
+            messageSender = MessageSender(ObjectOutputStream(socketMessage.getOutputStream()))
             Thread(messageSender).start()
 
             socketScreen = Socket(ip, port)
-            screenReceiver = ScreenReceiver(socketScreen)
+            screenReceiver = ScreenReceiver(
+                    ObjectInputStream(socketScreen.getInputStream()),
+                    ObjectOutputStream(socketScreen.getOutputStream())
+            )
             Thread(screenReceiver).start()
 
             if (DataPackage.DataType.MOUSE in dataTypesList) {
                 socketMouse = Socket(ip, port)
-                mouseEventSender = MouseEventSender(socketMouse)
+                mouseEventSender = MouseEventSender(ObjectOutputStream(socketMouse.getOutputStream()))
                 Thread(mouseEventSender).start()
             }
 
             if (DataPackage.DataType.KEY in dataTypesList) {
                 socketKey = Socket(ip, port)
-                keyEventSender = KeyEventSender(socketKey)
+                keyEventSender = KeyEventSender(ObjectOutputStream(socketKey.getOutputStream()))
                 Thread(keyEventSender).start()
             }
         } catch (e: IOException) {

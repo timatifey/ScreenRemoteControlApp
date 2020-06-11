@@ -1,6 +1,5 @@
 package com.timatifey.models.receivers
 
-import com.google.gson.Gson
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Mouse
 import com.timatifey.models.data.Mouse.MouseButton
@@ -9,11 +8,8 @@ import java.awt.AWTException
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.event.InputEvent
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
 import java.io.ObjectInputStream
-import java.net.Socket
 import java.net.SocketException
 
 class MouseEventReceiver(private val input: ObjectInputStream): Runnable {
@@ -76,7 +72,6 @@ class MouseEventReceiver(private val input: ObjectInputStream): Runnable {
 
     override fun run() {
         try {
-            //input = ObjectInputStream(socket.getInputStream())
             needStop = false
             println("Mouse event receiver has started")
             while (!needStop) {
@@ -96,7 +91,6 @@ class MouseEventReceiver(private val input: ObjectInputStream): Runnable {
             println("Mouse Event Receiver Stop")
             try {
                 input.close()
-                //socket.close()
             } catch (e: SocketException) {}
         }
     }

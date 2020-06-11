@@ -7,12 +7,12 @@ import java.awt.Robot
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.io.ObjectInputStream
 import java.net.Socket
 import java.net.SocketException
 
-class KeyEventReceiver(private val socket: Socket): Runnable {
+class KeyEventReceiver(private val input: ObjectInputStream): Runnable {
     @Volatile var needStop = false
-    private lateinit var input: BufferedReader
 
     private fun keyRealise(key: Key) {
         val robot = Robot()
@@ -29,24 +29,14 @@ class KeyEventReceiver(private val socket: Socket): Runnable {
 
     override fun run() {
         try {
-            input = BufferedReader(InputStreamReader(socket.getInputStream()))
             needStop = false
             println("Key event receiver has started")
 
             while (!needStop) {
-                val json = input.readLine()
-                if (json != null) {
-                    try {
-                        val data = Gson().fromJson(json, DataPackage::class.java)
-                        if (data.dataType == DataPackage.DataType.KEY) {
-                            val key = data.key!!
-                            keyRealise(key)
-                        }
-                    } catch (e: IllegalStateException) {
-                        println("Key event receiver: ${e.message}")
-                    }
-                } else {
-                    needStop = true
+                val data = input.readObject() as DataPackage
+                if (data.dataType == DataPackage.DataType.KEY) {
+                    val key = data.key!!
+                    keyRealise(key)
                 }
             }
         } catch (e: IOException) {
@@ -56,7 +46,6 @@ class KeyEventReceiver(private val socket: Socket): Runnable {
             println("Key Event Receiver Stop")
             try {
                 input.close()
-                socket.close()
             } catch (e: SocketException) {}
         }
     }

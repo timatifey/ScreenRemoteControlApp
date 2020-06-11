@@ -20,7 +20,6 @@ class Server(private val isConsole: Boolean = false): Runnable {
     @Volatile private var needStop = false
     private var wasInit = false
 
-    val gson = Gson()
     val statusProperty = SimpleStringProperty("")
     val statusClient = SimpleStringProperty("")
 
@@ -35,8 +34,9 @@ class Server(private val isConsole: Boolean = false): Runnable {
             while (!needStop) {
                 println("Server is waiting")
                 val socket = server.accept()
-                val inObjStream = ObjectInputStream(socket.getInputStream())
-                val firstMsgFromSocket = inObjStream.readObject() as DataPackage
+                val input = ObjectInputStream(socket.getInputStream())
+                val firstMsgFromSocket = input.readObject() as DataPackage
+
                 if (firstMsgFromSocket.message != null) {
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
@@ -51,22 +51,22 @@ class Server(private val isConsole: Boolean = false): Runnable {
 
                     when (msg[1]) {
                         "MESSAGE_SOCKET" -> {
-                            val messageReceiver = MessageReceiver(socket)
+                            val messageReceiver = MessageReceiver(input)
                             Thread(messageReceiver).start()
                             clientMap[clientId]?.messageReceiver = messageReceiver
                         }
                         "SCREEN_SOCKET" -> {
-                            val screenSender = ScreenSender(socket)
+                            val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
                             Thread(screenSender).start()
                             clientMap[clientId]?.screenSender = screenSender
                         }
                         "MOUSE_SOCKET" -> {
-                            val mouseEventReceiver = MouseEventReceiver(inObjStream)
+                            val mouseEventReceiver = MouseEventReceiver(input)
                             Thread(mouseEventReceiver).start()
                             clientMap[clientId]?.mouseEventReceiver = mouseEventReceiver
                         }
                         "KEY_SOCKET" -> {
-                            val keyEventReceiver = KeyEventReceiver(socket)
+                            val keyEventReceiver = KeyEventReceiver(input)
                             Thread(keyEventReceiver).start()
                             clientMap[clientId]?.keyEventReceiver = keyEventReceiver
                         }

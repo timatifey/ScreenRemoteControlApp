@@ -1,25 +1,22 @@
 package com.timatifey.models.receivers
 
-import com.google.gson.Gson
 import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.image.Image
-import java.io.*
-import java.net.Socket
+import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.net.SocketException
 
-class ScreenReceiver(private val socket: Socket): Runnable {
+class ScreenReceiver(private val input: ObjectInputStream, private val output: ObjectOutputStream): Runnable {
     val imageScene = SimpleObjectProperty<Image?>()
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0
     @Volatile var needStop = false
-    private lateinit var output: ObjectOutputStream
-    private lateinit var input: ObjectInputStream
 
     override fun run() {
         try {
-            output = ObjectOutputStream(socket.getOutputStream())
             needStop = false
             //First message
             val firstMsg =
@@ -32,8 +29,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
 
             println("Send first msg")
             //Get screen size
-
-            input = ObjectInputStream(socket.getInputStream())
             val data = input.readObject() as DataPackage
             println(data)
             if (data != null) {
@@ -61,7 +56,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             try {
                 input.close()
                 output.close()
-                socket.close()
             } catch (e: SocketException) {}
         }
     }
