@@ -40,6 +40,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
 
                 if (firstMsgFromSocket.message != null) {
                     val msg = firstMsgFromSocket.message.split(":")
+                    println(msg)
                     val clientId = msg[0]
                     if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
                     else {
@@ -57,7 +58,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                             clientMap[clientId]?.messageReceiver = messageReceiver
                         }
                         "SCREEN_SOCKET" -> {
-                            val screenSender = ScreenSender(socket)
+                            val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
                             Thread(screenSender).start()
                             clientMap[clientId]?.screenSender = screenSender
                         }

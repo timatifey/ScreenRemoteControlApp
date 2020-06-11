@@ -21,7 +21,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
     override fun run() {
         try {
             output = ObjectOutputStream(socket.getOutputStream())
-            input = ObjectInputStream(socket.getInputStream())
             needStop = false
             //First message
             val firstMsg =
@@ -44,8 +43,8 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             } else {
                 needStop = true
             }
-
             println("Screen receiver start")
+            input = ObjectInputStream(socket.getInputStream())
             //Get screen image
             while (!needStop) {
                 imageScene.value = Image(input, width, height, false, false)
