@@ -7,6 +7,7 @@ import java.io.EOFException
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.net.SocketException
+import kotlin.math.sign
 
 class ScrollEventReceiver(private val input: ObjectInputStream): Runnable {
     @Volatile var needStop = false
@@ -14,10 +15,9 @@ class ScrollEventReceiver(private val input: ObjectInputStream): Runnable {
     private fun scrollRealise(scroll: Scroll) {
         val robot = Robot()
         try {
-            println(scroll)
             when (scroll.eventType) {
                 Scroll.ScrollEventType.SCROLL -> {
-                    robot.mouseWheel((scroll.deltaY * 0.75).toInt())
+                    robot.mouseWheel((scroll.deltaY).toInt().sign * 2)
                 }
                 else -> {}
             }

@@ -9,7 +9,6 @@ import java.awt.Toolkit
 import java.awt.image.BufferedImage
 import java.io.IOException
 import java.io.ObjectOutputStream
-import java.lang.Thread.sleep
 import java.net.SocketException
 import javax.imageio.ImageIO
 
