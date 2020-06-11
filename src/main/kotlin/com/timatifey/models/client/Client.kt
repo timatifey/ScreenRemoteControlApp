@@ -46,10 +46,7 @@ class Client {
             Thread(messageSender).start()
 
             socketScreen = Socket(ip, port)
-            screenReceiver = ScreenReceiver(
-                    ObjectInputStream(socketScreen.getInputStream()),
-                    ObjectOutputStream(socketScreen.getOutputStream())
-            )
+            screenReceiver = ScreenReceiver(socketScreen)
             Thread(screenReceiver).start()
 
             if (DataPackage.DataType.MOUSE in dataTypesList) {

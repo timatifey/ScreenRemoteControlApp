@@ -7,16 +7,20 @@ import javafx.scene.image.Image
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.net.Socket
 import java.net.SocketException
 
-class ScreenReceiver(private val input: ObjectInputStream, private val output: ObjectOutputStream): Runnable {
+class ScreenReceiver(private val socket: Socket): Runnable {
     val imageScene = SimpleObjectProperty<Image?>()
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0
     @Volatile var needStop = false
+    private lateinit var input: ObjectInputStream
+    private lateinit var output: ObjectOutputStream
 
     override fun run() {
         try {
+            output = ObjectOutputStream(socket.getOutputStream())
             needStop = false
             //First message
             val firstMsg =
@@ -41,7 +45,7 @@ class ScreenReceiver(private val input: ObjectInputStream, private val output: O
             }
 
             println("Screen receiver start")
-
+            input = ObjectInputStream(socket.getInputStream())
             //Get screen image
             while (!needStop) {
                 imageScene.value = Image(input, width, height, false, false)
