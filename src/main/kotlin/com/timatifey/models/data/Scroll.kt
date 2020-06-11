@@ -4,7 +4,14 @@ import java.io.Serializable
 
 data class Scroll(
     val eventType: ScrollEventType,
-    val totalDeltaY: Double
+    val deltaX: Double,
+    val deltaY: Double,
+    val totalDeltaX: Double,
+    val totalDeltaY: Double,
+    val textDeltaX: Double,
+    val textDeltaY: Double,
+    val multiplierX: Double,
+    val multiplierY: Double
 ): Serializable {
     enum class ScrollEventType: Serializable {
         ANY,

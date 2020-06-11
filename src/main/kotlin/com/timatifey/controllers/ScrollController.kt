@@ -11,7 +11,14 @@ class ScrollController: Controller() {
         if (clientController.mouseCheck.value) {
             clientController.client.scrollEventSender.putScrollEvent(Scroll(
                     Scroll.ScrollEventType.valueOf(eventScroll.eventType.name),
-                    eventScroll.totalDeltaY
+                    eventScroll.deltaX,
+                    eventScroll.deltaY,
+                    eventScroll.totalDeltaX,
+                    eventScroll.totalDeltaY,
+                    eventScroll.textDeltaX,
+                    eventScroll.textDeltaY,
+                    eventScroll.multiplierX,
+                    eventScroll.multiplierY
             ))
         }
     }
