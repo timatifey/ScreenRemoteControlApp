@@ -14,13 +14,13 @@ import java.util.concurrent.LinkedBlockingQueue
 class KeyEventSender(private val socket: Socket): Runnable {
     @Volatile private var needStop = false
     private val queueKey = LinkedBlockingQueue<Key>()
-    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-    fun putKeyEvent(key: Key) {
-        queueKey.put(key)
-    }
+    private lateinit var output: PrintWriter
+
+    fun putKeyEvent(key: Key) { queueKey.put(key) }
 
     override fun run() {
         try {
+            output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             needStop = false
 
             //First message

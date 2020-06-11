@@ -14,12 +14,13 @@ import java.util.concurrent.LinkedBlockingQueue
 class MouseEventSender(private val socket: Socket): Runnable {
     @Volatile private var needStop = false
     private val queueMouse = LinkedBlockingQueue<Mouse>()
-    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+    private lateinit var output: PrintWriter
 
     fun putMouseEvent(mouse: Mouse) { queueMouse.put(mouse) }
 
     override fun run() {
         try {
+            output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             needStop = false
 
             //First message

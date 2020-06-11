@@ -14,14 +14,15 @@ class ScreenReceiver(private val socket: Socket): Runnable {
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0
     @Volatile var needStop = false
-//    private val input = BufferedReader(InputStreamReader(socket.getInputStream()))
-    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-    private val inObjStream = ObjectInputStream(socket.getInputStream())
+    private lateinit var output: PrintWriter
+    private lateinit var inObjStream: ObjectInputStream
 
     override fun run() {
         try {
+            output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
+            inObjStream = ObjectInputStream(socket.getInputStream())
             needStop = false
-
+            println("HERE")
             //First message
             val firstMsg = Gson().toJson(
                 DataPackage(
@@ -30,7 +31,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                 )
             )
             output.println(firstMsg)
-
+            println("Send first msg")
             //Get screen size
 //            val json = input.readLine()
             val data = inObjStream.readObject() as DataPackage

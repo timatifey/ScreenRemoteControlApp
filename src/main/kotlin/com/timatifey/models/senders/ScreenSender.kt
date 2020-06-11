@@ -24,10 +24,11 @@ private fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScre
 class ScreenSender(private val socket: Socket): Runnable {
     @Volatile var needStop = false
 //    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-    private val outScreen = ObjectOutputStream(socket.getOutputStream())
+    private lateinit var outScreen: ObjectOutputStream
 
     override fun run() {
         try {
+            outScreen = ObjectOutputStream(socket.getOutputStream())
             needStop = false
 
             val screenSize = takeScreenSize()

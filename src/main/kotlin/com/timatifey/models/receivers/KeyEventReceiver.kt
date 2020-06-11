@@ -12,7 +12,7 @@ import java.net.SocketException
 
 class KeyEventReceiver(private val socket: Socket): Runnable {
     @Volatile var needStop = false
-    private val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+    private lateinit var input: BufferedReader
 
     private fun keyRealise(key: Key) {
         val robot = Robot()
@@ -29,6 +29,7 @@ class KeyEventReceiver(private val socket: Socket): Runnable {
 
     override fun run() {
         try {
+            input = BufferedReader(InputStreamReader(socket.getInputStream()))
             needStop = false
             println("Key event receiver has started")
 

@@ -10,10 +10,11 @@ import java.net.SocketException
 
 class MessageReceiver (private val socket: Socket): Runnable {
     @Volatile var needStop = false
-    private val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+    private lateinit var input: BufferedReader
 
     override fun run() {
         try {
+            input = BufferedReader(InputStreamReader(socket.getInputStream()))
             needStop = false
             println("Message Receiver Start")
             while (!needStop) {

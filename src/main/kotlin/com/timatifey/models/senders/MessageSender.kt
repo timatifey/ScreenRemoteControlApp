@@ -13,12 +13,13 @@ import java.util.concurrent.LinkedBlockingQueue
 class MessageSender(private val socket: Socket): Runnable {
     @Volatile private var needStop = false
     private val queueMessages = LinkedBlockingQueue<String>()
-    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-    fun sendMessage(msg: String) { queueMessages.put(msg)
-    }
+    private lateinit var output: PrintWriter
+
+    fun sendMessage(msg: String) { queueMessages.put(msg) }
 
     override fun run() {
         try {
+            output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
             needStop = false
 
             //First message
@@ -28,6 +29,7 @@ class MessageSender(private val socket: Socket): Runnable {
             println("Message Sender Start")
 
             while (!needStop) {
+                if (queueMessages.isEmpty()) continue
                 val msg = queueMessages.take()
                 val data = DataPackage(DataPackage.DataType.MESSAGE, message = msg)
                 val json = Gson().toJson(data)
