@@ -1,5 +1,7 @@
 package com.timatifey.models.data
 
+import java.io.Serializable
+
 data class Mouse(
         val eventType: MouseEventType,
         val x: Double,
@@ -19,8 +21,8 @@ data class Mouse(
         val popupTrigger: Boolean,
         val stillSincePress: Boolean,
         val secondaryButtonDown: Boolean
-) {
-    enum class MouseEventType {
+): Serializable {
+    enum class MouseEventType: Serializable {
         ANY,
         MOUSE_PRESSED,
         MOUSE_RELEASED,
@@ -34,7 +36,7 @@ data class Mouse(
         DRAG_DETECTED
     }
 
-    enum class MouseButton {
+    enum class MouseButton: Serializable {
         NONE,
         PRIMARY,
         MIDDLE,

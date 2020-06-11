@@ -1,13 +1,15 @@
 package com.timatifey.models.data
 
+import java.io.Serializable
+
 data class DataPackage(
     val dataType: DataType,
     val mouse: Mouse? = null,
     val key: Key? = null,
     val imageSize: ImageSize? = null,
     val message: String? = null
-) {
-    enum class DataType {
+): Serializable {
+    enum class DataType: Serializable {
         KEY,
         MOUSE,
         MESSAGE,

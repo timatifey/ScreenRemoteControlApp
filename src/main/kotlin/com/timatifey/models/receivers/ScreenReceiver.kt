@@ -20,7 +20,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
     override fun run() {
         try {
             output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-            inObjStream = ObjectInputStream(socket.getInputStream())
             needStop = false
             println("HERE")
             //First message
@@ -34,6 +33,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             println("Send first msg")
             //Get screen size
 //            val json = input.readLine()
+            inObjStream = ObjectInputStream(socket.getInputStream())
             val data = inObjStream.readObject() as DataPackage
             println(data)
             if (data != null) {
