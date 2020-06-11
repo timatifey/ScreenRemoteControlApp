@@ -57,7 +57,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                             clientMap[clientId]?.messageReceiver = messageReceiver
                         }
                         "SCREEN_SOCKET" -> {
-                            val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
+                            val screenSender = ScreenSender(socket)
                             Thread(screenSender).start()
                             clientMap[clientId]?.screenSender = screenSender
                         }
