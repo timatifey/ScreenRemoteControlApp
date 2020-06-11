@@ -35,6 +35,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                 println("Server is waiting")
                 val socket = server.accept()
                 val input = ObjectInputStream(socket.getInputStream())
+
                 val firstMsgFromSocket = input.readObject() as DataPackage
 
                 if (firstMsgFromSocket.message != null) {
