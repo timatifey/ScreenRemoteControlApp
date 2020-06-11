@@ -14,13 +14,12 @@ class ScreenReceiver(private val socket: Socket): Runnable {
     @Volatile var height: Double = 0.0
     @Volatile var width: Double = 0.0
     @Volatile var needStop = false
-    private lateinit var output: PrintWriter
-    private lateinit var inObjStream: ObjectInputStream
+    private lateinit var output: ObjectOutputStream
+    private lateinit var input: ObjectInputStream
 
     override fun run() {
         try {
-//            output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-            val outObj = ObjectOutputStream(socket.getOutputStream())
+            output = ObjectOutputStream(socket.getOutputStream())
             needStop = false
             println("HERE")
             //First message
@@ -29,17 +28,16 @@ class ScreenReceiver(private val socket: Socket): Runnable {
                     DataPackage.DataType.MESSAGE,
                     message = "${id}:SCREEN_SOCKET"
                 )
-            outObj.writeObject(firstMsg)
-            outObj.flush()
-//            output.println(firstMsg)
+            output.writeObject(firstMsg)
+            output.flush()
+
             println("Send first msg")
             //Get screen size
-//            val json = input.readLine()
-            inObjStream = ObjectInputStream(socket.getInputStream())
-            val data = inObjStream.readObject() as DataPackage
+
+            input = ObjectInputStream(socket.getInputStream())
+            val data = input.readObject() as DataPackage
             println(data)
             if (data != null) {
-//                val data = Gson().fromJson(json, DataPackage::class.java)
                 if (data.dataType == DataPackage.DataType.IMAGE_SIZE) {
                     height = data.imageSize!!.height
                     width = data.imageSize.width
@@ -52,7 +50,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
 
             //Get screen image
             while (!needStop) {
-                imageScene.value = Image(inObjStream, width, height, false, false)
+                imageScene.value = Image(input, width, height, false, false)
             }
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
@@ -62,9 +60,8 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             println("Screen Receiver Stop")
             setNullImage()
             try {
-                inObjStream.close()
+                input.close()
                 output.close()
-//                input.close()
                 socket.close()
             } catch (e: SocketException) {}
         }

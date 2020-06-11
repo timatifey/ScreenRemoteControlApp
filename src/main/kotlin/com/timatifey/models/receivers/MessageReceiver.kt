@@ -5,35 +5,26 @@ import com.timatifey.models.data.DataPackage
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.io.ObjectInputStream
 import java.net.Socket
 import java.net.SocketException
 
 class MessageReceiver (private val socket: Socket): Runnable {
     @Volatile var needStop = false
-    private lateinit var input: BufferedReader
+    private lateinit var input: ObjectInputStream
 
     override fun run() {
         try {
-            input = BufferedReader(InputStreamReader(socket.getInputStream()))
+            input = ObjectInputStream(socket.getInputStream())
             needStop = false
             println("Message Receiver Start")
             while (!needStop) {
-                val json = input.readLine()
-                if (json != null) {
-                    try {
-                        println(json)
-                        val data = Gson().fromJson(json, DataPackage::class.java)
-                        if (data.dataType == DataPackage.DataType.MESSAGE) {
-                            val text = data.message!!.split(":")
-                            if (text[1] == "STOP") {
-                                needStop = true
-                            }
-                        }
-                    } catch (e: IllegalStateException) {
-                        println("Message Receiver: ${e.message}")
+                val data = input.readObject() as DataPackage
+                if (data.dataType == DataPackage.DataType.MESSAGE) {
+                    val text = data.message!!.split(":")
+                    if (text[1] == "STOP") {
+                        needStop = true
                     }
-                } else {
-                    needStop = true
                 }
             }
         } catch (e: IOException) {

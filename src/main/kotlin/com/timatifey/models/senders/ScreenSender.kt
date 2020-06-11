@@ -23,12 +23,11 @@ private fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScre
 
 class ScreenSender(private val socket: Socket): Runnable {
     @Volatile var needStop = false
-//    private val output = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-    private lateinit var outScreen: ObjectOutputStream
+    private lateinit var output: ObjectOutputStream
 
     override fun run() {
         try {
-            outScreen = ObjectOutputStream(socket.getOutputStream())
+            output = ObjectOutputStream(socket.getOutputStream())
             needStop = false
 
             val screenSize = takeScreenSize()
@@ -39,10 +38,8 @@ class ScreenSender(private val socket: Socket): Runnable {
                 DataPackage.DataType.IMAGE_SIZE,
                 imageSize = ImageSize(screenSize.getHeight(), screenSize.getWidth())
             )
-            val jsonScreen = Gson().toJson(dataScreen)
-            outScreen.writeObject(dataScreen)
-            outScreen.flush()
-//            output.println(jsonScreen)
+            output.writeObject(dataScreen)
+            output.flush()
 
             println("Screen Sender has started")
 
@@ -51,8 +48,8 @@ class ScreenSender(private val socket: Socket): Runnable {
             while (!needStop) {
                 val screen = takeScreen(rectangle)
                 if (previousImage == null || !compareImages(screen, previousImage)) {
-                    ImageIO.write(screen, "jpg", outScreen)
-                    outScreen.flush()
+                    ImageIO.write(screen, "jpg", output)
+                    output.flush()
                     sleep(100)
                 }
                 previousImage = screen
@@ -64,8 +61,7 @@ class ScreenSender(private val socket: Socket): Runnable {
             needStop = true
             println("Screen Sender Stop")
             try {
-//                output.close()
-                outScreen.close()
+                output.close()
                 socket.close()
             } catch (e: SocketException) {}
         }
