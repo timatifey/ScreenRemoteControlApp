@@ -16,10 +16,9 @@ import java.io.ObjectInputStream
 import java.net.Socket
 import java.net.SocketException
 
-class MouseEventReceiver(private val socket: Socket): Runnable {
+class MouseEventReceiver(private val input: ObjectInputStream): Runnable {
     @Volatile var needStop = false
     private var prevMouse = mutableListOf<Mouse?>(null, null)
-    private lateinit var input: ObjectInputStream
 
     private fun mouseRealise(mouse: Mouse) {
         try {
@@ -77,7 +76,7 @@ class MouseEventReceiver(private val socket: Socket): Runnable {
 
     override fun run() {
         try {
-            input = ObjectInputStream(socket.getInputStream())
+            //input = ObjectInputStream(socket.getInputStream())
             needStop = false
             println("Mouse event receiver has started")
             while (!needStop) {
@@ -97,7 +96,7 @@ class MouseEventReceiver(private val socket: Socket): Runnable {
             println("Mouse Event Receiver Stop")
             try {
                 input.close()
-                socket.close()
+                //socket.close()
             } catch (e: SocketException) {}
         }
     }
