@@ -12,6 +12,7 @@ import java.awt.event.InputEvent
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.io.ObjectInputStream
 import java.net.Socket
 import java.net.SocketException
 
@@ -77,25 +78,33 @@ class MouseEventReceiver(private val socket: Socket): Runnable {
     override fun run() {
         try {
             input = BufferedReader(InputStreamReader(socket.getInputStream()))
+            val inObjStream = ObjectInputStream(socket.getInputStream())
             needStop = false
             println("Mouse event receiver has started")
             while (!needStop) {
-                val json = input.readLine()
-                if (json != null) {
-                    try {
-                        val data = Gson().fromJson(json, DataPackage::class.java)
-                        if (data.dataType == DataPackage.DataType.MOUSE) {
-                            val mouse = data.mouse!!
-                            mouseRealise(mouse)
-                            prevMouse[1] = prevMouse[0]
-                            prevMouse[0] = mouse.copy()
-                        }
-                    } catch (e: IllegalStateException) {
-                        println("Mouse event receiver: ${e.message}")
-                    }
-                } else {
-                    needStop = true
+                val data = inObjStream.readObject() as DataPackage
+                if (data.dataType == DataPackage.DataType.MOUSE) {
+                    val mouse = data.mouse!!
+                    mouseRealise(mouse)
+                    prevMouse[1] = prevMouse[0]
+                    prevMouse[0] = mouse.copy()
                 }
+//                val json = input.readLine()
+//                if (json != null) {
+//                    try {
+//                        val data = Gson().fromJson(json, DataPackage::class.java)
+//                        if (data.dataType == DataPackage.DataType.MOUSE) {
+//                            val mouse = data.mouse!!
+//                            mouseRealise(mouse)
+//                            prevMouse[1] = prevMouse[0]
+//                            prevMouse[0] = mouse.copy()
+//                        }
+//                    } catch (e: IllegalStateException) {
+//                        println("Mouse event receiver: ${e.message}")
+//                    }
+//                } else {
+//                    needStop = true
+//                }
             }
         } catch (e: IOException) {
             println("Mouse Event Receiver Client Socket Error: $e")
