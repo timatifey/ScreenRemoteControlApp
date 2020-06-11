@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage
 import java.io.IOException
 import java.io.ObjectOutputStream
 import java.lang.Thread.sleep
+import java.net.Socket
 import java.net.SocketException
 import javax.imageio.ImageIO
 
@@ -17,12 +18,14 @@ fun takeScreenSize(): Dimension = Toolkit.getDefaultToolkit().screenSize
 private fun takeRectangle(screenSize: Dimension) = Rectangle(screenSize)
 private fun takeScreen(rectangle: Rectangle): BufferedImage = Robot().createScreenCapture(rectangle)
 
-class ScreenSender(private val output: ObjectOutputStream): Runnable {
+class ScreenSender(private val socket: Socket): Runnable {
     @Volatile var needStop = false
+    private lateinit var output: ObjectOutputStream
 
     override fun run() {
         try {
             needStop = false
+            output = ObjectOutputStream(socket.getOutputStream())
 
             val screenSize = takeScreenSize()
             val rectangle = takeRectangle(screenSize)
