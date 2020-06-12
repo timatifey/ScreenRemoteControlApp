@@ -23,7 +23,6 @@ class ServerController: Controller() {
     fun stopServer() {
         hasStarted.value = false
         server.stop()
-        server = Server()
         runLater {
             server.statusProperty.value = "Server has stopped"
             server.statusClient.value = ""

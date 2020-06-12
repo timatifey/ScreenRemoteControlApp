@@ -1,18 +1,18 @@
 package com.timatifey.controllers
 
 import com.timatifey.models.data.Mouse
-import com.timatifey.models.data.Mouse.MouseEventType
 import com.timatifey.models.data.Mouse.MouseButton
+import com.timatifey.models.data.Mouse.MouseEventType
 import com.timatifey.views.ScreenControlView
-import tornadofx.*
 import javafx.scene.input.MouseEvent
+import tornadofx.*
 
 class MouseController: Controller() {
-    private val view: ScreenControlView by inject()
     private val clientController: ClientController by inject()
 
     fun sendMouseEvent(eventMouse: MouseEvent) {
         if (clientController.mouseCheck.value) {
+            val view = clientController.window as ScreenControlView
             val clientWidth = view.root.center.boundsInLocal.width
             val clientHeight = view.root.center.boundsInLocal.height
 

@@ -17,6 +17,7 @@ class ClientController: Controller() {
 
     val mouseCheck = SimpleBooleanProperty(true)
     val keyCheck = SimpleBooleanProperty(true)
+    lateinit var window: View
 
     fun connect(ip: String, port: String) {
         runLater { status = "" }
@@ -33,9 +34,9 @@ class ClientController: Controller() {
                 if (isConnected) {
                     this.ip = ip
                     this.port = port
-                    val window = find(ScreenControlView::class)
+                    window = ScreenControlView()
                     window.title = "$ip:$port"
-                    window.openModal()
+                    window.openWindow()
                 } else {
                     status = "Connection Error"
                 }
@@ -47,8 +48,7 @@ class ClientController: Controller() {
     }
 
     fun stopConnection() {
-        println("STOP CLIENT")
+        println("STOP CLIENT\n")
         client.stopConnection()
-        client = Client()
     }
 }

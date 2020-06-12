@@ -8,7 +8,6 @@ import java.io.EOFException
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
-import java.lang.Thread.sleep
 import java.net.Socket
 import java.net.SocketException
 
@@ -21,9 +20,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
 
     private lateinit var input: ObjectInputStream
     private lateinit var output: ObjectOutputStream
-
-    private val maxNumReconnection = 5
-    private var currentCountReconnection = maxNumReconnection
 
     override fun run() {
         try {
@@ -38,7 +34,6 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             output.writeObject(firstMsg)
             output.flush()
 
-            println("Send first msg")
             //Get screen size
             input = ObjectInputStream(socket.getInputStream())
             try {
@@ -56,21 +51,12 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             //Get screen image
             while (!needStop) {
                 imageScene.value = Image(input, width, height, false, false)
-                if (imageScene.value == null) {
-                    currentCountReconnection--
-                    sleep(200)
-                } else currentCountReconnection = maxNumReconnection
-                if (currentCountReconnection == 0) {
-                    needStop = true
-                }
             }
         } catch (e: IOException) {
             println("Screen Receiver Client Socket Error: $e")
-            e.printStackTrace()
         } finally {
             needStop = true
             println("Screen Receiver Stop")
-            setNullImage()
             try {
                 if (this::input.isInitialized)
                     input.close()
@@ -81,6 +67,4 @@ class ScreenReceiver(private val socket: Socket): Runnable {
     }
 
     fun stop() { needStop = true }
-
-    private fun setNullImage() { imageScene.value = null }
 }

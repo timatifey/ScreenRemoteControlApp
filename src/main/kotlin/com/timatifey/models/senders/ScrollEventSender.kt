@@ -30,7 +30,6 @@ class ScrollEventSender(private val output: ObjectOutputStream): Runnable {
                 if (queueScroll.isEmpty()) continue
                 val scroll = queueScroll.take()
                 val data = DataPackage(DataPackage.DataType.SCROLL, scroll = scroll)
-                println(data)
                 output.writeObject(data)
                 output.flush()
             }

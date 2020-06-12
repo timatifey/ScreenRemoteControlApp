@@ -21,6 +21,9 @@ class KeyEventReceiver(private val input: ObjectInputStream): Runnable {
             }
         } catch (e: IllegalArgumentException) {
             println("Key realise error: ${e.message}")
+        } catch (e: NoSuchMethodError) {
+            println("Key Get Code Error: $e")
+            needStop = true
         }
     }
 

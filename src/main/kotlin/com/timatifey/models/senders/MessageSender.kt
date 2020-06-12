@@ -1,13 +1,9 @@
 package com.timatifey.models.senders
 
-import com.google.gson.Gson
 import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
 import java.io.IOException
 import java.io.ObjectOutputStream
-import java.io.OutputStreamWriter
-import java.io.PrintWriter
-import java.net.Socket
 import java.net.SocketException
 import java.util.concurrent.LinkedBlockingQueue
 
