@@ -6,10 +6,10 @@ import java.net.Socket
 import java.net.SocketException
 
 class ClientListElement {
-    lateinit var sockets: MutableList<Socket>
+    val sockets = mutableListOf<Socket>()
+    val receivers = mutableListOf<EventReceiver<*>>()
 
     lateinit var screenSender: ScreenSender
-    lateinit var receivers: MutableList<EventReceiver<*>>
     @Volatile var needDelete = false
 
     fun stopAll() {

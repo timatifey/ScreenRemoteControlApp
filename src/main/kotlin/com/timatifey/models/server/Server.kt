@@ -44,10 +44,11 @@ class Server(private val isConsole: Boolean = false): Runnable {
                     val firstMsgFromSocket = (input.readObject() as DataPackage).data as Message
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
+
                     if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
                     else {
                         clientMap[clientId] = ClientListElement()
-                        clientMap[clientId]?.sockets = mutableListOf(socket)
+                        clientMap[clientId]?.sockets?.add(socket)
                         println("${socket.inetAddress.hostAddress} has connected ( ID = $clientId )")
                         if (!isConsole)
                             runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
