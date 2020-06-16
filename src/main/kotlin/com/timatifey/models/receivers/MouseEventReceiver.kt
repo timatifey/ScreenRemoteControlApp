@@ -19,8 +19,6 @@ class MouseEventReceiver(input: ObjectInputStream): EventReceiver<Mouse>(input) 
     override fun realise(obj: Data) {
         try {
             val mouse = obj as Mouse
-            prevMouse[1] = prevMouse[0]
-            prevMouse[0] = mouse.copy()
             val screenSize = Toolkit.getDefaultToolkit().screenSize
             val robot = Robot()
             val button = when (mouse.button) {
@@ -68,6 +66,8 @@ class MouseEventReceiver(input: ObjectInputStream): EventReceiver<Mouse>(input) 
                 }
                 else -> {}
             }
+            prevMouse[1] = prevMouse[0]
+            prevMouse[0] = mouse.copy()
         } catch (e: AWTException) {
             println("Mouse realise error: ${e.message}")
         }
