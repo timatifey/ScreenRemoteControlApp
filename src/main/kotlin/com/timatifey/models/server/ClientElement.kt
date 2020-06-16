@@ -1,11 +1,11 @@
-package com.timatifey.models.data
+package com.timatifey.models.server
 
 import com.timatifey.models.receivers.EventReceiver
 import com.timatifey.models.senders.ScreenSender
 import java.net.Socket
 import java.net.SocketException
 
-class ClientListElement {
+class ClientElement {
     val sockets = mutableListOf<Socket>()
     val receivers = mutableListOf<EventReceiver<*>>()
 
@@ -53,7 +53,7 @@ class ClientListElement {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as ClientListElement
+        other as ClientElement
 
         if (sockets != other.sockets) return false
 

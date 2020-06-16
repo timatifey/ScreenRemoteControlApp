@@ -1,6 +1,5 @@
 package com.timatifey.models.server
 
-import com.timatifey.models.data.ClientListElement
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Message
 import com.timatifey.models.receivers.KeyEventReceiver
@@ -9,7 +8,7 @@ import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.receivers.ScrollEventReceiver
 import com.timatifey.models.senders.ScreenSender
 import javafx.beans.property.SimpleStringProperty
-import tornadofx.*
+import tornadofx.runLater
 import java.io.EOFException
 import java.io.IOException
 import java.io.ObjectInputStream
@@ -22,7 +21,7 @@ import kotlin.collections.set
 
 class Server(private val isConsole: Boolean = false): Runnable {
     private lateinit var server: ServerSocket
-    @Volatile private var clientMap = ConcurrentHashMap<String, ClientListElement>()
+    @Volatile private var clientMap = ConcurrentHashMap<String, ClientElement>()
     @Volatile private var needStop = false
     private var wasInit = false
 
@@ -47,7 +46,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                     val socketName = msg[1]
                     if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
                     else {
-                        clientMap[clientId] = ClientListElement()
+                        clientMap[clientId] = ClientElement()
                         clientMap[clientId]?.sockets?.add(socket)
                         println("${socket.inetAddress.hostAddress} has connected ( ID = $clientId )")
                         if (!isConsole)
