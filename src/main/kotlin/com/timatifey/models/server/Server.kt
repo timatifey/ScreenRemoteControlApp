@@ -44,7 +44,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                     val firstMsgFromSocket = (input.readObject() as DataPackage).data as Message
                     val msg = firstMsgFromSocket.message.split(":")
                     val clientId = msg[0]
-
+                    val socketName = msg[1]
                     if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
                     else {
                         clientMap[clientId] = ClientListElement()
@@ -53,13 +53,12 @@ class Server(private val isConsole: Boolean = false): Runnable {
                         if (!isConsole)
                             runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
                     }
-                    println(msg[0])
-                    if (msg[0] == "SCREEN_SOCKET") {
+                    if (socketName == "SCREEN_SOCKET") {
                         val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
                         Thread(screenSender).start()
                         clientMap[clientId]?.screenSender = screenSender
                     } else {
-                        val receiver = when (msg[1]) {
+                        val receiver = when (socketName) {
                             "MESSAGE_SOCKET" -> MessageEventReceiver(input)
                             "MOUSE_SOCKET" -> MouseEventReceiver(input)
                             "KEY_SOCKET" -> KeyEventReceiver(input)
