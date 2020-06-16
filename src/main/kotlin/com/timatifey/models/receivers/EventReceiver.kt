@@ -7,7 +7,7 @@ import java.io.IOException
 import java.io.ObjectInputStream
 import java.net.SocketException
 
-abstract class Receiver<T>(private val input: ObjectInputStream): Runnable {
+abstract class EventReceiver<T>(private val input: ObjectInputStream): Runnable {
     @Volatile var needStop = false
     abstract val socketName: String
 

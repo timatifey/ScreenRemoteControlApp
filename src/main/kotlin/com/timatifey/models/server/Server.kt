@@ -4,7 +4,7 @@ import com.timatifey.models.data.ClientListElement
 import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Message
 import com.timatifey.models.receivers.KeyEventReceiver
-import com.timatifey.models.receivers.MessageReceiver
+import com.timatifey.models.receivers.MessageEventReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.receivers.ScrollEventReceiver
 import com.timatifey.models.senders.ScreenSender
@@ -52,33 +52,25 @@ class Server(private val isConsole: Boolean = false): Runnable {
                         if (!isConsole)
                             runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
                     }
-                    when (msg[1]) {
-                        "MESSAGE_SOCKET" -> {
-                            val messageReceiver = MessageReceiver(input)
-                            Thread(messageReceiver).start()
-                            clientMap[clientId]?.messageReceiver = messageReceiver
+
+                    if (msg[0] == "SCREEN_SOCKET") {
+                        val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
+                        Thread(screenSender).start()
+                        clientMap[clientId]?.screenSender = screenSender
+                    } else {
+                        val receiver = when (msg[1]) {
+                            "MESSAGE_SOCKET" -> MessageEventReceiver(input)
+                            "MOUSE_SOCKET" -> MouseEventReceiver(input)
+                            "KEY_SOCKET" -> KeyEventReceiver(input)
+                            "SCROLL_SOCKET" -> ScrollEventReceiver(input)
+                            else -> null
                         }
-                        "SCREEN_SOCKET" -> {
-                            val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
-                            Thread(screenSender).start()
-                            clientMap[clientId]?.screenSender = screenSender
-                        }
-                        "MOUSE_SOCKET" -> {
-                            val mouseEventReceiver = MouseEventReceiver(input)
-                            Thread(mouseEventReceiver).start()
-                            clientMap[clientId]?.mouseEventReceiver = mouseEventReceiver
-                        }
-                        "KEY_SOCKET" -> {
-                            val keyEventReceiver = KeyEventReceiver(input)
-                            Thread(keyEventReceiver).start()
-                            clientMap[clientId]?.keyEventReceiver = keyEventReceiver
-                        }
-                        "SCROLL_SOCKET" -> {
-                            val scrollEventReceiver = ScrollEventReceiver(input)
-                            Thread(scrollEventReceiver).start()
-                            clientMap[clientId]?.scrollEventReceiver = scrollEventReceiver
+                        if (receiver != null) {
+                            Thread(receiver).start()
+                            clientMap[clientId]?.receivers?.add(receiver)
                         }
                     }
+
                 } catch (e: EOFException) {
                     needStop = true
                     print("Server first message error: $e")

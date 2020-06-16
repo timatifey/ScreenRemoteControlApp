@@ -9,7 +9,7 @@ import java.io.ObjectOutputStream
 import java.net.SocketException
 import java.util.concurrent.LinkedBlockingQueue
 
-abstract class Sender<T> (private val output: ObjectOutputStream): Runnable {
+abstract class EventSender<T> (private val output: ObjectOutputStream): Runnable {
     @Volatile private var needStop = false
     private val queue = LinkedBlockingQueue<T>()
 

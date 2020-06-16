@@ -4,7 +4,7 @@ import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Message
 import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.KeyEventSender
-import com.timatifey.models.senders.MessageSender
+import com.timatifey.models.senders.MessageEventSender
 import com.timatifey.models.senders.MouseEventSender
 import com.timatifey.models.senders.ScrollEventSender
 import javafx.beans.property.SimpleStringProperty
@@ -24,19 +24,19 @@ fun generateId(): String {
 }
 
 class Client {
+    private var wasInit = false
+
     private lateinit var socketMessage: Socket
     private lateinit var socketScreen: Socket
     private lateinit var socketMouse: Socket
     private lateinit var socketKey: Socket
     private lateinit var socketScroll: Socket
 
-    private var wasInit = false
-
-    lateinit var messageSender: MessageSender private set
+    lateinit var messageSender: MessageEventSender private set
     lateinit var mouseEventSender: MouseEventSender private set
-    lateinit var screenReceiver: ScreenReceiver private set
     lateinit var keyEventSender: KeyEventSender private set
     lateinit var scrollEventSender: ScrollEventSender private set
+    lateinit var screenReceiver: ScreenReceiver private set
 
     val status = SimpleStringProperty("")
 
@@ -45,7 +45,7 @@ class Client {
             id = generateId()
 
             socketMessage = Socket(ip, port)
-            messageSender = MessageSender(ObjectOutputStream(socketMessage.getOutputStream()))
+            messageSender = MessageEventSender(ObjectOutputStream(socketMessage.getOutputStream()))
             Thread(messageSender).start()
 
             socketScreen = Socket(ip, port)
