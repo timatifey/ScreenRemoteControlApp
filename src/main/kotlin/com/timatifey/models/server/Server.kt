@@ -53,7 +53,7 @@ class Server(private val isConsole: Boolean = false): Runnable {
                         if (!isConsole)
                             runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
                     }
-
+                    println(msg[0])
                     if (msg[0] == "SCREEN_SOCKET") {
                         val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
                         Thread(screenSender).start()
