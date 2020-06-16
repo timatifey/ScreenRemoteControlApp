@@ -1,6 +1,7 @@
 package com.timatifey.models.client
 
 import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.Message
 import com.timatifey.models.receivers.ScreenReceiver
 import com.timatifey.models.senders.KeyEventSender
 import com.timatifey.models.senders.MessageSender
@@ -81,7 +82,7 @@ class Client {
             if (wasInit) {
                 try {
                     if (this::messageSender.isInitialized) {
-                        messageSender.sendMessage("$id:STOP")
+                        messageSender.putEvent(Message("$id:STOP"))
                         messageSender.stop()
                     }
                     if (this::socketMessage.isInitialized)

@@ -27,10 +27,7 @@ class ScreenSender(private val output: ObjectOutputStream): Runnable {
             val rectangle = takeRectangle(screenSize)
 
             //Sending screen size
-            val dataScreen = DataPackage(
-                DataPackage.DataType.IMAGE_SIZE,
-                imageSize = ImageSize(screenSize.getHeight(), screenSize.getWidth())
-            )
+            val dataScreen = DataPackage(ImageSize(screenSize.getHeight(), screenSize.getWidth()))
             output.writeObject(dataScreen)
             output.flush()
 

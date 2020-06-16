@@ -16,7 +16,7 @@ class MouseController: Controller() {
             val clientWidth = view.root.center.boundsInLocal.width
             val clientHeight = view.root.center.boundsInLocal.height
 
-            clientController.client.mouseEventSender.putMouseEvent(Mouse(
+            clientController.client.mouseEventSender.putEvent(Mouse(
                     MouseEventType.valueOf(eventMouse.eventType.name),
                     eventMouse.x,
                     eventMouse.y,

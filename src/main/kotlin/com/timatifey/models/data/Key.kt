@@ -11,7 +11,7 @@ data class Key(val eventType: KeyEventType,
                val controlDown: Boolean,
                val altDown: Boolean,
                val metaDown: Boolean
-): Serializable {
+): Data, Serializable {
     enum class KeyEventType: Serializable {
         ANY,
         KEY_PRESSED,

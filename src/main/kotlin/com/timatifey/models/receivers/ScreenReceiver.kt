@@ -2,6 +2,8 @@ package com.timatifey.models.receivers
 
 import com.timatifey.models.client.id
 import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.ImageSize
+import com.timatifey.models.data.Message
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.image.Image
 import java.io.EOFException
@@ -26,11 +28,7 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             output = ObjectOutputStream(socket.getOutputStream())
             needStop = false
             //First message
-            val firstMsg =
-                DataPackage(
-                    DataPackage.DataType.MESSAGE,
-                    message = "${id}:SCREEN_SOCKET"
-                )
+            val firstMsg = DataPackage(Message("${id}:SCREEN_SOCKET"))
             output.writeObject(firstMsg)
             output.flush()
 
@@ -38,10 +36,9 @@ class ScreenReceiver(private val socket: Socket): Runnable {
             input = ObjectInputStream(socket.getInputStream())
             try {
                 val data = input.readObject() as DataPackage
-                if (data.dataType == DataPackage.DataType.IMAGE_SIZE) {
-                    height = data.imageSize!!.height
-                    width = data.imageSize.width
-                }
+                val imageSize = data.data as ImageSize
+                height = imageSize.height
+                width = imageSize.width
             } catch (e: EOFException) {
                 needStop = true
             } catch (e: SocketException) {

@@ -21,7 +21,7 @@ data class Mouse(
         val popupTrigger: Boolean,
         val stillSincePress: Boolean,
         val secondaryButtonDown: Boolean
-): Serializable {
+): Serializable, Data {
     enum class MouseEventType: Serializable {
         ANY,
         MOUSE_PRESSED,

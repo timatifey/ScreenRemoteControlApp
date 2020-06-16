@@ -12,7 +12,7 @@ data class Scroll(
     val textDeltaY: Double,
     val multiplierX: Double,
     val multiplierY: Double
-): Serializable {
+): Serializable, Data {
     enum class ScrollEventType: Serializable {
         ANY,
         SCROLL,
