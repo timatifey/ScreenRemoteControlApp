@@ -1,48 +1,8 @@
 package com.timatifey.models.senders
 
-import com.timatifey.models.client.id
-import com.timatifey.models.data.DataPackage
 import com.timatifey.models.data.Key
-import java.io.IOException
 import java.io.ObjectOutputStream
-import java.net.SocketException
-import java.util.concurrent.LinkedBlockingQueue
 
-class KeyEventSender(private val output: ObjectOutputStream): Runnable {
-    @Volatile private var needStop = false
-    private val queueKey = LinkedBlockingQueue<Key>()
-
-    fun putKeyEvent(key: Key) { queueKey.put(key) }
-
-    override fun run() {
-        try {
-            needStop = false
-
-            //First message
-            val firstMsg = DataPackage(DataPackage.DataType.MESSAGE,
-                message = "$id:KEY_SOCKET")
-            output.writeObject(firstMsg)
-            output.flush()
-
-            println("Key Event Sender Start")
-
-            while (!needStop) {
-                if (queueKey.isEmpty()) continue
-                val key = queueKey.take()
-                val data = DataPackage(DataPackage.DataType.KEY, key = key)
-                output.writeObject(data)
-                output.flush()
-            }
-        } catch (e: IOException) {
-            println("Key Event Sender Client Socket Error: $e")
-        } finally {
-            needStop = true
-            println("Key Event Sender Stop")
-            try {
-                output.close()
-            } catch (e: SocketException) {}
-        }
-    }
-
-    fun stop() { needStop = true }
+class KeyEventSender(output: ObjectOutputStream) : EventSender<Key>(output) {
+    override val socketName = "KEY_SOCKET"
 }

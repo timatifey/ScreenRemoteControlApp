@@ -1,6 +1,6 @@
 package com.timatifey.models.receivers
 
-import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.Data
 import com.timatifey.models.data.Mouse
 import com.timatifey.models.data.Mouse.MouseButton
 import com.timatifey.models.data.Mouse.MouseEventType
@@ -8,17 +8,17 @@ import java.awt.AWTException
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.event.InputEvent
-import java.io.EOFException
-import java.io.IOException
 import java.io.ObjectInputStream
-import java.net.SocketException
 
-class MouseEventReceiver(private val input: ObjectInputStream): Runnable {
-    @Volatile var needStop = false
+class MouseEventReceiver(input: ObjectInputStream): EventReceiver<Mouse>(input) {
+    override val socketName: String
+        get() = "MOUSE_SOCKET"
+
     private var prevMouse = mutableListOf<Mouse?>(null, null)
 
-    private fun mouseRealise(mouse: Mouse) {
+    override fun realise(obj: Data) {
         try {
+            val mouse = obj as Mouse
             val screenSize = Toolkit.getDefaultToolkit().screenSize
             val robot = Robot()
             val button = when (mouse.button) {
@@ -66,40 +66,10 @@ class MouseEventReceiver(private val input: ObjectInputStream): Runnable {
                 }
                 else -> {}
             }
+            prevMouse[1] = prevMouse[0]
+            prevMouse[0] = mouse.copy()
         } catch (e: AWTException) {
             println("Mouse realise error: ${e.message}")
         }
     }
-
-    override fun run() {
-        try {
-            needStop = false
-            println("Mouse event receiver has started")
-            while (!needStop) {
-                try {
-                    val data = input.readObject() as DataPackage
-                    if (data.dataType == DataPackage.DataType.MOUSE) {
-                        val mouse = data.mouse!!
-                        mouseRealise(mouse)
-                        prevMouse[1] = prevMouse[0]
-                        prevMouse[0] = mouse.copy()
-                    }
-                } catch (e: EOFException) {
-                    needStop = true
-                } catch (e: SocketException) {
-                    needStop = true
-                }
-            }
-        } catch (e: IOException) {
-            println("Mouse Event Receiver Client Socket Error: $e")
-        } finally {
-            needStop = true
-            println("Mouse Event Receiver Stop")
-            try {
-                input.close()
-            } catch (e: SocketException) {}
-        }
-    }
-
-    fun stop() { needStop = true }
 }

@@ -1,14 +1,14 @@
 package com.timatifey.models.server
 
-import com.timatifey.models.data.ClientListElement
 import com.timatifey.models.data.DataPackage
+import com.timatifey.models.data.Message
 import com.timatifey.models.receivers.KeyEventReceiver
-import com.timatifey.models.receivers.MessageReceiver
+import com.timatifey.models.receivers.MessageEventReceiver
 import com.timatifey.models.receivers.MouseEventReceiver
 import com.timatifey.models.receivers.ScrollEventReceiver
 import com.timatifey.models.senders.ScreenSender
 import javafx.beans.property.SimpleStringProperty
-import tornadofx.*
+import tornadofx.runLater
 import java.io.EOFException
 import java.io.IOException
 import java.io.ObjectInputStream
@@ -21,7 +21,7 @@ import kotlin.collections.set
 
 class Server(private val isConsole: Boolean = false): Runnable {
     private lateinit var server: ServerSocket
-    @Volatile private var clientMap = ConcurrentHashMap<String, ClientListElement>()
+    @Volatile private var clientMap = ConcurrentHashMap<String, ClientElement>()
     @Volatile private var needStop = false
     private var wasInit = false
 
@@ -40,46 +40,36 @@ class Server(private val isConsole: Boolean = false): Runnable {
                 val socket = server.accept()
                 val input = ObjectInputStream(socket.getInputStream())
                 try {
-                    val firstMsgFromSocket = input.readObject() as DataPackage
-                    if (firstMsgFromSocket.message != null) {
-                        val msg = firstMsgFromSocket.message.split(":")
-                        val clientId = msg[0]
-                        if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
-                        else {
-                            clientMap[clientId] = ClientListElement()
-                            clientMap[clientId]?.sockets = mutableListOf(socket)
-                            println("${socket.inetAddress.hostAddress} has connected ( ID = $clientId )")
-                            if (!isConsole)
-                                runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
+                    val firstMsgFromSocket = (input.readObject() as DataPackage).data as Message
+                    val msg = firstMsgFromSocket.message.split(":")
+                    val clientId = msg[0]
+                    val socketName = msg[1]
+                    if (clientMap.keys.contains(clientId)) clientMap[clientId]?.sockets?.add(socket)
+                    else {
+                        clientMap[clientId] = ClientElement()
+                        clientMap[clientId]?.sockets?.add(socket)
+                        println("${socket.inetAddress.hostAddress} has connected ( ID = $clientId )")
+                        if (!isConsole)
+                            runLater { statusClient.value = "${socket.inetAddress.hostAddress} has connected" }
+                    }
+                    if (socketName == "SCREEN_SOCKET") {
+                        val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
+                        Thread(screenSender).start()
+                        clientMap[clientId]?.screenSender = screenSender
+                    } else {
+                        val receiver = when (socketName) {
+                            "MESSAGE_SOCKET" -> MessageEventReceiver(input)
+                            "MOUSE_SOCKET" -> MouseEventReceiver(input)
+                            "KEY_SOCKET" -> KeyEventReceiver(input)
+                            "SCROLL_SOCKET" -> ScrollEventReceiver(input)
+                            else -> null
                         }
-                        when (msg[1]) {
-                            "MESSAGE_SOCKET" -> {
-                                val messageReceiver = MessageReceiver(input)
-                                Thread(messageReceiver).start()
-                                clientMap[clientId]?.messageReceiver = messageReceiver
-                            }
-                            "SCREEN_SOCKET" -> {
-                                val screenSender = ScreenSender(ObjectOutputStream(socket.getOutputStream()))
-                                Thread(screenSender).start()
-                                clientMap[clientId]?.screenSender = screenSender
-                            }
-                            "MOUSE_SOCKET" -> {
-                                val mouseEventReceiver = MouseEventReceiver(input)
-                                Thread(mouseEventReceiver).start()
-                                clientMap[clientId]?.mouseEventReceiver = mouseEventReceiver
-                            }
-                            "KEY_SOCKET" -> {
-                                val keyEventReceiver = KeyEventReceiver(input)
-                                Thread(keyEventReceiver).start()
-                                clientMap[clientId]?.keyEventReceiver = keyEventReceiver
-                            }
-                            "SCROLL_SOCKET" -> {
-                                val scrollEventReceiver = ScrollEventReceiver(input)
-                                Thread(scrollEventReceiver).start()
-                                clientMap[clientId]?.scrollEventReceiver = scrollEventReceiver
-                            }
+                        if (receiver != null) {
+                            Thread(receiver).start()
+                            clientMap[clientId]?.receivers?.add(receiver)
                         }
                     }
+
                 } catch (e: EOFException) {
                     needStop = true
                     print("Server first message error: $e")

@@ -9,7 +9,7 @@ class ScrollController: Controller() {
 
     fun sendScrollEvent(eventScroll: ScrollEvent) {
         if (clientController.mouseCheck.value) {
-            clientController.client.scrollEventSender.putScrollEvent(Scroll(
+            clientController.client.scrollEventSender.putEvent(Scroll(
                     Scroll.ScrollEventType.valueOf(eventScroll.eventType.name),
                     eventScroll.deltaX,
                     eventScroll.deltaY,
